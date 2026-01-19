@@ -1,86 +1,31 @@
-import { useRef } from 'react'
-import CategoriasSlots from '@/components/CategoriasSlots';
-import { Link } from '@inertiajs/react';
-import PageLinks from '@/components/PageLinks';
+import AppFront from '@/AppFront';
+import Filtro from '@/components/Filtro';
+import Presentaciones from '@/components/Presentaciones';
+import { PageProps } from '@/types/automovil';
 
-interface Props {
-    children: React.ReactNode,
-}
-
-export default function Welcome(props: Props) {
-    const { children } = props;
-    const categoriasRefDesk = useRef<HTMLUListElement>(null!)
-    const categoriasRefMob = useRef<HTMLUListElement>(null!)
-    const menuRef = useRef<HTMLUListElement>(null!) // esto sirve para referenciar el ul del menu explicitamente. 
-    // el ! al final es para que no tire error de q puede ser nulo
-    const year = new Date().getFullYear();
-
-    const toggleMenu = () => {
-        innerWidth < 500 ? menuRef.current.classList.toggle('w-[85%]') : menuRef.current.classList.toggle('w-screen');
-    }
-    const toggleCategoriasMobile = () => {
-        categoriasRefMob.current.classList.toggle('hidden');
-    }
-    // Desktop categorias toggle
-    const toggleCategoriasDesktopOn = () => {
-        categoriasRefDesk.current.classList.remove('hidden');
-    }
-    const toggleCategoriasDesktopOff = () => {
-        categoriasRefDesk.current.classList.add('hidden');
-    }
+export default function Welcome({ loguedUser, posts }: PageProps) {
     return (
-        <>
-            <header className={`relative z-30 flex items-center justify-center bg-[#111b] sticky top-0 w-full`}>
-                <div id='mobile-nav' className='lg:hidden'>
-                    <nav className='bg-[#111]'>
-                        <ul ref={menuRef} id='menu' className='flex flex-col gap-10 justify-center overflow-hidden fixed left-0 bg-[#1117] backdrop-blur-sm transition-[width] duration-350 ease-in-out w-0 h-screen z-50'>
-                            <PageLinks title="Inicio" link='/' />
-                            <PageLinks title="Contacto" link='/contacto' />
-                            <li className='text-[#ccc] pl-7 text-3xl cursor-pointer' onClick={toggleCategoriasMobile}>
-                                Categorías
-                            </li>
-                            <ul className='text-[#ccc] flex flex-col ml-5 hidden' ref={categoriasRefMob}>
-                                <CategoriasSlots text="Autos" link="/categorias/autos" clases='w-[85%]' />
-                                <CategoriasSlots text="Camionetas" link="/categorias/camionetas" clases='w-[85%]' />
-                                <CategoriasSlots text="Motos" link="/categorias/motos" clases='w-[85%]' />
-                            </ul>
-                        </ul>
-                    </nav>
-                    <button className='fixed top-0 left-0 z-50 flex flex-col gap-1 p-5 bg-[#2228] outline outline-gray-200/40' onClick={toggleMenu}>
-                        <div className="h-[2px] w-[30px] bg-[#ccc] shadow-lg"></div>
-                        <div className="h-[2px] w-[20px] bg-[#ccc] shadow-lg"></div>
-                        <div className="h-[2px] w-[10px] bg-[#ccc] shadow-lg"></div>
-                    </button>
+        <AppFront loguedUser={loguedUser}>
+            <section className='flex flex-col gap-25 mt-20'>
+                <div className="space-y-5 md:space-y-10">
+                    <h1 className='text-4xl text-left animate-text-pulse md:text-5xl lg:text-6xl text-[#ccc] font-[200]'>Silvetti Automotores</h1>
+                    <p>Somos un grupo de vendedores independientes dedicados a la compra, venta y permuta de vehículos, unidos por la transparencia y el trato directo.</p>
                 </div>
-                <div id='desktop-nav'>
-                    <nav>
-                        <ul className='hidden lg:flex items-center justify-center w-full gap-10 p-3'>
-                            <PageLinks title="Inicio" link='/' clases='!text-2xl text-shadow-gray-300 hover:text-shadow-md transition-all duration-300' />
-                            <div>
-                                <li className='flex items-center gap-2 text-2xl text-[#ccc] ml-5 cursor-pointer p-3' onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff}>
-                                    Categorías
-                                </li>
-                            </div>
-                            <PageLinks title="Contacto" link='/contacto' clases='!text-2xl text-shadow-gray-300 hover:text-shadow-md transition-all duration-300' />
-                            <div className='absolute'>
-                                <ul className='text-[#ccc] flex flex-col hidden absolute bg-[#111] -top-5 mt-8.5 border border-gray-700' ref={categoriasRefDesk}>
-                                    <Link className={`p-5 hover:bg-[#222d]`} href='www.youtube.com' onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff}>Camionetas</Link>
-                                    <Link className={`p-5 hover:bg-[#222d]`} href='www.youtube.com' onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff}>Autos</Link>
-                                    <Link className={`p-5 hover:bg-[#222d]`} href='www.youtube.com' onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff}>Motos</Link>
-                                </ul>
-                            </div>
-                        </ul>
-                    </nav>
-                </div>
-            </header>
-            <main className={`my-8 mx-5 text-[#ccc] max-w-7xl min-h-screen`}>
-                {children}
-            </main>
-            <footer className='p-5'>
-                <div className='bg-[#111] text-center p-5 text-[#ccc]'>
-                    &copy; {year} Silvetti Automotores. Todos los derechos reservados.
-                </div>
-            </footer>
-        </>
+                <hr className="m-0 animate-box-pulse" />
+                <div className="space-y-50">
+                    <Presentaciones titulo="Sobre nosotros" descripcion="Trabajamos de forma autónoma, pero compartimos un mismo objetivo: que cada compra y venta sea clara y segura. Cada vehículo es ofrecido con información real y atención personalizada." img="https://imgs.search.brave.com/Mrkc3fRnJ-3YlH1rYjLT-DiqKt_LyAzgYyfDyea0ShY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9oaXBz/LmhlYXJzdGFwcHMu/Y29tL2htZy1wcm9k/L2ltYWdlcy8yMDIz/LWF1ZGktcjgtZ3Qt/cmVhci10aHJlZS1x/dWFydGVycy1tb3Rp/b24tMTY2NDgyNzk4/My5qcGc_Y3JvcD0w/Ljc4Mnh3OjAuNzE3/eGg7MC4xNTB4dyww/LjE4NHhoJnJlc2l6/ZT05ODA6Kg" />
+                    <Presentaciones titulo="¿Por qué elegirnos?" descripcion="Porque creemos en el trato directo, sin intermediarios innecesarios. Ofrecemos autos seleccionados, información real y un acompañamiento cercano en cada paso." img="https://imgs.search.brave.com/Mrkc3fRnJ-3YlH1rYjLT-DiqKt_LyAzgYyfDyea0ShY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9oaXBz/LmhlYXJzdGFwcHMu/Y29tL2htZy1wcm9k/L2ltYWdlcy8yMDIz/LWF1ZGktcjgtZ3Qt/cmVhci10aHJlZS1x/dWFydGVycy1tb3Rp/b24tMTY2NDgyNzk4/My5qcGc_Y3JvcD0w/Ljc4Mnh3OjAuNzE3/eGg7MC4xNTB4dyww/LjE4NHhoJnJlc2l6/ZT05ODA6Kg" clases="lg:-order-1" />
+                </div> 
+                <hr className="m-0 animate-box-pulse" />
+                <section id='categorias' className='flex flex-col items-center justify-center'>
+                    <div className='space-y-4'>
+                        <div>
+                            {/* <Vehiculos  /> */}
+                            <Filtro posts={posts} loguedUser={loguedUser} />
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </AppFront>
     );
 }

@@ -1,3 +1,4 @@
+import React from "react";
 import { type User } from ".";
 
 export interface Images{
@@ -12,11 +13,13 @@ export interface CarBrand{
 // lo que recibo cuando creo un auto (array de las marcas pre-hechas)
 export interface CreateProps{
     carBrands: CarBrand[],
+    loguedUser: User,
 }
 // lo que recibo a la hora de editar un post
 export interface EditProps{
     carBrands: CarBrand[],
     postData: Post,
+    loguedUser: User,
 }
 export interface Post{
     id: number,
@@ -54,7 +57,8 @@ export interface CreatePostForm {
 // para varios autos
 export interface PageProps{
     posts: Paginated<Post>, // están paginados los posts
-    user: User[],
+    // users: User[],
+    loguedUser: User,
 }
 // para un solo auto
 export interface CarProp{
@@ -70,4 +74,18 @@ export interface PaginationLink {
 export interface Paginated<T> {
     data: T[], // informacion de <Product> (la 'T' es un parámetro de tipo, por lo que puede traer data de tipo Product, User o el tipo que sea)
     links: PaginationLink[], // información referida a los links (un array de la interfaz PaginationLink)
+}
+
+export interface AppComponentProps{
+    children?: React.ReactNode,
+    loguedUser?: User,
+}
+export interface FiltroProps{
+    posts: Paginated<Post>,
+    loguedUser: User
+}
+export interface CarCardsProps{
+    loguedUser?: User,
+    post: Post,
+    src?: string,
 }

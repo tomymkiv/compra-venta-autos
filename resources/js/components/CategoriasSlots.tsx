@@ -1,12 +1,12 @@
-import { Link } from "@inertiajs/react";
-
 interface Props {
     text: string,
-    link: string,
+    link?: string,
     clases?: string,
     onMouseEnter?: () => void,
     onMouseLeave?: () => void,
 }
+
+import { Link } from "@inertiajs/react";
 
 function CategoriasSlots(props: Props) {
     const { text, link, clases, onMouseEnter, onMouseLeave } = props;

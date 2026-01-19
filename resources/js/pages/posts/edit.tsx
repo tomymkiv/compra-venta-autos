@@ -8,11 +8,11 @@ import { route } from "ziggy-js";
 import { useState } from "react";
 import { type Images } from '@/types/automovil';
 
-export default function edit({ carBrands, postData }: EditProps) {
+export default function edit({ carBrands, postData, loguedUser }: EditProps) {
     const [newImg, setNewImg] = useState<File[]>([]);
     const [deletedImg, setDeletedImg] = useState<Number[]>([]); // solo para enviar los id's de las imagenes EXISTENTES que se deseen eliminar
     const [existingImg, setExistingImg] = useState<Images[]>(postData.post_image)
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, put, processing, errors, delete: destroy } = useForm({
         marca: postData.car.car_model.car_brand.id,
         modelo: postData.car.car_model.modelo,
         anio: postData.car.anio,
@@ -38,7 +38,6 @@ export default function edit({ carBrands, postData }: EditProps) {
         //...data.images: imagenes ya seteadas (en caso de haber)
         //...files: imagenes entrantes (nuevas)
         // seteo las imagenes para enviarlas al backend
-        console.log(data.images);
     }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,7 +55,6 @@ export default function edit({ carBrands, postData }: EditProps) {
         setData('deleted_images', [...data.deleted_images, id]);
     };
     const removeNewImage = (index: number) => {
-        console.log(data.images);
         if (confirm('¿Estás seguro que quieres eliminar esta imagen?')) {
             setNewImg(prev =>
                 prev.filter((_, i) => i !== index) // recorro las imagenes nuevas (si es que hay) y filtro:
@@ -66,156 +64,167 @@ export default function edit({ carBrands, postData }: EditProps) {
             setData('images', data.images.filter((_, i) => i !== index));
         }
     }
-    const undoDeletedImages = () => {
-
+    const handleDelete = (id: number) => {
+        confirm('¿Seguro que quieres eliminar este post? La acción será irreversible.') ? 
+        destroy(route('posts.destroy', id)) : '';
     }
     return <>
         <section className="flex flex-col my-20 items-center justify-center">
-            <div>
-                <h2 className="text-2xl text-center">Editar publicación</h2>
-            </div>
-            <form action="" onSubmit={handleSubmit} className="grid lg:grid-cols-2 items-center justify-center gap-8 lg:gap-4 my-5 lg:my-0 mx-3">
-                <div className="mt-5 flex flex-col gap-2">
-                    {
-                        errors.marca && (
-                            <p className='text-red-500 font-[500] text-sm'>{errors.marca}</p>
-                        )
-                    }
-                    <Label htmlFor="marca">Marca:</Label>
-                    <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={data.marca} id="marca" onChange={e => setData('marca', Number(e.target.value))} >
-                        <option value="" disabled>Selecciona la marca del vehiculo</option>
-                        {carBrands.map(brand => (
-                            <option key={brand.id} value={brand.id}>{brand.marca}</option>
-                        ))}
-                    </Select>
-                </div>
-                <div className="mt-5 flex flex-col gap-2">
-                    {
-                        errors.modelo && (
-                            <p className='text-red-500 font-[500] text-sm'>{errors.modelo}</p>
-                        )
-                    }
-                    <Label htmlFor="modelo">Modelo:</Label>
-                    <Input type="text" className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" value={data.modelo} placeholder="Ej: Fiesta ST, Mustang GT 5.0, MX-5" id="modelo" onChange={e => setData('modelo', e.target.value)} />
-                </div>
-                <div className="mt-5 flex flex-col gap-2">
-                    {
-                        errors.anio && (
-                            <p className='text-red-500 font-[500] text-sm'>{errors.anio}</p>
-                        )
-                    }
-                    <Label htmlFor="anio">Año:</Label>
-                    <Input type="number" className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" placeholder="Ej: 1992, 1995, 2002" value={data.anio} id="anio" onChange={e => setData('anio', Number(e.target.value))} />
-                </div>
-                <div className="mt-5 flex flex-col gap-2">
-                    {
-                        errors.kilometraje && (
-                            <p className='text-red-500 font-[500] text-sm'>{errors.kilometraje}</p>
-                        )
-                    }
-                    <Label htmlFor="kilometraje">Kilometraje:</Label>
-                    <Input type="number" value={data.kilometraje} className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" id="kilometraje" onChange={e => setData('kilometraje', Number(e.target.value))} />
-                </div>
-                <div className="mt-5 flex flex-col gap-2">
-                    {
-                        errors.precio && (
-                            <p className='text-red-500 font-[500] text-sm'>{errors.precio}</p>
-                        )
-                    }
-                    <Label htmlFor="precio">Precio:</Label>
-                    <Input type="number" value={data.precio} className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" id="precio" onChange={e => setData('precio', Number(e.target.value))} />
-                </div>
-                <div className="mt-5 flex flex-col gap-2">
-                    {
-                        errors.descripcion && (
-                            <p className='text-red-500 font-[500] text-sm'>{errors.descripcion}</p>
-                        )
-                    }
-                    <Label htmlFor="descripcion">Descripción:</Label>
-                    <textarea className="border-input file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive" id="descripcion" value={data.descripcion} onChange={e => setData('descripcion', e.target.value)} />
-                </div>
-                <div className="mt-5 flex flex-col gap-2">
-                    {
-                        errors.ubicacion && (
-                            <p className='text-red-500 font-[500] text-sm'>{errors.ubicacion}</p>
-                        )
-                    }
-                    <Label htmlFor="ubicacion">Ubicación:</Label>
-                    <Input type="text" value={data.ubicacion} className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" id="ubicacion" onChange={e => setData('ubicacion', e.target.value)} />
-                </div>
-                <div className="mt-5 flex flex-col gap-2">
-                    {
-                        errors.tipo && (
-                            <p className='text-red-500 font-[500] text-sm'>{errors.tipo}</p>
-                        )
-                    }
-                    <Label htmlFor="tipo">Tipo de vehiculo:</Label>
-                    <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={data.tipo} id="tipo" onChange={e => setData('tipo', e.target.value)} >
-                        <option value="" disabled>Selecciona el tipo de vehículo</option>
-                        <option value="auto">Auto</option>
-                        <option value="camioneta">Camioneta/Camión</option>
-                        <option value="moto">Moto</option>
-                    </Select>
-                </div>
-                <div className="mt-5 flex flex-col gap-2">
-                    {
-                        errors.images && (
-                            <p className='text-red-500 font-[500] text-sm'>{errors.images}</p>
-                        )
-                    }
-                    <Label htmlFor="tipo">Imagen/es del vehiculo</Label>
-                    <input className="p-3 bg-slate-700" type="file" accept="image/*" multiple onChange={handleImages} />
-                    <h4>Imagenes actuales del post</h4>
-                    <div className={existingImg.length !== 0 ? `grid grid-cols-4 gap-4 max-w-[550px]` : ''}>
-                        {
-                            existingImg.length != 0 ?
-                                existingImg.map(img => (
-                                    <div
-                                        key={img.id}
-                                        onClick={() => removeExistingImage(img.id)}
-                                        className="relative cursor-pointer"
-                                    >
-                                        <img
-                                            src={`/storage/${img.url}`}
-                                            className="w-full h-32 object-cover rounded"
-                                        />
+            {
+                loguedUser.id === postData.user.id ?
+                    <>
+                        <div>
+                            <h2 className="text-2xl text-center">Editar publicación</h2>
+                        </div>
+                        <form action="" onSubmit={handleSubmit} className="grid lg:grid-cols-2 items-center justify-center gap-8 lg:gap-4 my-5 lg:my-0 mx-3">
+                            <div className="mt-5 flex flex-col gap-2">
+                                {
+                                    errors.marca && (
+                                        <p className='text-red-500 font-[500] text-sm'>{errors.marca}</p>
+                                    )
+                                }
+                                <Label htmlFor="marca">Marca:</Label>
+                                <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={data.marca} id="marca" onChange={e => setData('marca', Number(e.target.value))} >
+                                    <option value="" disabled>Selecciona la marca del vehiculo</option>
+                                    {carBrands.map(brand => (
+                                        <option key={brand.id} value={brand.id}>{brand.marca}</option>
+                                    ))}
+                                </Select>
+                            </div>
+                            <div className="mt-5 flex flex-col gap-2">
+                                {
+                                    errors.modelo && (
+                                        <p className='text-red-500 font-[500] text-sm'>{errors.modelo}</p>
+                                    )
+                                }
+                                <Label htmlFor="modelo">Modelo:</Label>
+                                <Input type="text" className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" value={data.modelo} placeholder="Ej: Fiesta ST, Mustang GT 5.0, MX-5" id="modelo" onChange={e => setData('modelo', e.target.value)} />
+                            </div>
+                            <div className="mt-5 flex flex-col gap-2">
+                                {
+                                    errors.anio && (
+                                        <p className='text-red-500 font-[500] text-sm'>{errors.anio}</p>
+                                    )
+                                }
+                                <Label htmlFor="anio">Año:</Label>
+                                <Input type="number" className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" placeholder="Ej: 1992, 1995, 2002" value={data.anio} id="anio" onChange={e => setData('anio', Number(e.target.value))} />
+                            </div>
+                            <div className="mt-5 flex flex-col gap-2">
+                                {
+                                    errors.kilometraje && (
+                                        <p className='text-red-500 font-[500] text-sm'>{errors.kilometraje}</p>
+                                    )
+                                }
+                                <Label htmlFor="kilometraje">Kilometraje:</Label>
+                                <Input type="number" value={data.kilometraje} className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" id="kilometraje" onChange={e => setData('kilometraje', Number(e.target.value))} />
+                            </div>
+                            <div className="mt-5 flex flex-col gap-2">
+                                {
+                                    errors.precio && (
+                                        <p className='text-red-500 font-[500] text-sm'>{errors.precio}</p>
+                                    )
+                                }
+                                <Label htmlFor="precio">Precio:</Label>
+                                <Input type="number" value={data.precio} className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" id="precio" onChange={e => setData('precio', Number(e.target.value))} />
+                            </div>
+                            <div className="mt-5 flex flex-col gap-2">
+                                {
+                                    errors.descripcion && (
+                                        <p className='text-red-500 font-[500] text-sm'>{errors.descripcion}</p>
+                                    )
+                                }
+                                <Label htmlFor="descripcion">Descripción:</Label>
+                                <textarea className="border-input file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive" id="descripcion" value={data.descripcion} onChange={e => setData('descripcion', e.target.value)} />
+                            </div>
+                            <div className="mt-5 flex flex-col gap-2">
+                                {
+                                    errors.ubicacion && (
+                                        <p className='text-red-500 font-[500] text-sm'>{errors.ubicacion}</p>
+                                    )
+                                }
+                                <Label htmlFor="ubicacion">Ubicación:</Label>
+                                <Input type="text" value={data.ubicacion} className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" id="ubicacion" onChange={e => setData('ubicacion', e.target.value)} />
+                            </div>
+                            <div className="mt-5 flex flex-col gap-2">
+                                {
+                                    errors.tipo && (
+                                        <p className='text-red-500 font-[500] text-sm'>{errors.tipo}</p>
+                                    )
+                                }
+                                <Label htmlFor="tipo">Tipo de vehiculo:</Label>
+                                <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={data.tipo} id="tipo" onChange={e => setData('tipo', e.target.value)} >
+                                    <option value="" disabled>Selecciona el tipo de vehículo</option>
+                                    <option value="auto">Auto</option>
+                                    <option value="camioneta">Camioneta/Camión</option>
+                                    <option value="moto">Moto</option>
+                                </Select>
+                            </div>
+                            <div className="mt-5 flex flex-col gap-2">
+                                {
+                                    errors.images && (
+                                        <p className='text-red-500 font-[500] text-sm'>{errors.images}</p>
+                                    )
+                                }
+                                <Label htmlFor="tipo">Imagen/es del vehiculo</Label>
+                                <input className="p-3 bg-slate-700" type="file" accept="image/*" multiple onChange={handleImages} />
+                                <h4>Imagenes actuales del post</h4>
+                                <div className={existingImg.length !== 0 ? `grid grid-cols-4 gap-4 max-w-[550px]` : ''}>
+                                    {
+                                        existingImg.length != 0 ?
+                                            existingImg.map(img => (
+                                                <div
+                                                    key={img.id}
+                                                    onClick={() => removeExistingImage(img.id)}
+                                                    className="relative cursor-pointer"
+                                                >
+                                                    <img
+                                                        src={`/storage/${img.url}`}
+                                                        className="w-full h-32 object-cover rounded"
+                                                    />
 
-                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm opacity-0 hover:opacity-100 transition">
-                                            Eliminar
-                                        </div>
-                                    </div>
-                                ))
-                                :
-                                <p>No hay imagenes en este post</p>
-                        }
-                    </div>
-                    <h4>Imagenes nuevas: </h4>
-                    <div className={newImg.length !== 0 ? `grid grid-cols-4 gap-4 max-w-[550px]` : ''}>
-                        {
-                            newImg.length != 0 ? newImg.map((file, index) => (
-                                <div
-                                    key={index}
-                                    onClick={() => removeNewImage(index)}
-                                    className="relative cursor-pointer"
-                                >
-                                    <img
-                                        src={URL.createObjectURL(file)}
-                                        className="w-full h-32 object-cover rounded"
-                                    />
-
-                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm opacity-0 hover:opacity-100 transition">
-                                        Eliminar
-                                    </div>
+                                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm opacity-0 hover:opacity-100 transition">
+                                                        Eliminar
+                                                    </div>
+                                                </div>
+                                            ))
+                                            :
+                                            <p>No hay imagenes en este post</p>
+                                    }
                                 </div>
-                            ))
-                                : <p>No hay imagenes agregadas</p>
-                        }
+                                <h4>Imagenes nuevas: </h4>
+                                <div className={newImg.length !== 0 ? `grid grid-cols-4 gap-4 max-w-[550px]` : ''}>
+                                    {
+                                        newImg.length != 0 ? newImg.map((file, index) => (
+                                            <div
+                                                key={index}
+                                                onClick={() => removeNewImage(index)}
+                                                className="relative cursor-pointer"
+                                            >
+                                                <img
+                                                    src={URL.createObjectURL(file)}
+                                                    className="w-full h-32 object-cover rounded"
+                                                />
+
+                                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm opacity-0 hover:opacity-100 transition">
+                                                    Eliminar
+                                                </div>
+                                            </div>
+                                        ))
+                                            : <p>No hay imagenes agregadas</p>
+                                    }
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <Button disabled={processing} type="submit" className="w-full cursor-pointer transition-colors duration-300">Enviar</Button>
+                                <Button disabled={processing} onClick={() => handleDelete(postData.id)} type="submit" className="w-full bg-red-500 text-gray-200 hover:text-gray-800 hover:bg-red-800 transition-colors duration-300 cursor-pointer">Eliminar publicación</Button>
+                            </div>
+                        </form>
+                    </>
+                    :
+                    <div>
+                        <p>Esta publicación no te pertenece, por lo que no podés editarlo.</p>
                     </div>
-                </div>
-                <div>
-                    <Button disabled={processing} type="submit" className="w-full">Enviar</Button>
-                </div>
-            </form>
+            }
         </section>
     </>;
 }

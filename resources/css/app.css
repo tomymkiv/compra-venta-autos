@@ -1,5 +1,32 @@
 @import 'tailwindcss';
 
+.animate-text-pulse {
+    animation: 5s shadow-text-pulse infinite alternate linear;
+}
+
+.animate-box-pulse {
+    animation: 5s shadow-box-pulse infinite alternate linear;
+}
+
+@keyframes shadow-text-pulse {
+    from {
+        text-shadow: none;
+    }
+
+    to {
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+}
+
+@keyframes shadow-box-pulse {
+    from {
+        box-shadow: none;
+    }
+    to {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+}
+
 @import "tw-animate-css";
 
 @source '../views';
