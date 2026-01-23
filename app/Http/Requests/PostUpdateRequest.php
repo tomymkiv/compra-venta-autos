@@ -29,7 +29,7 @@ class PostUpdateRequest extends FormRequest
             'descripcion' => ['string', 'max:16000'],
             'precio' => ['required', 'numeric'],
             'ubicacion' => ['required', 'string'],
-            'tipo' => ['required', 'in:auto,camioneta,moto'],
+            'tipo' => ['required'],
             'images' => ['array', 'min:1', 'max:50'],
             'images.*' => ['image'],
             'deleted_images' => ['nullable','array'],

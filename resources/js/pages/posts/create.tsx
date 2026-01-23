@@ -9,7 +9,7 @@ import { route } from 'ziggy-js'
 import { type CreatePostForm } from '@/types/automovil';
 import AppFront from "@/AppFront";
 
-export default function create({ carBrands, loguedUser }: CreateProps) {
+export default function create({ carBrands, loguedUser, car_types }: CreateProps) {
     const [newImg, setNewImg] = useState<File[]>([]);
     const { data, setData, post, processing, errors } = useForm<CreatePostForm>({
         marca: '',
@@ -142,9 +142,11 @@ export default function create({ carBrands, loguedUser }: CreateProps) {
                     <Label htmlFor="tipo">Tipo de vehiculo:</Label>
                     <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={data.tipo} id="tipo" onChange={e => setData('tipo', e.target.value)} >
                         <option value="" disabled>Selecciona el tipo de vehículo</option>
-                        <option value="auto">Auto</option>
-                        <option value="camioneta">Camioneta/Camión</option>
-                        <option value="moto">Moto</option>
+                        {
+                            car_types ? car_types.map(tipo => (
+                                <option value={tipo.id} key={tipo.id}>{tipo.tipo}</option>
+                            )) : ''
+                        }
                     </Select>
                 </div>
                 <div className="mt-5 flex flex-col gap-2">

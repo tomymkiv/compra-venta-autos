@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -27,17 +26,18 @@ return new class extends Migration
         Schema::create('cars', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_modelo')->constrained('cars_models')->cascadeOnDelete();
+            $table->foreignId('id_type')->constrained('car_types')->cascadeOnDelete();
             $table->unsignedMediumInteger('kilometraje');
             $table->unsignedSmallInteger('anio');
-            $table->tinyInteger('tipo');
             $table->timestamps();
         });
         // en caso de que el sistema crezca, esta tabla reemplazará el campo "tipo" de la tabla "cars".
         // habria que crearle su modelo y demas
-        // Schema::create('car_type', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->string('tipo')->unique();
-        // });
+        Schema::create('car_types', function (Blueprint $table) {
+            $table->id();
+            $table->string('tipo')->unique();
+            $table->timestamps();
+        });
     }
 
     public function down(): void
@@ -45,5 +45,6 @@ return new class extends Migration
         Schema::dropIfExists('cars_brands');
         Schema::dropIfExists('cars_models');
         Schema::dropIfExists('cars');
+        Schema::dropIfExists('car_types');
     }
 };

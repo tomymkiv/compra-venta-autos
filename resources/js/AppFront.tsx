@@ -1,10 +1,11 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import PageLinks from './components/PageLinks'
 import { router } from '@inertiajs/react';
 import { route } from 'ziggy-js'
 import { AppComponentProps } from './types/automovil';
 import CategoriasSlots from './components/CategoriasSlots';
 import DropdownButton from './components/DropdownButton';
+import SearchInput from './components/SearchInput';
 
 export default function AppFront({ loguedUser, children }: AppComponentProps) {
   const categoriasRefDesk = useRef<HTMLUListElement>(null!)
@@ -30,6 +31,7 @@ export default function AppFront({ loguedUser, children }: AppComponentProps) {
   const handleLogout = () => {
     router.delete(route('logout'));
   };
+  
   return (
     <>
       <header className={`relative z-30 flex items-center justify-center bg-[#111b] sticky top-0 w-full`}>
@@ -50,6 +52,7 @@ export default function AppFront({ loguedUser, children }: AppComponentProps) {
                   </li>
                   : <PageLinks title="Iniciar sesión" link='/login' clases='!text-xl' />
               }
+              <SearchInput />
             </ul>
           </nav>
           <button className='fixed top-0 left-0 z-50 flex flex-col gap-1 p-5 bg-[#2228] outline outline-gray-200/40' onClick={toggleMenu}>
@@ -76,6 +79,7 @@ export default function AppFront({ loguedUser, children }: AppComponentProps) {
                     }
                   </ul>
                 </div>
+                <SearchInput />
               </div>
               {
                 loguedUser ?

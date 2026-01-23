@@ -29,7 +29,7 @@ class PostCreateRequest extends FormRequest
             'descripcion' => ['string', 'max:16000'],
             'precio' => ['required', 'numeric'],
             'ubicacion' => ['required', 'string'],
-            'tipo' => ['required', 'in:auto,camioneta,moto'],
+            'tipo' => ['required'],
             'images' => ['required', 'array', 'min:1', 'max:50'],
             'images.*' => ['image'],
         ];

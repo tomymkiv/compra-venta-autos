@@ -1,9 +1,9 @@
-import { type PageProps } from '@/types/automovil';
+import { FilterProps } from '@/types/automovil';
 import AppFront from '@/AppFront';
 import Filtro from '@/components/Filtro';
 
-export default function index({ posts, loguedUser }: PageProps) {
+export default function index({ posts, loguedUser, carBrands, carType }: FilterProps) {
     return <AppFront loguedUser={loguedUser}>
-        <Filtro posts={posts} loguedUser={loguedUser} />
+        <Filtro posts={posts} loguedUser={loguedUser} carBrands={carBrands} showPages={true}  carType={carType} />
     </AppFront>;
 }

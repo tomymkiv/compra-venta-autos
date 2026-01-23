@@ -20,7 +20,6 @@ export default function Welcome({ loguedUser, posts }: PageProps) {
                 <section id='categorias' className='flex flex-col items-center justify-center'>
                     <div className='space-y-4'>
                         <div>
-                            {/* <Vehiculos  /> */}
                             <Filtro posts={posts} loguedUser={loguedUser} />
                         </div>
                     </div>

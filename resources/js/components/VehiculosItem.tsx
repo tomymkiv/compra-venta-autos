@@ -74,15 +74,15 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
                                 post.post_image.map((img, i) => (
                                     <div key={i}>
                                         {i !== limit - 1 ?
-                                                <div className={`rounded-md max-w-[${minHeightWidthCards}px] min-w-[${minHeightWidthCards}px] md:min-w-[${minHeightWidthCards}px] min-h-[${minHeightWidthCards}px]`}>
-                                                    <img src={`/${img.url}`} alt={"imagen " + i} className={`rounded-lg object-cover cursor-pointer w-[60px] p-0.5 h-[60px] max-h-[60px] max-w-[60px] ${indexImg === i ? 'border border-blue-400' : ''}`} onMouseEnter={() => { showImg(i) }} onClick={openSlide} />
-                                                </div> :
-                                                <div className={`relative rounded-md max-w-[${minHeightWidthCards}px] min-w-[${minHeightWidthCards}px] md:min-w-[${minHeightWidthCards}px] min-h-[${minHeightWidthCards}px]`}>
-                                                    <div className="absolute bg-white/50 w-full h-full text-gray-800 text-xl flex items-center justify-center font-[500] rounded-lg cursor-pointer" onMouseEnter={() => { showImg(i) }} onClick={openSlide}>
-                                                        +{(post.post_image.length - 1) - i}
-                                                    </div>
-                                                    <img src={`/${img.url}`} alt={"imagen " + i} className={`rounded-lg object-cover cursor-pointer hover:scale-105 transition-transform w-[60px] p-0.5 h-[60px] max-h-[60px] max-w-[60px] ${indexImg === i ? 'border border-blue-400' : ''}`} onMouseEnter={() => { showImg(i) }} />
+                                            <div className={`rounded-md max-w-[${minHeightWidthCards}px] min-w-[${minHeightWidthCards}px] md:min-w-[${minHeightWidthCards}px] min-h-[${minHeightWidthCards}px]`}>
+                                                <img src={`/${img.url}`} alt={"imagen " + i} className={`rounded-lg object-cover cursor-pointer w-[60px] p-0.5 h-[60px] max-h-[60px] max-w-[60px] ${indexImg === i ? 'border border-blue-400' : ''}`} onMouseEnter={() => { showImg(i) }} onClick={openSlide} />
+                                            </div> :
+                                            <div className={`relative rounded-md max-w-[${minHeightWidthCards}px] min-w-[${minHeightWidthCards}px] md:min-w-[${minHeightWidthCards}px] min-h-[${minHeightWidthCards}px]`}>
+                                                <div className="absolute bg-white/50 w-full h-full text-gray-800 text-xl flex items-center justify-center font-[500] rounded-lg cursor-pointer" onMouseEnter={() => { showImg(i) }} onClick={openSlide}>
+                                                    +{(post.post_image.length - 1) - i}
                                                 </div>
+                                                <img src={`/${img.url}`} alt={"imagen " + i} className={`rounded-lg object-cover cursor-pointer hover:scale-105 transition-transform w-[60px] p-0.5 h-[60px] max-h-[60px] max-w-[60px] ${indexImg === i ? 'border border-blue-400' : ''}`} onMouseEnter={() => { showImg(i) }} />
+                                            </div>
                                         }
                                     </div>
                                 ))
@@ -94,12 +94,12 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
                             {/* esto es la imagen principal (la que está siendo mostrada en grande) */}
                             <img src={`/${post.post_image[indexImg].url}`} alt="" className="max-w-[90vw] md:min-w-[700px] md:min-h-[700px] md:max-h-[700px] md:max-w-[700px] object-contain cursor-pointer" onClick={openSlide} />
                         </div>
-                        <div className='w-[33%] space-y-2 md:mt-3 mx-3 lg:mx-6 md:flex flex-col gap-5'>
+                        <div className='xl:w-[33%] space-y-2 md:mt-3 mx-3 lg:mx-6 md:flex flex-col gap-5'>
                             <div>
                                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8">{post.car.car_model.car_brand.marca} {post.car.car_model.modelo}</h2>
                                 <p className="text-md md:text-lg lg:text-xl"><b>Año:</b> {post.car.anio}</p>
                                 <p className="text-md md:text-lg lg:text-xl"><b>Kilometraje:</b> {post.car.kilometraje} km</p>
-                                <p className="text-md md:text-lg lg:text-xl"><b>Precio:</b> {post.precio}</p>
+                                <p className="text-md md:text-lg lg:text-xl"><b>Precio:</b> $ {post.precio}</p>
                                 <p className="text-md md:text-lg lg:text-xl"><b>Ubicación:</b> {post.ubicacion}</p>
                             </div>
                             <div>
@@ -140,7 +140,7 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
                 <div className="w-[50%] flex flex-col lg:flex-row gap-4 items-center justify-center">
                     <a href={`https://wa.me/541123124430?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40% text-center font-[500]">Consultar</a>
                     {
-                        loguedUser?.id === post.user.id ? <Link href={`/posts/${post.id}/edit`} className="p-3 bg-gray-800 rounded-lg hover:bg-blue-600 hover:text-gray-200 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40% text-center font-[500]">Editar publicación</Link>  : ''
+                        loguedUser?.id === post.user.id ? <Link href={`/posts/${post.id}/edit`} className="p-3 bg-gray-800 rounded-lg hover:bg-blue-600 hover:text-gray-200 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40% text-center font-[500]">Editar publicación</Link> : ''
                     }
                 </div>
             </div>

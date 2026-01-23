@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -13,7 +14,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/', [UserController::class, 'welcome'])->name('home');
-Route::delete('logout',[LoginController::class, 'logout']);
+Route::delete('logout', [LoginController::class, 'logout']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('posts/create', [PostController::class, 'create'])->name('posts.create');
@@ -25,4 +26,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('posts/user/{user}', [PostController::class, 'userPosts'])->name('user.posts');
 Route::get('posts/{post}', [PostController::class, 'show'])->name('posts.show');
-require __DIR__.'/settings.php';
+Route::get('/buscar', [SearchController::class, 'index'])->name('search.index');
+// Route::get('/buscar', [SearchController::class, 'filter'])->name('search.index');
+require __DIR__ . '/settings.php';

@@ -1,41 +1,47 @@
 import React from "react";
 import { type User } from ".";
 
-export interface Images{
+export interface Images {
     id: number,
     url: string,
     orden: number,
 }
-export interface CarBrand{
+export interface CarBrand {
     id: number,
     marca: string,
 }
+interface CarType {
+    id: number,
+    tipo: string,
+}
 // lo que recibo cuando creo un auto (array de las marcas pre-hechas)
-export interface CreateProps{
+export interface CreateProps {
     carBrands: CarBrand[],
     loguedUser: User,
+    car_types: CarType[],
 }
 // lo que recibo a la hora de editar un post
-export interface EditProps{
+export interface EditProps {
     carBrands: CarBrand[],
     postData: Post,
     loguedUser: User,
+    car_types: CarType[]
 }
-export interface Post{
+export interface Post {
     id: number,
     fecha_publicacion: string,
     precio: number,
     descripcion: string,
     ubicacion: string,
-    estado: string,
+    // estado: string,
     user: User,
     post_image: Images[], // todas las imagenes
     main_image: Images, // solo una imagen (orden = 1)
-    car:{
+    car: {
+        id_type: number,
         kilometraje: number,
         anio: number,
-        tipo: string,
-        car_model:{
+        car_model: {
             modelo: string,
             car_brand: CarBrand
         } // al hacer todo en cascada, estoy relacionando cada tipo correctamente, siguiendo el hilo de lo que recibo en el backend con las relaciones entre FK.
@@ -55,13 +61,13 @@ export interface CreatePostForm {
 }
 
 // para varios autos
-export interface PageProps{
+export interface PageProps {
     posts: Paginated<Post>, // están paginados los posts
-    // users: User[],
     loguedUser: User,
+    showPages?: boolean | false,
 }
 // para un solo auto
-export interface CarProp{
+export interface CarProp {
     post: Post,
     user: User,
 }
@@ -76,15 +82,18 @@ export interface Paginated<T> {
     links: PaginationLink[], // información referida a los links (un array de la interfaz PaginationLink)
 }
 
-export interface AppComponentProps{
+export interface AppComponentProps {
     children?: React.ReactNode,
     loguedUser?: User,
 }
-export interface FiltroProps{
-    posts: Paginated<Post>,
-    loguedUser: User
+export interface FilterProps {
+    posts: Paginated<Post>, // están paginados los posts
+    loguedUser: User,
+    carBrands?: CarBrand[],
+    showPages?: boolean | false,
+    carType?: CarType[],
 }
-export interface CarCardsProps{
+export interface CarCardsProps {
     loguedUser?: User,
     post: Post,
     src?: string,
