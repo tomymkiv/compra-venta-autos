@@ -35,9 +35,11 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
     const handleClearFilters = (e: React.FormEvent) => {
         setFilters({}); // quito los filtros para que el backend no envíe ninguno
         setSelectedFilter(''); // limpio la vista de los filtros elegidos
-        handleSubmit(e); // envio la informacion al backend
+
+        !filters ? handleSubmit(e) : ''; // si no tengo filtros, ejecuto el submit. si los tengo, no hago nada
     }
     const handleSubmit = (e: React.FormEvent) => {
+        setFilterOn(false);
         e.preventDefault();
 
         router.get(route('search.index'), // o index

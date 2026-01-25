@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { CarCardsProps, type Post } from "@/types/automovil";
 import AppFront from "@/AppFront";
 import { Link } from "@inertiajs/react";
+import { route } from "ziggy-js";
 
 export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
     const limit = 6;
@@ -137,14 +138,20 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
                         </div>
                     </div>
                 </div>
-                <div className="w-[50%] flex flex-col lg:flex-row gap-4 items-center justify-center">
-                    <a href={`https://wa.me/541123124430?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40% text-center font-[500]">Consultar</a>
-                    {
-                        loguedUser?.id === post.user.id ? <Link href={`/posts/${post.id}/edit`} className="p-3 bg-gray-800 rounded-lg hover:bg-blue-600 hover:text-gray-200 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40% text-center font-[500]">Editar publicación</Link> : ''
-                    }
-                </div>
+                {
+                    loguedUser ? <div className="w-[50%] flex flex-col lg:flex-row gap-4 items-center justify-center">
+                        <a href={`https://wa.me/541123124430?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40% text-center font-[500]">Consultar</a>
+                        {
+                            loguedUser?.id === post.user.id ? <Link href={`/posts/${post.id}/edit`} className="p-3 bg-gray-800 rounded-lg hover:bg-blue-600 hover:text-gray-200 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40% text-center font-[500]">Editar publicación</Link> : ''
+                        }
+                    </div> :
+                        <div>
+                            <p>Para consultar sobre este vehículo, debes {' '}
+                                <Link href={route('auth.login')} className="text-blue-500 hover:underline">iniciar sesión.</Link>
+                            </p>
+                        </div>
+                }
             </div>
-            // ))
         }
     </AppFront>
 }

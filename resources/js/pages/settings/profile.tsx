@@ -10,16 +10,8 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { edit } from '@/routes/profile';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Profile settings',
-        href: edit().url,
-    },
-];
+import AppFront from '@/AppFront';
 
 export default function Profile({
     mustVerifyEmail,
@@ -31,9 +23,7 @@ export default function Profile({
     const { auth } = usePage<SharedData>().props;
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Profile settings" />
-
+        <AppFront loguedUser={auth.user}>
             <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall
@@ -107,12 +97,12 @@ export default function Profile({
 
                                             {status ===
                                                 'verification-link-sent' && (
-                                                <div className="mt-2 text-sm font-medium text-green-600">
-                                                    A new verification link has
-                                                    been sent to your email
-                                                    address.
-                                                </div>
-                                            )}
+                                                    <div className="mt-2 text-sm font-medium text-green-600">
+                                                        A new verification link has
+                                                        been sent to your email
+                                                        address.
+                                                    </div>
+                                                )}
                                         </div>
                                     )}
 
@@ -143,6 +133,6 @@ export default function Profile({
 
                 <DeleteUser />
             </SettingsLayout>
-        </AppLayout>
+        </AppFront>
     );
 }

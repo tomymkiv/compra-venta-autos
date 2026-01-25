@@ -31,7 +31,7 @@ export default function AppFront({ loguedUser, children }: AppComponentProps) {
   const handleLogout = () => {
     router.delete(route('logout'));
   };
-  
+
   return (
     <>
       <header className={`relative z-30 flex items-center justify-center bg-[#111b] sticky top-0 w-full`}>
@@ -92,7 +92,7 @@ export default function AppFront({ loguedUser, children }: AppComponentProps) {
           </nav>
         </div>
       </header>
-      <main className={`my-8 mx-5 text-[#ccc] min-h-screen flex items-center justify-center`}>
+      <main className={`${innerWidth < 550 ? 'my-16' : 'my-10'} mx-5 text-[#ccc] min-h-screen flex items-center justify-center`}>
         <section className='max-w-7xl'>
           {children}
         </section>
