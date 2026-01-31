@@ -8,8 +8,10 @@ use App\Models\Car;
 use App\Models\CarsBrand;
 use App\Models\CarsModel;
 use App\Models\CarType;
+use App\Models\Currency;
 use App\Models\Post;
 use App\Models\PostImage;
+use App\Models\Provincia;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,19 +24,42 @@ class PostController extends Controller
         return inertia('posts/index', [
             'posts' => $this->paginatedCarPosts,
             'loguedUser' => $this->loguedUser,
-            'carBrands' => CarsBrand::get(),
-            'carType' => CarType::get(),
+            'carBrands' => Post::with('car.carModel.carBrand')
+                ->get()
+                ->pluck('car.carModel.carBrand')
+                ->unique('id')
+                ->values(),
+            'carType' => Post::with('car.car_type')
+                ->get()
+                ->pluck('car.car_type')
+                ->filter()
+                ->unique('id')
+                ->values(),
+            'provincias' => Post::with('municipio.provincia')
+                ->get()
+                ->pluck('municipio.provincia')
+                ->filter()
+                ->unique('id')
+                ->values(),
+            'municipios' => Post::with('municipio')
+                ->get()
+                ->pluck('municipio')
+                ->flatten()
+                ->filter()
+                ->unique('id')
+                ->values(),
         ]);
     }
 
-    public function show($id)
+    public function show(Post $post)
     {
-        $post = Post::with([
-            'postImage' => fn($query) => $query->orderBy('orden'),
+        $post->load([
+            'postImage' => fn($q) => $q->orderBy('orden'),
             'car.carModel.carBrand',
             'user',
-        ])->where('id_car', $id)->firstOrFail(); // first() o firstOrFail() traen un solo registro, mientras que get() trae una colección
-
+            'municipio.provincia',
+        ]);
+        // dd($post->municipio);
         return inertia('posts/show', [
             'post' => $post,
             'loguedUser' => $this->loguedUser,
@@ -44,12 +69,36 @@ class PostController extends Controller
     public function userPosts(User $user)
     {
         return inertia('user/posts', [
-            'posts' => Post::with('mainImage', 'car.carModel.carBrand', 'user')
+            'posts' => Post::with('mainImage', 'car.carModel.carBrand', 'user', 'municipio.provincia')
                 ->whereHas('mainImage', fn($query) => $query->where('orden', 1)) // limito a los posts que tienen una imagen principal con orden = 1
                 ->latest()
                 ->where('id_user', $user->id)
                 ->paginate($this->paginateLimit),
-            'loguedUser' => $this->loguedUser
+            'loguedUser' => $this->loguedUser,
+            'carBrands' => Post::with('car.carModel.carBrand')
+                ->get()
+                ->pluck('car.carModel.carBrand')
+                ->unique('id')
+                ->values(),
+            'carType' => Post::with('car.car_type')
+                ->get()
+                ->pluck('car.car_type')
+                ->filter()
+                ->unique('id')
+                ->values(),
+            'provincias' => Post::with('municipio.provincia')
+                ->get()
+                ->pluck('municipio.provincia')
+                ->filter()
+                ->unique('id')
+                ->values(),
+            'municipios' => Post::with('municipio')
+                ->get()
+                ->pluck('municipio')
+                ->flatten()
+                ->filter()
+                ->unique('id')
+                ->values(),
         ]);
     }
 
@@ -57,7 +106,7 @@ class PostController extends Controller
     {
         $images = $request->file('images');
         $validated = $request->validated();
-
+        // dd($validated['moneda']);
         // FUNCIONA
         $carModel = CarsModel::create([
             'id_marca' => $validated['marca'],
@@ -80,10 +129,11 @@ class PostController extends Controller
         $post = Post::create([
             'id_user' => Auth::user()->id,
             'id_car' => $car->id,
+            'id_currency' => $validated['moneda'],
+            'id_municipio' => $validated['municipio'],
             'descripcion' => $validated['descripcion'],
             'fecha_publicacion' => now(),
             'precio' => $validated['precio'],
-            'ubicacion' => $validated['ubicacion'],
         ]);
 
         // FUNCIONA
@@ -109,17 +159,21 @@ class PostController extends Controller
             'carBrands' => CarsBrand::get(),
             'car_types' => CarType::get(),
             'loguedUser' => $this->loguedUser,
+            'currencies' => Currency::get(),
+            'provincias' => Provincia::get(),
         ]);
     }
 
     public function edit($id)
     {
         return inertia('posts/edit', [
-            'postData' => Post::with('user', 'car.carModel.carBrand', 'postImage', 'mainImage')
+            'postData' => Post::with('user', 'car.carModel.carBrand', 'postImage', 'mainImage', 'municipio.provincia')
                 ->findOrFail($id),
             'carBrands' => CarsBrand::get(),
             'loguedUser' => $this->loguedUser,
             'car_types' => CarType::get(),
+            'currencies' => Currency::get(),
+            'provincias' => Provincia::get(),
         ]);
     }
 
@@ -135,7 +189,7 @@ class PostController extends Controller
                 PostImage::destroy($deleted_images);
             }
         }
-
+        // dd($validated['moneda']);
         $carModel->update([
             'id_marca' => $validated['marca'],
             'modelo' => $validated['modelo'],
@@ -158,9 +212,10 @@ class PostController extends Controller
         $post->update([
             'id_user' => Auth::user()->id,
             'id_car' => $car->id,
+            'id_currency' => $validated['moneda'],
+            'id_municipio' => $validated['municipio'],
             'precio' => $validated['precio'],
             'descripcion' => $validated['descripcion'],
-            'ubicacion' => $validated['ubicacion'],
         ]);
         // obtengo TODAS las imagenes relacionadas a ese post
         $images = $request->file('images');

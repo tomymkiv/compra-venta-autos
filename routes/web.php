@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RegisterController;
@@ -24,12 +25,16 @@ Route::post('login', [LoginController::class, 'login'])->name('auth.login');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('posts/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('posts', [PostController::class, 'store'])->name('posts.store');
-    Route::get('posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::put('posts/{post}', [PostController::class, 'update'])->name('posts.update');
+    Route::get('posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::delete('posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 });
+
 Route::get('posts', [PostController::class, 'index'])->name('posts.index');
-Route::get('posts/user/{user}', [PostController::class, 'userPosts'])->name('user.posts');
 Route::get('posts/{post}', [PostController::class, 'show'])->name('posts.show');
+Route::get('posts/user/{user}', [PostController::class, 'userPosts'])->name('user.posts');
 Route::get('/buscar', [SearchController::class, 'index'])->name('search.index');
+
+Route::get('/api/municipios/{provincia}', [LocationController::class, 'municipios']);
+
 require __DIR__ . '/settings.php';

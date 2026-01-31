@@ -14,9 +14,10 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('id_user')->constrained('users')->cascadeOnDelete();
             $table->foreignId('id_car')->constrained('cars')->cascadeOnDelete();
+            $table->foreignId('id_currency')->constrained('currencies')->cascadeOnDelete();
+            $table->foreignId('id_municipio')->constrained('municipios')->cascadeOnDelete();
             $table->bigInteger('precio')->default(0);
             $table->text('descripcion')->nullable();
-            $table->tinyText('ubicacion')->isNotEmpty();
             $table->timestamp('fecha_publicacion')->isNotEmpty();
             $table->timestamps();
         });

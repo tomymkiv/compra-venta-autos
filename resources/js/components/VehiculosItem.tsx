@@ -1,16 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
-import { CarCardsProps, type Post } from "@/types/automovil";
+import { CarCardsProps } from "@/types/automovil";
 import AppFront from "@/AppFront";
 import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
 export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
+    const blueDolarUrl = 'https://api.bluelytics.com.ar/v2/latest';
+    const [USDPrice, setUSDPrice] = useState(post.precio);
+    const [ARSPrice, setARSPrice] = useState(post.precio);
+    const [priceBtnActive, setPriceBtnActive] = useState(false);
     const limit = 6;
     const minHeightWidthCards = 60;
     const imgContainerRef = useRef<HTMLDivElement>(null);
     const [indexImg, setIndexImg] = useState(0); // contador para saber por cuál imagen estoy
     const [slide, setSlide] = useState(false); // verifico si el slide fue abierto o no
     const [translateX, setTranslateX] = useState(0);
+
+    const handleDots = (precio: string) => {
+        const raw = precio.replace(/\D/g, "");
+        return raw ? Number(raw).toLocaleString("es-AR") : "";
+    }
 
     const openSlide = () => {
         setSlide(true);
@@ -31,6 +40,23 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
         document.body.classList.toggle('overflow-hidden')
         imgContainerRef.current?.classList.add('hidden')
     }
+    const convertUSDPrice = () => {
+        !priceBtnActive ? setPriceBtnActive(true) : setPriceBtnActive(false);
+
+        fetch(blueDolarUrl)
+            .then(data => data.json())
+            .then(data => {
+                const blueDolarValue = data.blue.value_avg;
+
+                if (post.id_currency == 1) {
+                    const USD_TO_ARS = blueDolarValue * post.precio;
+                    setARSPrice(USD_TO_ARS);
+                } else if (post.id_currency == 2) {
+                    const ARS_TO_USD = Number(post.precio) / blueDolarValue;
+                    setUSDPrice(ARS_TO_USD);
+                }
+            })
+    }
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {
             if (e.key == 'ArrowRight') nextSlide();
@@ -41,6 +67,7 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
 
         return () => removeEventListener("keydown", handleKey);
     }, [slide, indexImg]) // ambas dependencias sirven para que funcione el soporte para teclado
+    // si el slide está activado y el índice de la imagen es verdadero (existe), se podrá usar todo el useEffect
 
     // slider para mobile
     let startX = 0;
@@ -68,11 +95,12 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
     return <AppFront loguedUser={loguedUser}>
         {
             <div className="flex flex-col items-center justify-center gap-8">
-                <div className="flex lg:items-center flex-col lg:flex-row gap-5 max-w-7xl">
-                    <div className={`order-2 mb-6 flex lg:flex-col px-3 gap-1.5 lg:w-[180px] flex-wrap md:flex-nowrap overflow-hidden`}>
+                <div className="flex lg:items-center flex-col lg:flex-row gap-5 max-w-2xl lg:max-w-7xl">
+                    <div className={`order-2 mb-6 flex lg:flex-col px-3 gap-1.5 lg:w-[180px] flex-wrap md:flex-nowrap`}>
                         <>
+                            {/* thumbnails de las imagenes*/}
                             {
-                                post.post_image.map((img, i) => (
+                                post.post_image.slice(0, limit).map((img, i) => (
                                     <div key={i}>
                                         {i !== limit - 1 ?
                                             <div className={`rounded-md max-w-[${minHeightWidthCards}px] min-w-[${minHeightWidthCards}px] md:min-w-[${minHeightWidthCards}px] min-h-[${minHeightWidthCards}px]`}>
@@ -99,12 +127,17 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
                             <div>
                                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8">{post.car.car_model.car_brand.marca} {post.car.car_model.modelo}</h2>
                                 <p className="text-md md:text-lg lg:text-xl"><b>Año:</b> {post.car.anio}</p>
-                                <p className="text-md md:text-lg lg:text-xl"><b>Kilometraje:</b> {post.car.kilometraje} km</p>
-                                <p className="text-md md:text-lg lg:text-xl"><b>Precio:</b> $ {post.precio}</p>
-                                <p className="text-md md:text-lg lg:text-xl"><b>Ubicación:</b> {post.ubicacion}</p>
+                                <p className="text-md md:text-lg lg:text-xl"><b>Kilometraje:</b> {handleDots(post.car.kilometraje.toString())} km</p>
+                                <p className="text-md md:text-lg lg:text-xl"><b>Precio: </b>
+                                    {post.id_currency == 1 ? (priceBtnActive ? `$ ${handleDots(ARSPrice.toFixed(0))}` : `U$S ${handleDots(USDPrice.toFixed(0))}`) : (priceBtnActive ? `U$S ${handleDots(USDPrice.toFixed(0))}` : `$ ${handleDots(ARSPrice.toFixed(0))}`)}
+                                </p>
+                                <p className="text-md md:text-lg lg:text-xl"><b>Ubicación:</b> {post.municipio.nombre}, {post.municipio.provincia.nombre}</p>
                             </div>
                             <div>
-                                <p className="text-md md:text-lg lg:text-xl"><b>Descripción: </b>{post.descripcion}</p>
+                                <p className="text-md"><b>Descripción:</b> {post.descripcion}</p>
+                            </div>
+                            <div className="">
+                                <button className={`bg-cover bg-center bg-no-repeat rounded-lg text-black cursor-pointer transition-background shadow-md hover:shadow-gray-400 duration-300 text-center font-[700] ${post.id_currency == 1 ? (priceBtnActive ? 'bg-[url("/public/img/billete-100-dolares.webp")]' : 'bg-[url("/public/img/billete-1000-pesos.webp")]') : (priceBtnActive ? 'bg-[url("/public/img/billete-1000-pesos.webp")]' : 'bg-[url("/public/img/billete-100-dolares.webp")]')}`} onClick={convertUSDPrice}> <p className="p-3 bg-white/40 rounded-md">{post.id_currency == 1 ? (priceBtnActive ? 'Convertir a dólares (USD)' : 'Convertir a pesos (ARS)') : (priceBtnActive ? 'Convertir a pesos (ARS)' : 'Convertir a dólares (USD)')}</p></button>
                             </div>
                             <hr className="my-5 lg:hidden" />
                         </div>
@@ -140,9 +173,9 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
                 </div>
                 {
                     loguedUser ? <div className="w-[50%] flex flex-col lg:flex-row gap-4 items-center justify-center">
-                        <a href={`https://wa.me/541123124430?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40% text-center font-[500]">Consultar</a>
+                        <a href={`https://wa.me/541123124430?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Consultar</a>
                         {
-                            loguedUser?.id === post.user.id ? <Link href={`/posts/${post.id}/edit`} className="p-3 bg-gray-800 rounded-lg hover:bg-blue-600 hover:text-gray-200 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40% text-center font-[500]">Editar publicación</Link> : ''
+                            loguedUser?.id === post.user.id ? <Link href={`/posts/${post.id}/edit`} className="p-3 bg-gray-800 rounded-lg hover:bg-blue-600 hover:text-gray-200 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Editar publicación</Link> : ''
                         }
                     </div> :
                         <div>

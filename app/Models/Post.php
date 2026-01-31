@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
-    protected $fillable = ['id_user', 'id_car', 'precio', 'descripcion', 'ubicacion', 'fecha_publicacion', 'estado', 'url'];
+    protected $fillable = ['id_user', 'id_car', 'id_currency', 'id_municipio', 'precio', 'descripcion', 'ubicacion', 'fecha_publicacion', 'estado', 'url'];
 
     public function user()
     {
@@ -26,5 +26,14 @@ class Post extends Model
     public function mainImage()
     {
         return $this->hasOne(PostImage::class, 'id_post')->orderBy('orden');
+    }
+
+    public function currency()
+    {
+        return $this->hasOne(Currency::class, 'id_currency');
+    }
+    public function municipio()
+    {
+        return $this->belongsTo(Municipio::class, 'id_municipio');
     }
 }

@@ -5,17 +5,23 @@ type Filters = {
     yearFrom?: number;
     yearTo?: number;
     typeId?: number;
+    provinceId?: number;
+    municipioId?: number;
 };
 
-import { FilterProps } from "@/types/automovil";
-import React, { useState } from "react";
+import { FilterProps, Municipio } from "@/types/automovil";
+import React, { useEffect, useState } from "react";
 import CarCards from "./CarCards";
 import Pagination from "./pagination";
 import { Link, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
-export default function Filtro({ posts, loguedUser, showPages, carBrands, carType }: FilterProps) {
-    const filtros = ['Precio', 'Marca', 'Año', 'Tipo'];
+export default function Filtro({ posts, loguedUser, showPages, carBrands, carType, provincias, municipios }: FilterProps) {
+    const filtros = ['Precio', 'Marca', 'Año', 'Tipo', 'Ubicación'];
+    const [provinciaId, setProvinciaId] = useState<number | ''>('');
+    const [municipioId, setMunicipioId] = useState<number | ''>('');
+    const [disabledMunicipios, setDisabledMunicipios] = useState(true);
+    const [municipiosState, setMunicipiosState] = useState<Municipio[]>([]);
     const [filters, setFilters] = useState<Filters>({}); // filtro elegido, para enviar al backend
     const [filterOn, setFilterOn] = useState(false); // abrir y cerrar el filtro
     const [selectedFilter, setSelectedFilter] = useState(''); // detecto el filtro seleccionado
@@ -28,15 +34,41 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
             setSelectedFilter('');
         }
     }
+    const altProvinciaMunicipio = () => {
+        if (!provinciaId) { // si no elijo ninguna provincia, dejo los estados vacíos.
+            setMunicipiosState([]);
+            setMunicipioId('');
+            return;
+        }
+        //  Si elijo una, hago la petición.
+        fetch(`/api/municipios/${provinciaId}`)
+            .then(res => res.json())
+            .then((data: Municipio[]) => {
+                const municipiosCoincidentes = data.filter(m =>
+                    municipios.some(mu => mu.id === m.id)
+                );
+
+                setMunicipiosState(municipiosCoincidentes);
+                setMunicipioId('');
+            });
+    }
     const filterDetected = (e: string) => {
         setSelectedFilter(e);
         setFilters({}); // reinicio los filtros en caso de seleccionar otro filtro
     }
-    const handleClearFilters = (e: React.FormEvent) => {
+    const handleProvincia = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilters(prev => ({ ...prev, provinciaId: Number(e.target.value) }))
+        setProvinciaId(Number(e.target.value));
+        setDisabledMunicipios(false);
+    }
+    const handleMunicipio = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilters(prev => ({ ...prev, municipioId: Number(e.target.value) }))
+        setMunicipioId(Number(e.target.value));
+    }
+    const handleClearFilters = () => {
         setFilters({}); // quito los filtros para que el backend no envíe ninguno
         setSelectedFilter(''); // limpio la vista de los filtros elegidos
-
-        !filters ? handleSubmit(e) : ''; // si no tengo filtros, ejecuto el submit. si los tengo, no hago nada
+        setFilterOn(false);
     }
     const handleSubmit = (e: React.FormEvent) => {
         setFilterOn(false);
@@ -51,6 +83,10 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
             }
         );
     }
+
+    useEffect(() => {
+        altProvinciaMunicipio()
+    }, [provinciaId])
 
     return <>
         <div className={`${filterOn ? `fixed ${innerWidth > 1024 ? 'w-[25%]' : 'w-full'}` : 'hidden w-0'} flex flex-col justify-center items-center overflow-hidden left-0 z-50 top-0 h-screen bg-black/85 space-y-12 text-gray-200 transition-all duration-300`}>
@@ -96,12 +132,26 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
                             }
                             {
                                 selectedFilter === 'Año' ? <div className="flex flex-col gap-2">
-                                    <input type="number" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder="Año (desde)" name="yearFrom" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                    <select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="anio" id="anio" onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                                         setFilters(prev => ({ ...prev, yearFrom: Number(e.target.value) }))
-                                    } />  {/** año (desde) */}
-                                    <input type="number" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder="Año (hasta)" name="yearTo" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                    }>
+                                        <option value="">Año (desde...)</option>
+                                        {
+                                            Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i).map(year => (
+                                                <option key={year} value={year}>{year}</option>
+                                            ))
+                                        }
+                                    </select>
+                                    <select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="anio" id="anio" onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                                         setFilters(prev => ({ ...prev, yearTo: Number(e.target.value) }))
-                                    } />
+                                    }>
+                                        <option value="">Año (hasta...)</option>
+                                        {
+                                            Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i).map(year => (
+                                                <option key={year} value={year}>{year}</option>
+                                            ))
+                                        }
+                                    </select>
                                 </div>
                                     : ''
                             }
@@ -122,13 +172,41 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
                                     </div>
                                     : ''
                             }
+                            {
+                                selectedFilter === 'Ubicación' ?
+                                    <div>
+                                        <div className="flex flex-col gap-3">
+                                            <h4>Elige la ubicación a filtrar</h4>
+                                            <label htmlFor="provincia">Provincia: </label>
+                                        </div>
+                                        <select value={provinciaId} id="provincia" className="border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full" onChange={handleProvincia}>
+                                            <option value="" className="bg-black/90">Todos</option>
+                                            {
+                                                provincias ? provincias.map(e => (
+                                                    <option key={e.id} value={e.id} className="bg-black/90">{e.nombre}</option>
+                                                )) : ''
+                                            }
+                                        </select>
+                                        <label htmlFor="municipio">Localidad: </label>
+                                        <select value={municipioId} id="municipio" className={`${disabledMunicipios ? 'opacity-50 cursor-not-allowed' : ''} border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full`} onChange={handleMunicipio} disabled={disabledMunicipios}>
+                                            <option value="" className="bg-black/90">Todos</option>
+                                            {
+                                                municipiosState ? municipiosState.map(e => (
+                                                    <option key={e.id} value={e.id} className="bg-black/90">{e.nombre}</option>
+                                                )) : ''
+                                            }
+                                        </select>
+                                    </div>
+                                    : ''
+                            }
+
                         </div>
                         <button type="submit" className="mt-10 border border-blue-500 p-3 w-full rounded-md lg:hover:bg-blue-500 lg:hover:text-gray-200 cursor-pointer transition-colors duration-300">Filtrar</button>
                         <button id="clearFilters" type="submit" onClick={handleClearFilters} className="mt-10 border border-red-500 p-3 w-full rounded-md lg:hover:bg-red-500 lg:hover:text-gray-200 cursor-pointer transition-colors duration-300">Limpiar filtros</button>
                     </form>
                 </ul>
             </div>
-        </div>
+        </div >
         <section className="space-y-8">
             <section id='categorias' className='flex flex-col items-center justify-center'>
                 <div className={`flex ${posts.data.length > 0 ? 'justify-start' : 'justify-center'} gap-5 w-full`}>
@@ -141,8 +219,8 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
                     </div>
                     <div className="flex items-center justify-between md:gap-5">
                         {
-                            (location.href.includes('buscar') || location.href.includes('posts')) && posts.data.length > 0 ? <div className="flex justify-between gap-4 mb-4">
-                                <svg onClick={handleOpenFilter} className="fill-gray-200 w-10 cursor-pointer drop-shadow-lg hover:drop-shadow-gray-200 transition-all duration-400 z-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" tabIndex={1}>
+                            (location.href.includes('buscar') || location.href.includes('posts')) && posts.data.length > 0 ? <div className="flex justify-between gap-4 mb-4" title="Filtrar">
+                                <svg onClick={handleOpenFilter} className="fill-gray-200 w-10 cursor-pointer z-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" tabIndex={1}>
                                     <path d="M96 128C83.1 128 71.4 135.8 66.4 147.8C61.4 159.8 64.2 173.5 73.4 182.6L256 365.3L256 480C256 488.5 259.4 496.6 265.4 502.6L329.4 566.6C338.6 575.8 352.3 578.5 364.3 573.5C376.3 568.5 384 556.9 384 544L384 365.3L566.6 182.7C575.8 173.5 578.5 159.8 573.5 147.8C568.5 135.8 556.9 128 544 128L96 128z" />
                                 </svg>
                             </div> : ''
@@ -154,7 +232,7 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
                         {
                             posts.data.length > 0 ? posts.data.map(post => (
                                 <div key={post.id} className="snap-center">
-                                    <CarCards post={post} src={`/posts/${post.id}`} loguedUser={loguedUser} />
+                                    <CarCards post={post} loguedUser={loguedUser} />
                                 </div>
                             )) :
                                 <>

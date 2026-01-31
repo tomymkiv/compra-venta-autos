@@ -25,15 +25,17 @@ class PostUpdateRequest extends FormRequest
             'marca' => ['required', 'string'],
             'modelo' => ['required', 'string', 'max:256'],
             'anio' => ['required', 'numeric'],
+            'moneda' => ['required'],
             'kilometraje' => ['required', 'numeric'],
             'descripcion' => ['string', 'max:16000'],
             'precio' => ['required', 'numeric'],
-            'ubicacion' => ['required', 'string'],
             'tipo' => ['required'],
             'images' => ['array', 'min:1', 'max:50'],
+            'provincia' => ['required'],
+            'municipio' => ['required'],
             'images.*' => ['image'],
-            'deleted_images' => ['nullable','array'],
-            'deleted_images.*' =>['nullable', 'integer', 'exists:post_images,id'],
+            'deleted_images' => ['nullable', 'array'],
+            'deleted_images.*' => ['nullable', 'integer', 'exists:post_images,id'],
         ];
     }
 }

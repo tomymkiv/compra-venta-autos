@@ -1,25 +1,30 @@
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CreateProps } from "@/types/automovil"
+import { CreateProps, Municipio } from "@/types/automovil"
 import { Select } from "@headlessui/react";
 import { useForm } from "@inertiajs/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { route } from 'ziggy-js'
 import { type CreatePostForm } from '@/types/automovil';
 import AppFront from "@/AppFront";
 
-export default function create({ carBrands, loguedUser, car_types }: CreateProps) {
+export default function create({ carBrands, loguedUser, car_types, currencies, provincias }: CreateProps) {
     const [newImg, setNewImg] = useState<File[]>([]);
+    const [provinciaId, setProvinciaId] = useState<number | ''>('');
+    const [municipiosState, setMunicipiosState] = useState<Municipio[]>([]);
+    const [municipioId, setMunicipioId] = useState<number | ''>('');
+    const [precio, setPrecio] = useState('');
     const { data, setData, post, processing, errors } = useForm<CreatePostForm>({
         marca: '',
         modelo: '',
         anio: '',
         kilometraje: '',
         precio: '',
+        moneda: '',
         descripcion: '',
         tipo: '',
-        ubicacion: '',
+        provincia: '',
+        municipio: '',
         images: [] as File[],
     })
     const handleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +46,34 @@ export default function create({ carBrands, loguedUser, car_types }: CreateProps
         // y agrego las nuevas imágenes seleccionadas (...files)
         // el spread operator (...) se usa para clonar los arrays
     }
+    const altProvinciaMunicipio = () => {
+        if (!provinciaId) { // si no elijo ninguna, dejo los estados vacíos.
+            setMunicipiosState([]);
+            setMunicipioId('');
+            return;
+        }
+        //  Si elijo una, hago la petición.
+        fetch(`/api/municipios/${provinciaId}`)
+            .then(res => res.json())
+            .then(data => {
+                setMunicipiosState(data);
+                setMunicipioId('');
+            });
+    }
+    const handleProvincia = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setProvinciaId(Number(e.target.value));
+        setData('provincia', e.target.value)
+    }
+    const handleMunicipio = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setMunicipioId(Number(e.target.value));
+        setData('municipio', e.target.value)
+    }
 
+    const handlePrecio = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const raw = e.target.value.replace(/\D/g, "");
+        setPrecio(raw ? Number(raw).toLocaleString("es-AR") : "");
+        setData('precio', Number(raw))
+    }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(route('posts.store'), {
@@ -59,6 +91,9 @@ export default function create({ carBrands, loguedUser, car_types }: CreateProps
             setData('images', data.images.filter((_, i) => i !== index));
         }
     }
+    useEffect(() => {
+        altProvinciaMunicipio()
+    }, [provinciaId]);
     return <AppFront loguedUser={loguedUser}>
         <section className="flex flex-col">
             <div>
@@ -95,7 +130,14 @@ export default function create({ carBrands, loguedUser, car_types }: CreateProps
                         )
                     }
                     <Label htmlFor="anio">Año:</Label>
-                    <Input type="number" className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" placeholder="Ej: 1992, 1995, 2002" value={data.anio} id="anio" onChange={e => setData('anio', Number(e.target.value))} />
+                    <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="anio" id="anio" value={data.anio} onChange={e => setData('anio', Number(e.target.value))}>
+                        <option value="" disabled>Selecciona el año</option>
+                        {
+                            Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i).map(year => (
+                                <option key={year} value={year}>{year}</option>
+                            ))
+                        }
+                    </Select>
                 </div>
                 <div className="mt-5 flex flex-col gap-2">
                     {
@@ -113,7 +155,23 @@ export default function create({ carBrands, loguedUser, car_types }: CreateProps
                         )
                     }
                     <Label htmlFor="precio">Precio:</Label>
-                    <Input type="number" value={data.precio} className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" id="precio" onChange={e => setData('precio', Number(e.target.value))} />
+                    <Input type="text" value={precio} className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" id="precio" maxLength={15} onChange={handlePrecio} />
+                </div>
+                <div className="mt-5 flex flex-col gap-2">
+                    {
+                        errors.moneda && (
+                            <p className='text-red-500 font-[500] text-sm'>{errors.moneda}</p>
+                        )
+                    }
+                    <Label htmlFor="moneda">Moneda:</Label>
+                    <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="moneda" id="moneda" value={data.moneda} onChange={e => setData('moneda', e.target.value)}>
+                        <option value="" disabled>Selecciona la moneda</option>
+                        {
+                            currencies.map(currency => (
+                                <option key={currency.id} value={currency.id}>{currency.nombre}</option>
+                            ))
+                        }
+                    </Select>
                 </div>
                 <div className="mt-5 flex flex-col gap-2">
                     {
@@ -126,13 +184,35 @@ export default function create({ carBrands, loguedUser, car_types }: CreateProps
                 </div>
                 <div className="mt-5 flex flex-col gap-2">
                     {
-                        errors.ubicacion && (
-                            <p className='text-red-500 font-[500] text-sm'>{errors.ubicacion}</p>
+                        errors.provincia && (
+                            <p className='text-red-500 font-[500] text-sm'>{errors.provincia}</p>
                         )
                     }
-                    <Label htmlFor="ubicacion">Ubicación:</Label>
-                    <Input type="text" value={data.ubicacion} className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" id="ubicacion" onChange={e => setData('ubicacion', e.target.value)} />
+                    <Label htmlFor="provincia">Provincia:</Label>
+                    <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={data.provincia} id="provincia" onChange={handleProvincia}>
+                        <option value="" disabled>Selecciona una provincia</option>
+                        {provincias.map(provincia => (
+                            // si elijo una provincia, los municipios que saldrán serán solo los de esa provincia. hay que compararlos por id_provincia
+                            <option key={provincia.id} disabled={provincia.id === 78 || provincia.id === 86} value={provincia.id}>{provincia.nombre}</option>
+                        ))}
+                    </Select>
                 </div>
+                {provinciaId && <div className="mt-5 flex flex-col gap-2">
+                    {
+                        errors.municipio && (
+                            <p className='text-red-500 font-[500] text-sm'>{errors.municipio}</p>
+                        )
+                    }
+                    <Label htmlFor="municipio">Municipio:</Label>
+                    <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={municipioId} id="municipio" name="municipio" onChange={handleMunicipio}>
+                        <option value="" disabled>Selecciona un municipio</option>
+                        {municipiosState.map(municipio => (
+                            // si elijo una provincia, los municipios que saldrán serán solo los de esa provincia. hay que compararlos por id_provincia
+                            <option key={municipio.id} value={municipio.id}>{municipio.nombre}</option>
+                        ))}
+                    </Select>
+                </div>
+                }
                 <div className="mt-5 flex flex-col gap-2">
                     {
                         errors.tipo && (
@@ -140,7 +220,7 @@ export default function create({ carBrands, loguedUser, car_types }: CreateProps
                         )
                     }
                     <Label htmlFor="tipo">Tipo de vehiculo:</Label>
-                    <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={data.tipo} id="tipo" onChange={e => setData('tipo', e.target.value)} >
+                    <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={data.tipo} id="tipo" onChange={e => setData('tipo', e.target.value)}>
                         <option value="" disabled>Selecciona el tipo de vehículo</option>
                         {
                             car_types ? car_types.map(tipo => (
@@ -186,8 +266,8 @@ export default function create({ carBrands, loguedUser, car_types }: CreateProps
                         </div>
                     </div>
                 </div>
-                <div>
-                    <Button disabled={processing} type="submit">Enviar</Button>
+                <div className="flex items-center justify-center">
+                    <button disabled={processing} type="submit" className="p-3 rounded-md bg-slate-400 text-gray-800 w-full cursor-pointer hover:bg-slate-600 hover:text-gray-200 transition-background duration-300">Enviar</button>
                 </div>
             </form>
         </section>

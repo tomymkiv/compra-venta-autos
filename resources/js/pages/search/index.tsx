@@ -2,10 +2,10 @@ import AppFront from "@/AppFront";
 import Filtro from "@/components/Filtro";
 import { FilterProps } from "@/types/automovil";
 
-export default function SearchIndex({ posts, loguedUser, carBrands, carType }: FilterProps) {
+export default function SearchIndex({ posts, loguedUser, carBrands, carType, provincias, municipios }: FilterProps) {
     return (
         <AppFront loguedUser={loguedUser}>
-            <Filtro posts={posts} loguedUser={loguedUser} showPages={true} carBrands={carBrands} carType={carType} />
+            <Filtro posts={posts} loguedUser={loguedUser} showPages={true} carBrands={carBrands} carType={carType} provincias={provincias} municipios={municipios} />
         </AppFront>
     );
 }

@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\CarsBrand;
 use App\Models\CarType;
+use App\Models\Municipio;
 use App\Models\Post;
+use App\Models\Provincia;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Unique;
 
 class SearchController extends Controller
 {
@@ -30,12 +33,31 @@ class SearchController extends Controller
                     'mainImage',
                 ])
                 ->paginate($this->paginateLimit)
-                ->withQueryString();
+                ->withQueryString()
+                ->orderBy('created_at', 'desc');
             return inertia('search/index', [
                 'loguedUser' => $this->loguedUser,
                 'posts' => $posts,
                 'carBrands' => CarsBrand::get(),
-                'carType' => CarType::get(),
+                'carType' => Post::with('car.car_type')
+                    ->get()
+                    ->pluck('car.car_type')
+                    ->filter()
+                    ->unique('id')
+                    ->values(),
+                Post::with('municipio.provincia')
+                    ->get()
+                    ->pluck('municipio.provincia')
+                    ->filter()
+                    ->unique('id')
+                    ->values(),
+                'municipios' => Post::with('municipio')
+                    ->get()
+                    ->pluck('municipio')
+                    ->flatten()
+                    ->filter()
+                    ->unique('id')
+                    ->values(),
             ]);
         } else { // si se trata de un filtro...
             $posts = Post::query()
@@ -69,18 +91,53 @@ class SearchController extends Controller
                         $q->where('id_type', $request->typeId);
                     });
                 })
+                ->when($request->provinciaId, function ($qBuilder) use ($request) {
+                    $qBuilder->whereHas('municipio', function ($q) use ($request) {
+                        $q->where('id_provincia', $request->provinciaId);
+                    });
+                })
+                ->when($request->municipioId, function ($qBuilder) use ($request) {
+                    $qBuilder->whereHas('municipio', function ($q) use ($request) {
+                        $q->where('id', $request->municipioId);
+                    });
+                })
                 ->with([
                     'car.carModel.carBrand',
+                    'car.car_type',
+                    'municipio.provincia',
                     'postImage',
                     'mainImage',
                 ])
                 ->paginate($this->paginateLimit)
                 ->withQueryString();
+
             return inertia('search/index', [
                 'loguedUser' => $this->loguedUser,
                 'posts' => $posts,
-                'carBrands' => CarsBrand::get(),
-                'carType' => CarType::get(),
+                'carBrands' => Post::with('car.carModel.carBrand')
+                    ->get()
+                    ->pluck('car.carModel.carBrand')
+                    ->unique('id')
+                    ->values(),
+                'carType' => Post::with('car.car_type')
+                    ->get()
+                    ->pluck('car.car_type')
+                    ->filter()
+                    ->unique('id')
+                    ->values(),
+                'provincias' => Post::with('municipio.provincia')
+                    ->get()
+                    ->pluck('municipio.provincia')
+                    ->filter()
+                    ->unique('id')
+                    ->values(),
+                'municipios' => Post::with('municipio')
+                    ->get()
+                    ->pluck('municipio')
+                    ->flatten()
+                    ->filter()
+                    ->unique('id')
+                    ->values(),
             ]);
         }
     }
