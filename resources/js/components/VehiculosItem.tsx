@@ -140,6 +140,14 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
                                 <button className={`bg-cover bg-center bg-no-repeat rounded-lg text-black cursor-pointer transition-background shadow-md hover:shadow-gray-400 duration-300 text-center font-[700] ${post.id_currency == 1 ? (priceBtnActive ? 'bg-[url("/public/img/billete-100-dolares.webp")]' : 'bg-[url("/public/img/billete-1000-pesos.webp")]') : (priceBtnActive ? 'bg-[url("/public/img/billete-1000-pesos.webp")]' : 'bg-[url("/public/img/billete-100-dolares.webp")]')}`} onClick={convertUSDPrice}> <p className="p-3 bg-white/40 rounded-md">{post.id_currency == 1 ? (priceBtnActive ? 'Convertir a dólares (USD)' : 'Convertir a pesos (ARS)') : (priceBtnActive ? 'Convertir a pesos (ARS)' : 'Convertir a dólares (USD)')}</p></button>
                             </div>
                             <hr className="my-5 lg:hidden" />
+                            <div className="flex flex-col gap-2">
+                                <p>Publicacion del usuario: {post.user.name}</p>
+                                <p>Fecha de publicacion: {post.fecha_publicacion.toString().split('T')[0]}</p>
+                            </div>
+                            <div className="flex items-center w-full gap-2">
+                                <Link href={route('user.show', post.user.id)}><img src={post.user.avatar} className="rounded-full w-20 h-20" alt="" /></Link>
+                            </div>
+                            <hr className="my-5 lg:hidden" />
                         </div>
                     </div>
                     <div ref={imgContainerRef} className="hidden fixed inset-0 bg-black/60 flex items-center justify-center w-screen h-screen z-50">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CarsBrand;
 use App\Models\CarType;
+use App\Models\Currency;
 use App\Models\Municipio;
 use App\Models\Post;
 use App\Models\Provincia;
@@ -31,10 +32,11 @@ class SearchController extends Controller
                     'car.carModel.carBrand',
                     'postImage',
                     'mainImage',
+                    'municipio.provincia',
                 ])
                 ->paginate($this->paginateLimit)
-                ->withQueryString()
-                ->orderBy('created_at', 'desc');
+                ->withQueryString();
+
             return inertia('search/index', [
                 'loguedUser' => $this->loguedUser,
                 'posts' => $posts,
@@ -62,12 +64,18 @@ class SearchController extends Controller
         } else { // si se trata de un filtro...
             $posts = Post::query()
                 ->when($request->priceFrom, function ($qBuilder) use ($request) {
-                    $qBuilder->where('precio', '>=', $request->priceFrom);
+                    $qBuilder->where('precio', '>=', $request->priceFrom)
+                        ->where('id_currency', $request->currencyId); // filtro segun la divisa
                     // precio desde...
                 })
                 ->when($request->priceTo, function ($qBuilder) use ($request) {
-                    $qBuilder->where('precio', '<=', $request->priceTo);
+                    $qBuilder->where('precio', '<=', $request->priceTo)
+                        ->where('id_currency', $request->currencyId); // filtro segun la divisa
                     // precio hasta...
+                })
+                ->when($request->currencyId, function ($qBuilder) use ($request) {
+                    $qBuilder->where('id_currency', $request->currencyId);
+                    // filtro segun la divisa (sin tener en cuenta "desde" ni "hasta")
                 })
                 ->when($request->brandId, function ($qBuilder) use ($request) {
                     $qBuilder->whereHas('car.carModel.carBrand', function ($q) use ($request) {
@@ -138,6 +146,7 @@ class SearchController extends Controller
                     ->filter()
                     ->unique('id')
                     ->values(),
+                'currencies' => Currency::get(),
             ]);
         }
     }

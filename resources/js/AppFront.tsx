@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import PageLinks from './components/PageLinks'
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { route } from 'ziggy-js'
 import { AppComponentProps } from './types/automovil';
 import CategoriasSlots from './components/CategoriasSlots';
@@ -38,12 +38,19 @@ export default function AppFront({ loguedUser, children }: AppComponentProps) {
         <div id='mobile-nav' className='lg:hidden'>
           <nav className='bg-[#111]'>
             <ul ref={menuRef} id='menu' className='flex flex-col gap-10 justify-center overflow-hidden fixed left-0 bg-[#1117] backdrop-blur-sm transition-[width] duration-350 ease-in-out w-0 h-screen z-50'>
+              {
+                loguedUser &&
+                <Link href={route('user.show', loguedUser.id)} className='w-fit p-5 flex items-center gap-2 flex-col'>
+                  <img src={loguedUser.avatar?.includes('api') ? loguedUser.avatar : `/storage/${loguedUser.avatar}`} className="rounded-full w-20 h-20 object-cover" alt={"Imagen del usuario"} />
+                  <p className='text-xl text-[#ccc]'>{loguedUser.name}</p>
+                </Link>
+              }
               <PageLinks title="Inicio" link='/' clases='!text-xl' />
               <DropdownButton title="Publicaciones" onclick={toggleCategoriasMobile} clases='!text-xl text-[#ccc] pl-7 flex items-center gap-2 p-2' />
               <ul className='text-[#ccc] flex flex-col ml-5 hidden' ref={categoriasRefMob}>
                 <CategoriasSlots text="Ver publicaciones" link="/posts" clases='w-[85%]' />
                 <CategoriasSlots text="Crear publicación" link="/posts/create" clases='w-[85%]' />
-                {loguedUser ? <CategoriasSlots text="Editar publicación" link={`/posts/user/${loguedUser?.id}`} clases='w-[85%]' /> : ''}
+                {loguedUser && <CategoriasSlots text="Editar publicación" link={`/posts/user/${loguedUser?.id}`} clases='w-[85%]' />}
               </ul>
               {
                 loguedUser ?
@@ -65,6 +72,15 @@ export default function AppFront({ loguedUser, children }: AppComponentProps) {
           <nav>
             <ul className='hidden lg:flex items-center justify-evenly w-full gap-10 p-3'>
               <div className='flex gap-5'>
+                {
+                  loguedUser &&
+                  <Link href={route('user.show', loguedUser.id)} className='w-fit flex items-center justify-center flex-col gap-2'>
+                    <img src={loguedUser.avatar?.includes('api') ? loguedUser.avatar : `/storage/${loguedUser.avatar}`} className="rounded-full w-15 h-15 object-cover" alt={"Imagen del usuario"} />
+                    <p>{loguedUser.name}</p>
+                  </Link>
+                }
+              </div>
+              <div className='flex gap-5'>
                 <PageLinks title="Inicio" link='/' clases='flex items-center gap-2 p-2 cursor-pointer text-xl text-shadow-gray-300 hover:text-shadow-md transition-all duration-300' />
                 <div>
                   <DropdownButton clases='text-xl text-[#ccc] ml-5 cursor-pointer p-4' onmouseenter={toggleCategoriasDesktopOn} onmouseleave={toggleCategoriasDesktopOff} title='Publicaciones' />
@@ -74,8 +90,8 @@ export default function AppFront({ loguedUser, children }: AppComponentProps) {
                     <CategoriasSlots text="Ver publicaciones" clases='w-fit' link="/posts" onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
                     <CategoriasSlots text="Crear publicación" clases='w-fit' link="/posts/create" onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
                     {
-                      loguedUser ?
-                        <CategoriasSlots text="Editar publicación" clases='w-fit' link={`/posts/user/${loguedUser?.id}`} onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} /> : ''
+                      loguedUser &&
+                      <CategoriasSlots text="Editar publicación" clases='w-fit' link={`/posts/user/${loguedUser?.id}`} onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
                     }
                   </ul>
                 </div>
@@ -93,7 +109,7 @@ export default function AppFront({ loguedUser, children }: AppComponentProps) {
         </div>
       </header>
       <main className={`${innerWidth < 550 ? 'my-16' : 'my-10'} mx-5 text-[#ccc] min-h-screen flex items-center justify-center`}>
-        <section className='max-w-7xl'>
+        <section className='max-w-7xl flex items-center justify-center w-full'>
           {children}
         </section>
       </main>

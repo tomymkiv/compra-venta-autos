@@ -8,7 +8,7 @@ export default function CarCards({ post }: CarCardsProps) {
         return raw ? Number(raw).toLocaleString("es-AR") : "";
     }
     return <>
-        <Link href={route('posts.show', post.id)} className={`flex flex-col justify-around bg-[#222] shadow-sm transition-shadow duration-200 hover:shadow-blue-400 min-h-[550px] text-gray-200 p-3.5 rounded-xl gap-0.5 my-3.5 md:my-0 min-w-[350px] md:min-w-auto`} title="Ver vehiculo">
+        <Link href={route('posts.show', post.id)} className={`flex flex-col justify-around bg-[#222] shadow-sm transition-shadow duration-200 hover:shadow-blue-400 min-h-[550px] text-gray-200 p-3.5 rounded-xl gap-0.5 my-3.5 md:my-0 min-w-auto`} title="Ver vehiculo">
             <div className="flex items-center justify-center">
                 <img src={`/${post.main_image.url}`} alt="Imagen del vehiculo" className="rounded-xl object-contain w-full max-h-[300px] min-h-[300px]" />
             </div>

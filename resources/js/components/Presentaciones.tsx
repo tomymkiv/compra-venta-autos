@@ -8,8 +8,7 @@ interface Props {
 import Images from "./Images";
 import Titulo from "./Titulo";
 
-function Presentaciones(props: Props) {
-    const { clases, img, titulo, descripcion } = props;
+export default function Presentaciones({ clases, img, titulo, descripcion }: Props) {
     return <div className="flex flex-col lg:flex-row items-center justify-between gap-5 lg:gap-20">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-5 lg:gap-20">
             <div className="flex flex-col max-w-[full]">
@@ -22,5 +21,3 @@ function Presentaciones(props: Props) {
         </div>
     </div>
 }
-
-export default Presentaciones;

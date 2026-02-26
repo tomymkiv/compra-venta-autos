@@ -14,7 +14,6 @@ export default function edit({ carBrands, postData, loguedUser, car_types, curre
     const [provinciaId, setProvinciaId] = useState<number | ''>(postData.municipio.provincia.id);
     const [municipiosState, setMunicipiosState] = useState<Municipio[]>([]);
     const [municipioId, setMunicipioId] = useState<number | ''>('');
-    // const [precio, setPrecio] = useState('');
     const [existingImg, setExistingImg] = useState<Images[]>(postData.post_image)
     const { data, setData, put, processing, errors, delete: destroy } = useForm({
         marca: postData.car.car_model.car_brand.id,

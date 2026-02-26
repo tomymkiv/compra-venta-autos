@@ -1,4 +1,5 @@
 type Filters = {
+    currencyId?: number,
     priceFrom?: number;
     priceTo?: number;
     brandId?: number;
@@ -16,7 +17,8 @@ import Pagination from "./pagination";
 import { Link, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
-export default function Filtro({ posts, loguedUser, showPages, carBrands, carType, provincias, municipios }: FilterProps) {
+export default function Filtro({ posts, loguedUser, showPages, carBrands, carType, currencies, provincias, municipios }: FilterProps) {
+    const [currencySelected, setCurrencySelected] = useState(false);
     const filtros = ['Precio', 'Marca', 'Año', 'Tipo', 'Ubicación'];
     const [provinciaId, setProvinciaId] = useState<number | ''>('');
     const [municipioId, setMunicipioId] = useState<number | ''>('');
@@ -38,9 +40,9 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
         if (!provinciaId) { // si no elijo ninguna provincia, dejo los estados vacíos.
             setMunicipiosState([]);
             setMunicipioId('');
-            return;
+            return; // salgo para no seguir ejecutando
         }
-        //  Si elijo una, hago la petición.
+        //  Si elijo una, hago la petición y traigo los municipios de esa provincia.
         fetch(`/api/municipios/${provinciaId}`)
             .then(res => res.json())
             .then((data: Municipio[]) => {
@@ -55,6 +57,7 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
     const filterDetected = (e: string) => {
         setSelectedFilter(e);
         setFilters({}); // reinicio los filtros en caso de seleccionar otro filtro
+        setCurrencySelected(false);
     }
     const handleProvincia = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFilters(prev => ({ ...prev, provinciaId: Number(e.target.value) }))
@@ -69,6 +72,10 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
         setFilters({}); // quito los filtros para que el backend no envíe ninguno
         setSelectedFilter(''); // limpio la vista de los filtros elegidos
         setFilterOn(false);
+    }
+    const handlePriceFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setCurrencySelected(true);
+        setFilters(prev => ({ ...prev, currencyId: Number(e.target.value) }))
     }
     const handleSubmit = (e: React.FormEvent) => {
         setFilterOn(false);
@@ -100,38 +107,44 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
                 <ul className="flex flex-col gap-4">
                     <form action="" onSubmit={handleSubmit}>
                         {filtros.map((el, index) => (
-                            <div key={index} className={`my-3 ${index == filtros.length - 1 ? 'mb-14' : ''} `}>
+                            <div key={index} className={`my-3 ${index == filtros.length - 1 && 'mb-14'} `}>
                                 <li onClick={() => filterDetected(el)} className="text-xl py-2 border border-gray-700 px-3 rounded-lg cursor-pointer lg:hover:bg-gray-500 transition-colors duration-300 z-40">{el}</li>
                             </div>
                         ))}
                         <div>
                             {
-                                selectedFilter === 'Precio' ?
-                                    <div className="flex flex-col gap-2">
-                                        <input type="number" name="priceFrom" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder="Precio (desde):" onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilters(prev => ({ ...prev, priceFrom: Number(e.target.value) }))} />
-                                        <input type="number" name="priceTo" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder="Precio (hasta):" onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilters(prev => ({ ...prev, priceTo: Number(e.target.value) }))} />
-                                    </div>
-                                    : ''
+                                selectedFilter === 'Precio' &&
+                                <div className="flex flex-col gap-2">
+                                    <select className="bg-gray-950 border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full" name="price" id="price" onChange={handlePriceFilter}>
+                                        <option value="" disabled selected>Elegí la divisa</option>
+                                        {
+                                            currencies.map((el, index) => (
+                                                <option key={index} value={el.id}>{el.nombre}</option>
+                                            ))
+                                        }
+                                    </select>
+                                    <input disabled={!currencySelected} type="number" name="priceFrom" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder="Precio (desde):" onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilters(prev => ({ ...prev, priceFrom: Number(e.target.value) }))} />
+                                    <input disabled={!currencySelected} type="number" name="priceTo" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder="Precio (hasta):" onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilters(prev => ({ ...prev, priceTo: Number(e.target.value) }))} />
+                                </div>
                             }
                             {
-                                selectedFilter === 'Marca' ?
-                                    <div>
-                                        <h4>Elige una marca para filtrar</h4>
-                                        <select name="marca" className="border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full" onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                                            setFilters(prev => ({ ...prev, brandId: Number(e.target.value) }))
-                                        }>
-                                            <option value="" className="bg-black/90">Todas</option>
-                                            {
-                                                carBrands ? carBrands.map(e => (
-                                                    <option key={e.id} value={e.id} className="bg-black/90">{e.marca}</option>
-                                                )) : ''
-                                            }
-                                        </select>
-                                    </div>
-                                    : ''
+                                selectedFilter === 'Marca' &&
+                                <div>
+                                    <h4>Elige una marca para filtrar</h4>
+                                    <select name="marca" className="border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full" onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                                        setFilters(prev => ({ ...prev, brandId: Number(e.target.value) }))
+                                    }>
+                                        <option value="" className="bg-black/90">Todas</option>
+                                        {
+                                            carBrands && carBrands.map(e => (
+                                                <option key={e.id} value={e.id} className="bg-black/90">{e.marca}</option>
+                                            ))
+                                        }
+                                    </select>
+                                </div>
                             }
                             {
-                                selectedFilter === 'Año' ? <div className="flex flex-col gap-2">
+                                selectedFilter === 'Año' && <div className="flex flex-col gap-2">
                                     <select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="anio" id="anio" onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                                         setFilters(prev => ({ ...prev, yearFrom: Number(e.target.value) }))
                                     }>
@@ -153,53 +166,49 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
                                         }
                                     </select>
                                 </div>
-                                    : ''
                             }
                             {
-                                selectedFilter === 'Tipo' ?
-                                    <div>
-                                        <h4>Elige el tipo de vehiculo a filtrar</h4>
-                                        <select className="border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full" onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                                            setFilters(prev => ({ ...prev, typeId: Number(e.target.value) }))
-                                        }>
-                                            <option value="" className="bg-black/90">Todos</option>
-                                            {
-                                                carType ? carType.map(e => (
-                                                    <option key={e.id} value={e.id} className="bg-black/90">{e.tipo}</option>
-                                                )) : ''
-                                            }
-                                        </select>
-                                    </div>
-                                    : ''
+                                selectedFilter === 'Tipo' &&
+                                <div>
+                                    <h4>Elige el tipo de vehiculo a filtrar</h4>
+                                    <select className="border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full" onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                                        setFilters(prev => ({ ...prev, typeId: Number(e.target.value) }))
+                                    }>
+                                        <option value="" className="bg-black/90">Todos</option>
+                                        {
+                                            carType ? carType.map(e => (
+                                                <option key={e.id} value={e.id} className="bg-black/90">{e.tipo}</option>
+                                            )) : ''
+                                        }
+                                    </select>
+                                </div>
                             }
                             {
-                                selectedFilter === 'Ubicación' ?
-                                    <div>
-                                        <div className="flex flex-col gap-3">
-                                            <h4>Elige la ubicación a filtrar</h4>
-                                            <label htmlFor="provincia">Provincia: </label>
-                                        </div>
-                                        <select value={provinciaId} id="provincia" className="border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full" onChange={handleProvincia}>
-                                            <option value="" className="bg-black/90">Todos</option>
-                                            {
-                                                provincias ? provincias.map(e => (
-                                                    <option key={e.id} value={e.id} className="bg-black/90">{e.nombre}</option>
-                                                )) : ''
-                                            }
-                                        </select>
-                                        <label htmlFor="municipio">Localidad: </label>
-                                        <select value={municipioId} id="municipio" className={`${disabledMunicipios ? 'opacity-50 cursor-not-allowed' : ''} border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full`} onChange={handleMunicipio} disabled={disabledMunicipios}>
-                                            <option value="" className="bg-black/90">Todos</option>
-                                            {
-                                                municipiosState ? municipiosState.map(e => (
-                                                    <option key={e.id} value={e.id} className="bg-black/90">{e.nombre}</option>
-                                                )) : ''
-                                            }
-                                        </select>
+                                selectedFilter === 'Ubicación' &&
+                                <div>
+                                    <div className="flex flex-col gap-3">
+                                        <h4>Elige la ubicación a filtrar</h4>
+                                        <label htmlFor="provincia">Provincia: </label>
                                     </div>
-                                    : ''
+                                    <select value={provinciaId} id="provincia" className="border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full" onChange={handleProvincia}>
+                                        <option value="" className="bg-black/90">Todos</option>
+                                        {
+                                            provincias && provincias.map(e => (
+                                                <option key={e.id} value={e.id} className="bg-black/90">{e.nombre}</option>
+                                            ))
+                                        }
+                                    </select>
+                                    <label htmlFor="municipio">Localidad: </label>
+                                    <select value={municipioId} id="municipio" className={`${disabledMunicipios ? 'opacity-50 cursor-not-allowed' : ''} border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full`} onChange={handleMunicipio} disabled={disabledMunicipios}>
+                                        <option value="" className="bg-black/90">Todos</option>
+                                        {
+                                            municipiosState && municipiosState.map(e => (
+                                                <option key={e.id} value={e.id} className="bg-black/90">{e.nombre}</option>
+                                            ))
+                                        }
+                                    </select>
+                                </div>
                             }
-
                         </div>
                         <button type="submit" className="mt-10 border border-blue-500 p-3 w-full rounded-md lg:hover:bg-blue-500 lg:hover:text-gray-200 cursor-pointer transition-colors duration-300">Filtrar</button>
                         <button id="clearFilters" type="submit" onClick={handleClearFilters} className="mt-10 border border-red-500 p-3 w-full rounded-md lg:hover:bg-red-500 lg:hover:text-gray-200 cursor-pointer transition-colors duration-300">Limpiar filtros</button>
@@ -242,7 +251,7 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
                         }
                     </div>
                     {
-                        posts.links && showPages && posts.data.length > 0 ? <Pagination links={posts.links} /> : ''
+                        posts.links && showPages && posts.data.length > 0 && <Pagination links={posts.links} />
                     }
                 </div>
             </section>

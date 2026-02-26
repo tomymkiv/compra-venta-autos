@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
@@ -12,18 +12,22 @@ class RegisterController extends Controller
     {
         return inertia('auth/register');
     }
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'password' => 'required|string|min:8',
-        ]);
+        $validated = $request->validated();
         if ($validated['password'] !== $request->password_confirmation) {
             return back()->withErrors([
                 'password' => 'Las contraseñas no coinciden',
             ]);
         }
+
+        if (!$validated['avatar']) {
+            $validated['avatar'] = 'https://ui-avatars.com/api/?name=' . $validated['name'] . '&background=random';
+        } else {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $validated['avatar'] = $path;
+        }
+        // dd($validated['avatar']);
         $user = User::create($validated);
         Auth::login($user);
         return redirect()->route('welcome');

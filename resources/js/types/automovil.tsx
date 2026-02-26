@@ -119,8 +119,15 @@ export interface FilterProps {
     carType: CarType[],
     provincias: Provincia[],
     municipios: Municipio[],
+    currencies: Currency[],
 }
 export interface CarCardsProps {
     loguedUser?: User,
     post: Post,
+}
+export interface ProfileProps {
+    loguedUser: User,
+    post?: Post[],
+    children: React.ReactNode,
+    user: User,
 }

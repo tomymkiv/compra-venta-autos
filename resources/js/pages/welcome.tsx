@@ -8,7 +8,7 @@ import { route } from 'ziggy-js';
 export default function Welcome({ loguedUser, posts }: PageProps) {
     return (
         <AppFront loguedUser={loguedUser}>
-            <section className='flex flex-col gap-25 mt-20'>
+            <section className='flex flex-col gap-25 mt-20 w-full'>
                 <div className="space-y-5 md:space-y-10">
                     <h1 className='text-4xl text-left animate-text-pulse md:text-5xl lg:text-6xl text-[#ccc] font-[200]'>Silvetti Automotores</h1>
                     <p>Somos un grupo de vendedores independientes dedicados a la compra, venta y permuta de vehículos, unidos por la transparencia y el trato directo.</p>

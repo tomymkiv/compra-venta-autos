@@ -48,6 +48,7 @@ class PostController extends Controller
                 ->filter()
                 ->unique('id')
                 ->values(),
+            'currencies' => Currency::get(),
         ]);
     }
 
@@ -59,7 +60,7 @@ class PostController extends Controller
             'user',
             'municipio.provincia',
         ]);
-        // dd($post->municipio);
+
         return inertia('posts/show', [
             'post' => $post,
             'loguedUser' => $this->loguedUser,
@@ -70,7 +71,7 @@ class PostController extends Controller
     {
         return inertia('user/posts', [
             'posts' => Post::with('mainImage', 'car.carModel.carBrand', 'user', 'municipio.provincia')
-                ->whereHas('mainImage', fn($query) => $query->where('orden', 1)) // limito a los posts que tienen una imagen principal con orden = 1
+                ->whereHas('mainImage') // mainImage = imagen con orden = 1
                 ->latest()
                 ->where('id_user', $user->id)
                 ->paginate($this->paginateLimit),
@@ -99,6 +100,7 @@ class PostController extends Controller
                 ->filter()
                 ->unique('id')
                 ->values(),
+            'currencies' => Currency::get(),
         ]);
     }
 
@@ -106,7 +108,6 @@ class PostController extends Controller
     {
         $images = $request->file('images');
         $validated = $request->validated();
-        // dd($validated['moneda']);
         // FUNCIONA
         $carModel = CarsModel::create([
             'id_marca' => $validated['marca'],
