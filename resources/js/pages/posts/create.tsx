@@ -8,6 +8,11 @@ import { route } from 'ziggy-js'
 import { type CreatePostForm } from '@/types/automovil';
 import AppFront from "@/AppFront";
 
+/**
+ * las provincias de santa cruz y santiago del estero no funcionan (desde la API vienen vacias, sin municipios)
+ * 
+ * 
+ */
 export default function create({ carBrands, loguedUser, car_types, currencies, provincias }: CreateProps) {
     const [newImg, setNewImg] = useState<File[]>([]);
     const [provinciaId, setProvinciaId] = useState<number | ''>('');
