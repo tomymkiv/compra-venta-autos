@@ -1,6 +1,7 @@
 import AppFront from "@/AppFront";
 import { ProfileProps } from "@/types/automovil";
 import { useEffect, useState } from "react";
+import CloseButton from "./close-button";
 
 export default function ProfileSection({ loguedUser, children, user }: ProfileProps) {
     const [isImageOpen, setIsImageOpen] = useState(false);
@@ -50,16 +51,7 @@ export default function ProfileSection({ loguedUser, children, user }: ProfilePr
                 {isImageOpen && (
                     <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
                         {/* Gray "X" Close Button */}
-                        <button
-                            onClick={toggleImg}
-                            className="absolute cursor-pointer top-8 right-8 text-gray-200 hover:text-white transition-all transform hover:scale-110 z-[110] p-2 bg-gray-200/10 rounded-full"
-                            aria-label="Cerrar imagen"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-
+                        <CloseButton onClickEvent={toggleImg} />
                         {/* Full Image Container (when i click the image) */}
                         <div className="relative max-w-full max-h-full flex items-center justify-center animate-in zoom-in-90 duration-300">
                             <img
