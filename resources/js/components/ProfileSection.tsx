@@ -50,7 +50,6 @@ export default function ProfileSection({ loguedUser, children, user }: ProfilePr
                 {/* Modal Overlay for Full-screen Image */}
                 {isImageOpen && (
                     <div className="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-                        {/* Gray "X" Close Button */}
                         <CloseButton onClickEvent={toggleImg} />
                         {/* Full Image Container (when i click the image) */}
                         <div className="relative max-w-full max-h-full flex items-center justify-center animate-in zoom-in-90 duration-300">
