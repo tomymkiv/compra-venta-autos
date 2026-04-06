@@ -5,7 +5,6 @@ import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
 export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
-    console.log(post)
     const blueDolarUrl = 'https://api.bluelytics.com.ar/v2/latest';
     const [USDPrice, setUSDPrice] = useState(post.precio);
     const [ARSPrice, setARSPrice] = useState(post.precio);
