@@ -146,7 +146,7 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
                                 <p>Fecha de publicacion: {post.fecha_publicacion.toString().split('T')[0]}</p>
                             </div>
                             <div className="flex items-center w-full gap-2">
-                                <Link href={route('user.show', post.user.id)}><img src={post.user.avatar} className="rounded-full w-20 h-20" alt="" /></Link>
+                                <Link href={route('user.show', post.user.id)}><img src={`/storage/${post.user.avatar}`} className="object-cover rounded-full w-20 h-20" alt="" /></Link>
                             </div>
                             <hr className="my-5 lg:hidden" />
                         </div>
