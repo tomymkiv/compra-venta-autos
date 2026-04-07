@@ -26,15 +26,6 @@ class DatabaseSeeder extends Seeder
         $localidades_json = json_decode(file_get_contents("https://infra.datos.gob.ar/georef/municipios.json"));
         $localidades = $localidades_json->municipios;
 
-        User::firstOrCreate(
-            ['email' => 'test@example.com'],
-            [
-                'name' => 'Test User',
-                'password' => 'password',
-                'email_verified_at' => now(),
-            ]
-        );
-
         foreach ($provincias as $provincia) {
             Provincia::create([
                 'id' => $provincia->id,
@@ -63,5 +54,8 @@ class DatabaseSeeder extends Seeder
                 'nombre' => $divisa
             ]);
         }
+        $this->call([
+            UserSeeder::class
+        ]);
     }
 }
