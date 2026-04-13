@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/react";
-import { type CarCardsProps } from "@/types/automovil";
+import { type CarCardsProps } from "@/types/types";
 import { route } from "ziggy-js";
 
 export default function CarCards({ post }: CarCardsProps) {

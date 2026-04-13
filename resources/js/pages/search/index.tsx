@@ -1,6 +1,6 @@
 import AppFront from "@/AppFront";
 import Filtro from "@/components/Filtro";
-import { FilterProps } from "@/types/automovil";
+import { FilterProps } from "@/types/types";
 
 export default function SearchIndex({ posts, loguedUser, carBrands, carType, provincias, municipios, currencies }: FilterProps) {
     return (

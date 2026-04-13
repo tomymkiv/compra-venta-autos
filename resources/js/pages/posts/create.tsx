@@ -1,11 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CreateProps, Municipio } from "@/types/automovil"
+import { CreateProps, Municipio } from "@/types/types"
 import { Select } from "@headlessui/react";
 import { useForm } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 import { route } from 'ziggy-js'
-import { type CreatePostForm } from '@/types/automovil';
+import { type CreatePostForm } from '@/types/types';
 import AppFront from "@/AppFront";
 
 /**

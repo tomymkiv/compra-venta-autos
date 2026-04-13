@@ -10,7 +10,7 @@ type Filters = {
     municipioId?: number;
 };
 
-import { FilterProps, Municipio } from "@/types/automovil";
+import { FilterProps, Municipio } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import CarCards from "./CarCards";
 import Pagination from "./pagination";

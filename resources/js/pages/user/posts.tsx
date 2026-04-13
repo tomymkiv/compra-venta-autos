@@ -1,4 +1,4 @@
-import { FilterProps } from '@/types/automovil';
+import { FilterProps } from '@/types/types';
 import AppFront from '@/AppFront';
 import Filtro from '@/components/Filtro';
 

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import PageLinks from './components/PageLinks'
 import { Link, router } from '@inertiajs/react';
 import { route } from 'ziggy-js'
-import { AppComponentProps } from './types/automovil';
+import { AppComponentProps } from './types/types';
 import CategoriasSlots from './components/CategoriasSlots';
 import DropdownButton from './components/DropdownButton';
 import SearchInput from './components/SearchInput';

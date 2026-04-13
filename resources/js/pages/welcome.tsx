@@ -1,7 +1,7 @@
 import AppFront from '@/AppFront';
 import CarCards from '@/components/CarCards';
 import Presentaciones from '@/components/Presentaciones';
-import { PageProps } from '@/types/automovil';
+import { PageProps } from '@/types/types';
 import { Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 

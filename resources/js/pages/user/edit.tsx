@@ -1,7 +1,7 @@
 import ProfileSection from '@/components/ProfileSection'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ProfileProps } from '@/types/automovil'
+import { ProfileProps } from '@/types/types'
 import { Button } from '@/components/ui/button'
 import { useForm } from '@inertiajs/react'
 import { route } from 'ziggy-js'

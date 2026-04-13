@@ -131,3 +131,8 @@ export interface ProfileProps {
     children: React.ReactNode,
     user: User,
 }
+
+export interface Rol {
+    id: number,
+    nombre: string,
+}

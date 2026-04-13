@@ -1,5 +1,5 @@
 import ProfileSection from "@/components/ProfileSection";
-import { ProfileProps } from "@/types/automovil";
+import { ProfileProps } from "@/types/types";
 import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
 

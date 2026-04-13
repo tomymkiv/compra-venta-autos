@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -45,4 +46,8 @@ Route::get('user/{user}', [UserController::class, 'show'])->name('user.show');
 
 // apis
 Route::get('/api/municipios/{provincia}', [LocationController::class, 'municipios']);
+
+// roles/admin
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+Route::get('/admin/roles/index', [RolesController::class, 'index'])->name('admin.roles.index');
 require __DIR__ . '/settings.php';

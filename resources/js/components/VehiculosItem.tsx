@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { CarCardsProps } from "@/types/automovil";
+import { CarCardsProps } from "@/types/types";
 import AppFront from "@/AppFront";
 import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";

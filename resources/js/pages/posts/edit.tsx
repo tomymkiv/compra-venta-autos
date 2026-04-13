@@ -1,12 +1,12 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EditProps, Municipio } from "@/types/automovil";
+import { EditProps, Municipio } from "@/types/types";
 import { Select } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
 import { Link, useForm } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import React, { useEffect, useState } from "react";
-import { type Images } from '@/types/automovil';
+import { type Images } from '@/types/types';
 
 export default function edit({ carBrands, postData, loguedUser, car_types, currencies, provincias }: EditProps) {
     const [newImg, setNewImg] = useState<File[]>([]);

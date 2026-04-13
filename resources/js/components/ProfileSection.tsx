@@ -1,5 +1,5 @@
 import AppFront from "@/AppFront";
-import { ProfileProps } from "@/types/automovil";
+import { ProfileProps } from "@/types/types";
 import { useEffect, useState } from "react";
 import CloseButton from "./close-button";
 
