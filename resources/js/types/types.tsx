@@ -1,6 +1,18 @@
 import React from "react";
 import { type User } from ".";
 
+
+export interface Rol {
+    id: number,
+    name: string,
+    guard_name: string,
+}
+
+export interface Permission {
+    id: number,
+    name: string,
+}
+
 export interface Images {
     id: number,
     url: string,
@@ -39,6 +51,7 @@ export interface EditProps {
     car_types: CarType[],
     currencies: Currency[],
     provincias: Provincia[],
+    permissions: Permission[],
 }
 export interface Currency {
     id: number,
@@ -120,6 +133,7 @@ export interface FilterProps {
     provincias: Provincia[],
     municipios: Municipio[],
     currencies: Currency[],
+    roles: Rol[],
 }
 export interface CarCardsProps {
     loguedUser?: User,
@@ -130,9 +144,4 @@ export interface ProfileProps {
     post?: Post[],
     children: React.ReactNode,
     user: User,
-}
-
-export interface Rol {
-    id: number,
-    nombre: string,
 }

@@ -2,8 +2,8 @@ import { FilterProps } from '@/types/types';
 import AppFront from '@/AppFront';
 import Filtro from '@/components/Filtro';
 
-export default function index({ posts, loguedUser, carBrands, carType, provincias, municipios, currencies }: FilterProps) {
+export default function index({ posts, loguedUser, carBrands, carType, provincias, municipios, currencies, roles }: FilterProps) {
     return <AppFront loguedUser={loguedUser}>
-        <Filtro posts={posts} loguedUser={loguedUser} carBrands={carBrands} showPages={true} carType={carType} provincias={provincias} municipios={municipios} currencies={currencies} />
+        <Filtro posts={posts} loguedUser={loguedUser} carBrands={carBrands} showPages={true} carType={carType} provincias={provincias} municipios={municipios} currencies={currencies} roles={roles} />
     </AppFront>;
 }

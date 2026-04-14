@@ -17,7 +17,8 @@ import Pagination from "./pagination";
 import { Link, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
-export default function Filtro({ posts, loguedUser, showPages, carBrands, carType, currencies, provincias, municipios }: FilterProps) {
+export default function Filtro({ posts, loguedUser, showPages, carBrands, carType, currencies, provincias, municipios, roles }: FilterProps) {
+    console.log(roles)
     const [currencySelected, setCurrencySelected] = useState(false);
     const filtros = ['Precio', 'Marca', 'Año', 'Tipo', 'Ubicación'];
     const [provinciaId, setProvinciaId] = useState<number | ''>('');

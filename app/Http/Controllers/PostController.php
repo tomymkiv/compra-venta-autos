@@ -14,7 +14,8 @@ use App\Models\PostImage;
 use App\Models\Provincia;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use function Symfony\Component\Clock\now;
 
 class PostController extends Controller
@@ -49,6 +50,7 @@ class PostController extends Controller
                 ->unique('id')
                 ->values(),
             'currencies' => Currency::get(),
+            'roles' => Role::get(),
         ]);
     }
 
@@ -175,6 +177,7 @@ class PostController extends Controller
             'car_types' => CarType::get(),
             'currencies' => Currency::get(),
             'provincias' => Provincia::get(),
+            'permissions' => $this->loguedUser->getAllPermissions(),
         ]);
     }
 

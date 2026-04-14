@@ -50,4 +50,6 @@ Route::get('/api/municipios/{provincia}', [LocationController::class, 'municipio
 // roles/admin
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::get('/admin/roles/index', [RolesController::class, 'index'])->name('admin.roles.index');
+// Route::post('/admin/roles/store', [RolesController::class, 'store'])->name('admin.roles.store');
+// Route::put('/admin/roles/update', [RolesController::class, 'update'])->name('admin.roles.update');
 require __DIR__ . '/settings.php';
