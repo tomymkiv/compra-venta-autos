@@ -84,6 +84,9 @@ export default function create({ carBrands, loguedUser, car_types, currencies, p
         post(route('posts.store'), {
             forceFormData: true, // fuerzo un "formData", para que me tome todos los archivos (imagenes)
         });
+        // post(route('post.send.n8n'), {
+        //     forceFormData: true,
+        // });
         // “Tomo todos los datos + las imágenes, los convierto en FormData y los mando por POST”
     }
     const removeNewImage = (index: number) => {

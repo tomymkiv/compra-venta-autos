@@ -67,7 +67,7 @@ class UserSeeder extends Seeder
             // 'VIEW_POST',
             'CREATE_POST',
             'EDIT_POST',
-            // 'DELETE_POST',
+            'DELETE_POST',
         ]); // asigno ciertos permisos al rol "USER" (deberia tener todo habilitado, pero es una prueba)
     }
 }

@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { type Images } from '@/types/types';
 
 export default function edit({ carBrands, postData, loguedUser, car_types, currencies, provincias, permissions }: EditProps) {
+    console.log(permissions)
     const [newImg, setNewImg] = useState<File[]>([]);
     const [deletedImg, setDeletedImg] = useState<Number[]>([]); // solo para enviar los id's de las imagenes EXISTENTES que se deseen eliminar
     const [provinciaId, setProvinciaId] = useState<number | ''>(postData.municipio.provincia.id);

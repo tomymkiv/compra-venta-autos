@@ -108,6 +108,7 @@ class PostController extends Controller
 
     public function store(PostCreateRequest $request)
     {
+        // dd($this->loguedUser);
         $images = $request->file('images');
         $validated = $request->validated();
         // FUNCIONA
@@ -159,11 +160,11 @@ class PostController extends Controller
     {
         return inertia('posts/create', [
             'car' => new Post,
-            'carBrands' => CarsBrand::get(),
-            'car_types' => CarType::get(),
+            'carBrands' => CarsBrand::orderBy('marca', 'asc')->get(),
+            'car_types' => CarType::orderBy('tipo', 'asc')->get(),
             'loguedUser' => $this->loguedUser,
             'currencies' => Currency::get(),
-            'provincias' => Provincia::get(),
+            'provincias' => Provincia::orderBy('nombre', 'asc')->get(),
         ]);
     }
 
@@ -172,12 +173,12 @@ class PostController extends Controller
         return inertia('posts/edit', [
             'postData' => Post::with('user', 'car.carModel.carBrand', 'postImage', 'mainImage', 'municipio.provincia')
                 ->findOrFail($id),
-            'carBrands' => CarsBrand::get(),
+            'carBrands' => CarsBrand::orderBy('marca', 'asc')->get(),
             'loguedUser' => $this->loguedUser,
-            'car_types' => CarType::get(),
+            'car_types' => CarType::orderBy('tipo', 'asc')->get(),
             'currencies' => Currency::get(),
-            'provincias' => Provincia::get(),
-            'permissions' => $this->loguedUser->getAllPermissions(),
+            'provincias' => Provincia::orderBy('nombre', 'asc')->get(),
+            'permissions' => $this->loguedUser->getAllPermissions()->pluck('name'),
         ]);
     }
 
@@ -247,6 +248,7 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
+        dd($post);
         $post->delete();
 
         return redirect()->route('posts.index');

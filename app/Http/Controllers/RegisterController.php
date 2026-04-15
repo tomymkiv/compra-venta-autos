@@ -29,6 +29,7 @@ class RegisterController extends Controller
         }
         // dd($validated['avatar']);
         $user = User::create($validated);
+        $user->assignRole('USER');
         Auth::login($user);
         return redirect()->route('welcome');
     }
