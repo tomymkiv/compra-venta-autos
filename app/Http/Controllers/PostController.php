@@ -13,6 +13,7 @@ use App\Models\Post;
 use App\Models\PostImage;
 use App\Models\Provincia;
 use App\Models\User;
+use Http;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -152,6 +153,16 @@ class PostController extends Controller
                 'orden' => $i,
             ]);
         }
+        /**
+         * envio esta info por n8n para mandar un correo informativo
+         */
+        Http::post(env('N8N_WEBHOOK_BASE_URL') . '/new-post-notification', [
+            'correo' => $this->loguedUser->email,
+            'user' => $this->loguedUser->name,
+            'marca' => $carModel->carBrand->marca,
+            'modelo' => $carModel->modelo,
+            'anio' => $car->anio,
+        ]);
 
         return redirect()->route('posts.index');
     }
@@ -248,7 +259,7 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
-        dd($post);
+        // dd($post);
         $post->delete();
 
         return redirect()->route('posts.index');

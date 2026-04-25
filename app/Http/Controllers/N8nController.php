@@ -26,7 +26,10 @@ class N8nController extends Controller
          * cuando creo un post, a esa persona le llegará un correo diciendole que se creó un post exitosamente, mencionando su username, marca, modelo, etc (toda la informacion del post, incluso su fecha de publicacion).
          * Request será el encargado de recibir toda esta informacion y enviarla por correo.
          * http://localhost:5678/webhook-test/new-post-notification - POST
+         * crear una ruta en web.php para realizar esta accion
+         * para realizar esta accion, ya tengo una ruta (posts.store). como hago para poder utilizar tanto esa ruta como la del webhook? ya que una sirve para publicar el post y la otra para notificar via n8n con el webhook.
          */
+
         dd($req->all());
     }
 }

@@ -301,12 +301,14 @@ export default function edit({ carBrands, postData, loguedUser, car_types, curre
                             <div className="flex flex-col gap-2">
                                 <Link href={route('posts.index')} className="w-full cursor-pointer transition-colors duration-300 p-2 text-center bg-slate-700 rounded-lg hover:bg-slate-800">Salir sin guardar</Link>
                                 <Button disabled={processing} type="submit" className="w-full cursor-pointer transition-colors duration-300">Enviar</Button>
-                                {
+
+                                <Button disabled={processing} onClick={() => handleDelete(postData.id)} type="submit" className="w-full bg-red-500 text-gray-200 hover:text-gray-800 hover:bg-red-800 transition-colors duration-300 cursor-pointer">Eliminar publicación</Button>
+                                {/* {
                                     permissions.map((permiso => (
                                         permiso.name === 'DELETE_POST' &&
                                         <Button key={permiso.id} disabled={processing} onClick={() => handleDelete(postData.id)} type="submit" className="w-full bg-red-500 text-gray-200 hover:text-gray-800 hover:bg-red-800 transition-colors duration-300 cursor-pointer">Eliminar publicación</Button>
                                     )))
-                                }
+                                } */}
                             </div>
                         </form>
                     </>
