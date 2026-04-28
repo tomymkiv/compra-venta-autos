@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use Http;
 use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
@@ -27,10 +28,18 @@ class RegisterController extends Controller
             $path = $request->file('avatar')->store('avatars', 'public');
             $validated['avatar'] = $path;
         }
-        // dd($validated['avatar']);
+
         $user = User::create($validated);
         $user->assignRole('USER');
         Auth::login($user);
+        /**
+         * aviso de bienvenida enviado a n8n para que genere un correo
+         */
+        Http::post(env('N8N_WEBHOOK_BASE_URL') . '/new-user', [
+            'name' => $user->name,
+            'email' => $user->email,
+        ]);
+
         return redirect()->route('welcome');
     }
 }

@@ -146,7 +146,7 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
                                 <p>Fecha de publicacion: {post.fecha_publicacion.toString().split('T')[0]}</p>
                             </div>
                             <div className="flex items-center w-full gap-2">
-                                <Link href={route('user.show', post.user.id)}><img src={`/storage/${post.user.avatar}`} className="object-cover rounded-full w-20 h-20" alt="" /></Link>
+                                <Link href={route('user.show', post.user.id)}><img src={!post.user.avatar?.includes('ui-avatars') ? `/storage/${post.user.avatar}` : `${post.user.avatar}`} className="object-cover rounded-full w-20 h-20" alt="" /></Link>
                             </div>
                             <hr className="my-5 lg:hidden" />
                         </div>
@@ -178,7 +178,7 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
                 </div>
                 {
                     loguedUser ? <div className="w-[50%] flex flex-col lg:flex-row gap-4 items-center justify-center">
-                        <a href={`https://wa.me/541123124430?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Consultar</a>
+                        <a href={`https://wa.me/541123454230?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Consultar</a>
                         {
                             loguedUser?.id === post.user.id ? <Link href={`/posts/${post.id}/edit`} className="p-3 bg-gray-800 rounded-lg hover:bg-blue-600 hover:text-gray-200 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Editar publicación</Link> : ''
                         }

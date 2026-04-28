@@ -1,0 +1,253 @@
+{
+    "name": "silvetti automores workflows",
+    "nodes": [
+        {
+            "parameters": {
+                "operation": "removeLabels",
+                "messageId": "={{ $('Obtengo el ID de la accion realizada').item.json.id }}",
+                "labelIds": [
+                    "INBOX"
+                ]
+            },
+            "type": "n8n-nodes-base.gmail",
+            "typeVersion": 2.2,
+            "position": [
+                624,
+                96
+            ],
+            "id": "4420c235-72f8-4d8d-8ce7-751526296d16",
+            "name": "Elimina el correo de \"INBOX\"",
+            "webhookId": "3da8b71d-61e9-44fd-8152-9bd5959d0594",
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "GlNqk8f8LUQPLV5K",
+                    "name": "Gmail account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "sendTo": "={{ $json.body.correo }}",
+                "subject": "=  ¡Bienvenido a Silvetti Automores!",
+                "message": "=<!DOCTYPE html>\n<html>\n<body style=\"margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, sans-serif;\">\n\n  <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#f4f6f8; padding:20px;\">\n    <tr>\n      <td align=\"center\">\n\n        <table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#ffffff; border:1px solid #ddd; border-radius:8px; padding:20px;\">\n          \n          <tr>\n            <td style=\"color:#28a745; font-size:20px; font-weight:bold; padding-bottom:15px;\">\n              🎉 ¡Bienvenido a la plataforma!\n            </td>\n          </tr>\n\n          <tr>\n            <td style=\"font-size:16px; padding-bottom:10px;\">\n              Hola <strong>{{$json.body.name}}</strong>,\n            </td>\n          </tr>\n\n          <tr>\n            <td style=\"font-size:16px; padding-bottom:15px;\">\n              Tu cuenta ha sido creada correctamente. Ahora ya podés comenzar a explorar, publicar vehículos y gestionar tus operaciones dentro del sistema.\n            </td>\n          </tr>\n\n          <tr>\n            <td style=\"font-size:16px; padding-bottom:15px;\">\n              🚗 <strong>¿Qué podés hacer ahora?</strong><br>\n              - Publicar vehículos<br>\n              - Gestionar tus publicaciones<br>\n              - Explorar autos disponibles\n            </td>\n          </tr>\n\n          <tr>\n            <td style=\"padding:20px 0;\">\n              <a href=\"http://concesionario-laravel.test/\" \n                 style=\"background-color:#007bff; color:#ffffff; padding:12px 20px; text-decoration:none; border-radius:5px; font-size:16px;\">\n                 Ir a la plataforma\n              </a>\n            </td>\n          </tr>\n\n          <tr>\n            <td style=\"font-size:12px; color:#888; padding-top:20px;\">\n              Este es un mensaje automático. Si no creaste esta cuenta, podés ignorar este correo.\n            </td>\n          </tr>\n\n        </table>\n\n      </td>\n    </tr>\n  </table>\n\n</body>\n</html>",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.gmail",
+            "typeVersion": 2.2,
+            "position": [
+                -48,
+                192
+            ],
+            "id": "bb64e929-a1d7-469e-8111-270cfb5f65f0",
+            "name": "Mensaje de bienvenida",
+            "webhookId": "1e31be4e-d53d-485c-a6a7-55838162c6c7",
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "GlNqk8f8LUQPLV5K",
+                    "name": "Gmail account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "sendTo": "={{ $json.body.correo }}",
+                "subject": "=Creaste una nueva publicacion en Silvetti Automores",
+                "message": "=<!DOCTYPE html>\n<html>\n<body style=\"margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, sans-serif;\">\n\n  <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#f4f6f8; padding:20px;\">\n    <tr>\n      <td align=\"center\">\n\n        <table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#ffffff; border:1px solid #ddd; border-radius:8px; padding:20px;\">\n          \n          <tr>\n            <td style=\"color:#12b700; font-size:20px; font-weight:bold; padding-bottom:15px;\">\n              ✅ Publicación creada\n            </td>\n          </tr>\n\n          <tr>\n            <td style=\"font-size:16px; padding-bottom:10px;\">\n              <strong>Usuario:</strong> {{$json.body.user}}\n            </td>\n          </tr>\n\n          <tr>\n            <td style=\"font-size:16px; padding-bottom:10px;\">\n              <strong>Vehiculo: </strong>{{$json.body.marca}} {{$json.body.modelo}} ({{$json.body.anio}})\n            </td>\n          </tr>\n\n          <tr>\n            <td style=\"font-size:12px; color:#888; padding-top:20px;\">\n              Este es un mensaje automático del sistema.\n            </td>\n          </tr>\n\n        </table>\n\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.gmail",
+            "typeVersion": 2.2,
+            "position": [
+                -48,
+                0
+            ],
+            "id": "63238317-41ae-4e16-b428-4183f550a025",
+            "name": "Nueva publicacion (notificacion)",
+            "webhookId": "1e31be4e-d53d-485c-a6a7-55838162c6c7",
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "GlNqk8f8LUQPLV5K",
+                    "name": "Gmail account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "content": "Bienvenida automática",
+                "height": 80,
+                "width": 208
+            },
+            "type": "n8n-nodes-base.stickyNote",
+            "typeVersion": 1,
+            "position": [
+                -560,
+                240
+            ],
+            "id": "caf7b3f8-949d-492b-be3a-60d70a69a729",
+            "name": "Sticky Note"
+        },
+        {
+            "parameters": {
+                "content": "Aviso de nueva publicación",
+                "height": 80,
+                "width": 208
+            },
+            "type": "n8n-nodes-base.stickyNote",
+            "typeVersion": 1,
+            "position": [
+                -560,
+                -48
+            ],
+            "id": "d116fa5f-edbe-4176-b621-edc23f85fc82",
+            "name": "Sticky Note1"
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "new-user",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.1,
+            "position": [
+                -272,
+                192
+            ],
+            "id": "d85dfd7e-dfb2-47bd-8d81-13c3e0dace67",
+            "name": "Bienvenida",
+            "webhookId": "934db073-3629-468c-ac85-ab4a38cdfe17"
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "new-post-notification",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.1,
+            "position": [
+                -272,
+                0
+            ],
+            "id": "4c80f9c2-58d9-46d1-8c2a-faf76e4fbe94",
+            "name": "Nueva publicacion",
+            "webhookId": "d89300c7-9747-41ed-96a6-16bbc5f8f5f0"
+        },
+        {
+            "parameters": {
+                "operation": "addLabels",
+                "messageId": "={{ $json.id }}",
+                "labelIds": [
+                    "Label_2572313246385021720"
+                ]
+            },
+            "type": "n8n-nodes-base.gmail",
+            "typeVersion": 2.2,
+            "position": [
+                400,
+                96
+            ],
+            "id": "8c4d22d5-975c-4f5d-ae3f-c0320128e720",
+            "name": "Agrega a categoria \"n8n test\"",
+            "webhookId": "b04de31f-a6f7-4e56-8b8e-ccde1f5f40b2",
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "GlNqk8f8LUQPLV5K",
+                    "name": "Gmail account"
+                }
+            }
+        },
+        {
+            "parameters": {},
+            "type": "n8n-nodes-base.merge",
+            "typeVersion": 3.2,
+            "position": [
+                176,
+                96
+            ],
+            "id": "3e2a6199-47b0-4ac7-9b88-900a1b406835",
+            "name": "Obtengo el ID de la accion realizada"
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "Nueva publicacion (notificacion)": {
+            "main": [
+                [
+                    {
+                        "node": "Obtengo el ID de la accion realizada",
+                        "type": "main",
+                        "index": 1
+                    }
+                ]
+            ]
+        },
+        "Mensaje de bienvenida": {
+            "main": [
+                [
+                    {
+                        "node": "Obtengo el ID de la accion realizada",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Bienvenida": {
+            "main": [
+                [
+                    {
+                        "node": "Mensaje de bienvenida",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Nueva publicacion": {
+            "main": [
+                [
+                    {
+                        "node": "Nueva publicacion (notificacion)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Agrega a categoria \"n8n test\"": {
+            "main": [
+                [
+                    {
+                        "node": "Elimina el correo de \"INBOX\"",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Obtengo el ID de la accion realizada": {
+            "main": [
+                [
+                    {
+                        "node": "Agrega a categoria \"n8n test\"",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": false,
+    "settings": {
+        "executionOrder": "v1",
+        "binaryMode": "separate"
+    },
+    "versionId": "20baabef-8b99-4926-af26-1a1d4e4dc095",
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "79a11873d38ac3f22a6876a91499f7eafb418b1e4af182bad470799ee638d553"
+    },
+    "id": "azCjA5e7XKSjrezm",
+    "tags": []
+}
