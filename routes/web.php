@@ -3,20 +3,12 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\N8nController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use KayedSpace\N8n\Facades\N8nClient;
-
-// Route::get('/', function () {
-//     return Inertia::render('welcome', [
-//         // 'canRegister' => Features::enabled(Features::registration()),
-//     ]);
-// })->name('home');
 
 // autenticacion
 Route::get('register', [RegisterController::class, 'index'])->name('auth.register');
@@ -51,7 +43,7 @@ Route::get('/api/municipios/{provincia}', [LocationController::class, 'municipio
 
 // roles/admin
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
-Route::get('/admin/roles/index', [RolesController::class, 'index'])->name('admin.roles.index');
+Route::get('/admin/roles', [AdminController::class, 'roles'])->name('admin.roles');
 
 // Route::post('/admin/roles/store', [RolesController::class, 'store'])->name('admin.roles.store');
 // Route::put('/admin/roles/update', [RolesController::class, 'update'])->name('admin.roles.update');

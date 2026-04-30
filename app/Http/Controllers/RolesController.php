@@ -10,7 +10,7 @@ class RolesController extends Controller
     public function index()
     {
         $roles = Role::get();
-        return inertia('admin/roles/index', [
+        return inertia('admin/roles', [
             'roles' => $roles,
         ]);
     }
