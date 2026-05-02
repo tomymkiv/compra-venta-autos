@@ -143,7 +143,13 @@ export default function VehiculosItem({ post, loguedUser }: CarCardsProps) {
                             <hr className="my-5 lg:hidden" />
                             <div className="flex flex-col gap-2">
                                 <p>Publicacion del usuario: {post.user.name}</p>
-                                <p>Fecha de publicacion: {post.fecha_publicacion.toString().split('T')[0]}</p>
+                                <p>Fecha de publicacion:
+                                    <br />
+                                    {new Date(post.fecha_publicacion).toLocaleString('es-AR', {
+                                        timeZone: 'America/Argentina/Buenos_Aires',
+                                        year: 'numeric', month: '2-digit', day: '2-digit',
+                                        hour: '2-digit', minute: '2-digit'
+                                    })} (UTC-3)</p>
                             </div>
                             <div className="flex items-center w-full gap-2">
                                 <Link href={route('user.show', post.user.id)}><img src={!post.user.avatar?.includes('ui-avatars') ? `/storage/${post.user.avatar}` : `${post.user.avatar}`} className="object-cover rounded-full w-20 h-20" alt="" /></Link>

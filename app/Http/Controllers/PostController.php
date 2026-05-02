@@ -157,13 +157,13 @@ class PostController extends Controller
             /**
              * envio esta info por n8n para mandar un correo informativo
              */
-            Http::post(env('N8N_WEBHOOK_BASE_URL') . '/new-post-notification', [
-                'correo' => $this->loguedUser->email,
-                'user' => $this->loguedUser->name,
-                'marca' => $carModel->carBrand->marca,
-                'modelo' => $carModel->modelo,
-                'anio' => $car->anio,
-            ]);
+            // Http::post(env('N8N_WEBHOOK_BASE_URL') . '/new-post-notification', [
+            //     'correo' => $this->loguedUser->email,
+            //     'user' => $this->loguedUser->name,
+            //     'marca' => $carModel->carBrand->marca,
+            //     'modelo' => $carModel->modelo,
+            //     'anio' => $car->anio,
+            // ]);
 
             return redirect()->route('posts.index');
         } else {
