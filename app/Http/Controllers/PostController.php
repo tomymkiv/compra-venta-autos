@@ -109,62 +109,67 @@ class PostController extends Controller
 
     public function store(PostCreateRequest $request)
     {
-        // dd($this->loguedUser);
+        // dd($request->file(''));
         $images = $request->file('images');
         $validated = $request->validated();
         // FUNCIONA
-        $carModel = CarsModel::create([
-            'id_marca' => $validated['marca'],
-            'modelo' => $validated['modelo'],
-        ]);
-        // dd($validated['tipo']);
-        // FUNCIONA
-        $type_id = CarType::where('id', $validated['tipo'])
-            ->firstOrFail()
-            ->id;
-
-        $car = Car::create([
-            'id_modelo' => $carModel->id,
-            'id_type' => $type_id,
-            'anio' => $validated['anio'],
-            'kilometraje' => $validated['kilometraje'],
-        ]);
-
-        // FUNCIONA
-        $post = Post::create([
-            'id_user' => Auth::user()->id,
-            'id_car' => $car->id,
-            'id_currency' => $validated['moneda'],
-            'id_municipio' => $validated['municipio'],
-            'descripcion' => $validated['descripcion'],
-            'fecha_publicacion' => now(),
-            'precio' => $validated['precio'],
-        ]);
-
-        // FUNCIONA
-        $i = 0; // contador, para ordenar las imagenes
-        foreach ($images as $image) {
-            $i++;
-            $path = $image->store('posts', 'public');
-
-            PostImage::create([
-                'id_post' => $post->id,
-                'url' => $path,
-                'orden' => $i,
+        if (isset($images)) {
+            $carModel = CarsModel::create([
+                'id_marca' => $validated['marca'],
+                'modelo' => $validated['modelo'],
             ]);
-        }
-        /**
-         * envio esta info por n8n para mandar un correo informativo
-         */
-        Http::post(env('N8N_WEBHOOK_BASE_URL') . '/new-post-notification', [
-            'correo' => $this->loguedUser->email,
-            'user' => $this->loguedUser->name,
-            'marca' => $carModel->carBrand->marca,
-            'modelo' => $carModel->modelo,
-            'anio' => $car->anio,
-        ]);
+            // dd($validated['tipo']);
+            // FUNCIONA
+            $type_id = CarType::where('id', $validated['tipo'])
+                ->firstOrFail()
+                ->id;
 
-        return redirect()->route('posts.index');
+            $car = Car::create([
+                'id_modelo' => $carModel->id,
+                'id_type' => $type_id,
+                'anio' => $validated['anio'],
+                'kilometraje' => $validated['kilometraje'],
+            ]);
+
+            // FUNCIONA
+            $post = Post::create([
+                'id_user' => Auth::user()->id,
+                'id_car' => $car->id,
+                'id_currency' => $validated['moneda'],
+                'id_municipio' => $validated['municipio'],
+                'descripcion' => $validated['descripcion'],
+                'fecha_publicacion' => now(),
+                'precio' => $validated['precio'],
+            ]);
+
+            // FUNCIONA
+            $i = 0; // contador, para ordenar las imagenes
+            foreach ($images as $image) {
+                $i++;
+                $path = $image->store('posts', 'public');
+
+                PostImage::create([
+                    'id_post' => $post->id,
+                    'url' => $path,
+                    'orden' => $i,
+                ]);
+            }
+            /**
+             * envio esta info por n8n para mandar un correo informativo
+             */
+            Http::post(env('N8N_WEBHOOK_BASE_URL') . '/new-post-notification', [
+                'correo' => $this->loguedUser->email,
+                'user' => $this->loguedUser->name,
+                'marca' => $carModel->carBrand->marca,
+                'modelo' => $carModel->modelo,
+                'anio' => $car->anio,
+            ]);
+
+            return redirect()->route('posts.index');
+        } else {
+            return redirect()->back()->with('error', 'Error al crear el post. Debes incluir al menos una imagen.');
+        }
+
     }
 
     public function create()

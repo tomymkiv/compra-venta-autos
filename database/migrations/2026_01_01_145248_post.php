@@ -24,7 +24,7 @@ return new class extends Migration {
         Schema::create('post_images', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_post')->constrained('posts')->cascadeOnDelete();
-            $table->string('url');
+            // $table->string('url')->;
             $table->tinyInteger('orden'); // es el orden con el que se verían las imagenes
             $table->unique(['id_post', 'orden']); // para que no exista más de 1 imagen del mismo post con un numero de orden repetido (post=1 y orden=1 sin duplicado)
             $table->timestamps();
