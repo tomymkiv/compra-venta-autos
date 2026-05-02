@@ -8,8 +8,7 @@ import { route } from "ziggy-js";
 import React, { useEffect, useState } from "react";
 import { type Images } from '@/types/types';
 
-export default function edit({ carBrands, postData, loguedUser, car_types, currencies, provincias, permissions }: EditProps) {
-    console.log(permissions)
+export default function edit({ carBrands, postData, loguedUser, car_types, currencies, provincias }: EditProps) {
     const [newImg, setNewImg] = useState<File[]>([]);
     const [deletedImg, setDeletedImg] = useState<Number[]>([]); // solo para enviar los id's de las imagenes EXISTENTES que se deseen eliminar
     const [provinciaId, setProvinciaId] = useState<number | ''>(postData.municipio.provincia.id);
@@ -77,13 +76,17 @@ export default function edit({ carBrands, postData, loguedUser, car_types, curre
         });
     }
     const removeExistingImage = (id: number) => {
-        confirm('¿Estás seguro que quieres eliminar esta imagen?') ?
-            setExistingImg(prev => // arrow func, con las imagenes ya existentes
-                prev.filter(img => img.id !== id)
-                // recorro y filtro las imagenes existentes, eliminando la imagen cuyo ID coincide con el ID clickeado. si el id de una imagen coincide con el de la imagen que clickee, esa se elimina. 
-            ) : '';
-        setDeletedImg(prev => [...prev, id]);
-        setData('deleted_images', [...data.deleted_images, id]);
+        if (existingImg.length > 1) {
+            confirm('¿Estás seguro que quieres eliminar esta imagen?') &&
+                setExistingImg(prev => // arrow func, con las imagenes ya existentes
+                    prev.filter(img => img.id !== id)
+                    // recorro y filtro las imagenes existentes, eliminando la imagen cuyo ID coincide con el ID clickeado. si el id de una imagen coincide con el de la imagen que clickee, esa se elimina. 
+                );
+            setDeletedImg(prev => [...prev, id]);
+            setData('deleted_images', [...data.deleted_images, id]);
+        } else {
+            alert("Debes dejar al menos una imagen");
+        }
     };
     const removeNewImage = (index: number) => {
         if (confirm('¿Estás seguro que quieres eliminar esta imagen?')) {
