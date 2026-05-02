@@ -123,6 +123,7 @@ export interface Paginated<T> {
 export interface AppComponentProps {
     children?: React.ReactNode,
     loguedUser?: User,
+    initialQuery?: string,
 }
 export interface FilterProps {
     posts: Paginated<Post>, // están paginados los posts

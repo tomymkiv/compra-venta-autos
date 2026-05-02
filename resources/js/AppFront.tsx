@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PageLinks from './components/PageLinks'
 import { Link, router } from '@inertiajs/react';
 import { route } from 'ziggy-js'
@@ -7,7 +7,7 @@ import CategoriasSlots from './components/CategoriasSlots';
 import DropdownButton from './components/DropdownButton';
 import SearchInput from './components/SearchInput';
 
-export default function AppFront({ loguedUser, children }: AppComponentProps) {
+export default function AppFront({ loguedUser, children, initialQuery }: AppComponentProps) {
   const categoriasRefDesk = useRef<HTMLUListElement>(null!)
   const categoriasRefMob = useRef<HTMLUListElement>(null!)
   const menuRef = useRef<HTMLUListElement>(null!) // esto sirve para referenciar el ul del menu explicitamente. 
@@ -32,6 +32,23 @@ export default function AppFront({ loguedUser, children }: AppComponentProps) {
     router.delete(route('logout'));
   };
 
+  /**
+   * el siguiente codigo pertenece únicamente al buscador.
+   */
+
+  const [query, setQuery] = useState(initialQuery || '');
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    innerWidth < 1024 && menuRef.current.classList.toggle('w-screen')
+
+    router.get(route('search.index'), {
+      q: query,
+    }, {
+      preserveState: true,
+      replace: true,
+    });
+  };
   return (
     <>
       <header className={`relative z-30 flex items-center justify-center bg-[#111b] sticky top-0 w-full`}>
@@ -59,7 +76,7 @@ export default function AppFront({ loguedUser, children }: AppComponentProps) {
                   </li>
                   : <PageLinks title="Iniciar sesión" link='/login' clases='!text-xl' />
               }
-              <SearchInput />
+              <SearchInput enviarData={(e: React.FormEvent) => submit(e)} setQuery={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)} initialQuery={query} />
             </ul>
           </nav>
           <button className='fixed top-0 left-0 z-50 flex flex-col gap-1 p-5 bg-[#2228] outline outline-gray-200/40' onClick={toggleMenu}>
@@ -95,7 +112,7 @@ export default function AppFront({ loguedUser, children }: AppComponentProps) {
                     }
                   </ul>
                 </div>
-                <SearchInput />
+                <SearchInput enviarData={(e: React.FormEvent) => submit(e)} setQuery={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)} initialQuery={query} />
               </div>
               {
                 loguedUser ?
