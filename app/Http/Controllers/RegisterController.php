@@ -35,10 +35,10 @@ class RegisterController extends Controller
         /**
          * aviso de bienvenida enviado a n8n para que genere un correo
          */
-        Http::post(env('N8N_WEBHOOK_BASE_URL') . '/new-user', [
-            'name' => $user->name,
-            'email' => $user->email,
-        ]);
+        // Http::post(env('N8N_WEBHOOK_BASE_URL') . '/new-user', [
+        //     'name' => $user->name,
+        //     'email' => $user->email,
+        // ]);
 
         return redirect()->route('welcome');
     }

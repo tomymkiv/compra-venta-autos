@@ -96,6 +96,7 @@ export interface CreatePostForm {
     municipio: string
     images: File[]
     moneda: string
+    main_image: File | ''
 }
 
 // para varios autos
@@ -137,7 +138,6 @@ export interface FilterProps {
     roles: Rol[],
 }
 export interface CarCardsProps {
-    loguedUser?: User,
     post: Post,
 }
 export interface ProfileProps {

@@ -25,7 +25,6 @@ class PostController extends Controller
     {
         return inertia('posts/index', [
             'posts' => $this->paginatedCarPosts,
-            'loguedUser' => $this->loguedUser,
             'carBrands' => Post::with('car.carModel.carBrand')
                 ->get()
                 ->pluck('car.carModel.carBrand')
@@ -109,11 +108,12 @@ class PostController extends Controller
 
     public function store(PostCreateRequest $request)
     {
-        // dd($request->file(''));
+        // dd($request->file('main_image'));
         $images = $request->file('images');
+        $mainImage = $request->file('main_image');
         $validated = $request->validated();
         // FUNCIONA
-        if (isset($images)) {
+        if (isset($images) && isset($mainImage)) {
             $carModel = CarsModel::create([
                 'id_marca' => $validated['marca'],
                 'modelo' => $validated['modelo'],
@@ -142,8 +142,15 @@ class PostController extends Controller
                 'precio' => $validated['precio'],
             ]);
 
-            // FUNCIONA
-            $i = 0; // contador, para ordenar las imagenes
+            // almaceno la imagen principal con orden 1
+            $path = $mainImage->store('posts', 'public');
+
+            PostImage::create([
+                'id_post' => $post->id,
+                'url' => $path,
+                'orden' => 1,
+            ]);
+            $i = 1; // contador, para ordenar las imagenes
             foreach ($images as $image) {
                 $i++;
                 $path = $image->store('posts', 'public');

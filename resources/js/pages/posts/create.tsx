@@ -15,6 +15,7 @@ import AppFront from "@/AppFront";
  */
 export default function create({ carBrands, loguedUser, car_types, currencies, provincias }: CreateProps) {
     const [newImg, setNewImg] = useState<File[]>([]);
+    const [mainImage, setMainImage] = useState<File>();
     const [provinciaId, setProvinciaId] = useState<number | ''>('');
     const [municipiosState, setMunicipiosState] = useState<Municipio[]>([]);
     const [municipioId, setMunicipioId] = useState<number | ''>('');
@@ -31,6 +32,7 @@ export default function create({ carBrands, loguedUser, car_types, currencies, p
         provincia: '',
         municipio: '',
         images: [] as File[],
+        main_image: '' as File | ''
     })
     const handleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
@@ -79,15 +81,17 @@ export default function create({ carBrands, loguedUser, car_types, currencies, p
         setPrecio(raw ? Number(raw).toLocaleString("es-AR") : "");
         setData('precio', Number(raw))
     }
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        post(route('posts.store'), {
-            forceFormData: true, // fuerzo un "formData", para que me tome todos los archivos (imagenes)
-        });
-        // post(route('post.send.n8n'), {
-        //     forceFormData: true,
-        // });
-        // “Tomo todos los datos + las imágenes, los convierto en FormData y los mando por POST”
+    const handleMainImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
+        const file = e.target.files[0];
+        setMainImage(file);
+        setData('main_image', file);
+    }
+    const removeMainImage = () => {
+        if (confirm('¿Estás seguro que quieres eliminar esta imagen?')) {
+            setData('main_image', '');
+            setMainImage(undefined);
+        }
     }
     const removeNewImage = (index: number) => {
         if (confirm('¿Estás seguro que quieres eliminar esta imagen?')) {
@@ -99,15 +103,21 @@ export default function create({ carBrands, loguedUser, car_types, currencies, p
             setData('images', data.images.filter((_, i) => i !== index));
         }
     }
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(route('posts.store'), {
+            forceFormData: true, // fuerzo un "formData", para que me tome todos los archivos (imagenes)
+        });
+    }
     useEffect(() => {
         altProvinciaMunicipio()
     }, [provinciaId]);
     return <AppFront loguedUser={loguedUser}>
-        <section className="flex flex-col">
+        <section className="flex flex-col min-w-0">
             <div>
                 <h2 className="text-2xl text-center">Crear publicación</h2>
             </div>
-            <form action="" onSubmit={handleSubmit} className="grid grid-cols-2 items-center justify-center gap-4 my-5 mx-3">
+            <form action="" onSubmit={handleSubmit} className="flex flex-col sm:grid grid-cols-2 sm:items-center sm:justify-center gap-4 my-5 mx-3 w-full">
                 <div className="mt-5 flex flex-col gap-2">
                     {
                         errors.marca && (
@@ -243,14 +253,37 @@ export default function create({ carBrands, loguedUser, car_types, currencies, p
                             <p className='text-red-500 font-[500] text-sm'>{errors.images}</p>
                         )
                     }
-                    <Label htmlFor="tipo">Imagen/es del vehiculo</Label>
+
                     <div className="mt-5 flex flex-col gap-2">
                         {
                             errors.images && (
                                 <p className='text-red-500 font-[500] text-sm'>{errors.images}</p>
                             )
                         }
-                        <input className="p-3 bg-slate-700" type="file" accept="image/*" multiple onChange={handleImages} />
+
+                        <Label htmlFor="tipo">Elige la imagen principal</Label>
+                        <p className="text-xs">La imágen principal se usará de portada para que los usuarios tengan una primera impresión del vehiculo antes de ver la publicación</p>
+                        <input className="p-3 bg-slate-700 cursor-pointer" type="file" accept="image/*" onChange={handleMainImage} />
+                        {
+                            mainImage ?
+                                <div
+                                    className="relative cursor-pointer w-fit"
+                                    onClick={removeMainImage}
+                                >
+                                    <img
+                                        src={URL.createObjectURL(mainImage)}
+                                        className="w-full h-32 object-cover rounded"
+                                    />
+                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm opacity-0 hover:opacity-100 transition">
+                                        Eliminar
+                                    </div>
+                                </div>
+                                : <p>No elegiste una imagen de portada</p>
+                        }
+                        <div className="flex items-center justify-between w-full">
+                            <Label htmlFor="tipo">Imagen/es del vehiculo</Label>
+                        </div>
+                        <input className="p-3 bg-slate-700 cursor-pointer" type="file" accept="image/*" multiple onChange={handleImages} />
                         <div className={newImg.length !== 0 ? `grid grid-cols-4 gap-4 max-w-[550px]` : ''}>
                             {
                                 newImg.length != 0 ? newImg.map((file, index) => (

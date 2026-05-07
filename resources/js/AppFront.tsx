@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import PageLinks from './components/PageLinks'
 import { Link, router } from '@inertiajs/react';
 import { route } from 'ziggy-js'
