@@ -278,7 +278,7 @@ export default function create({ carBrands, loguedUser, car_types, currencies, p
                                         Eliminar
                                     </div>
                                 </div>
-                                : <p>No elegiste una imagen de portada</p>
+                                : <p className="text-red-500">No elegiste una imagen de portada</p>
                         }
                         <div className="flex items-center justify-between w-full">
                             <Label htmlFor="tipo">Imagen/es del vehiculo</Label>

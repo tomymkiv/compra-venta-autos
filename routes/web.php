@@ -20,11 +20,11 @@ Route::post('login', [LoginController::class, 'login'])->name('auth.login');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('user/edit', [UserController::class, 'edit'])->name('user.edit');
-    Route::put('user/{user}', [UserController::class, 'update'])->name('user.update');
+    Route::patch('user/{user}', [UserController::class, 'update'])->name('user.update');
     Route::delete('user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::get('posts/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('posts', [PostController::class, 'store'])->name('posts.store');
-    Route::put('posts/{post}', [PostController::class, 'update'])->name('posts.update');
+    Route::patch('posts/{post}', [PostController::class, 'update'])->name('posts.update');
     Route::get('posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::delete('posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 });

@@ -9,7 +9,7 @@ import { useRef, useState } from 'react'
 export default function edit({ loguedUser }: ProfileProps) {
     const [inputBg, setInputBg] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const { data, setData, put, processing, errors, delete: destroy } = useForm<{
+    const { data, setData, patch, processing, errors, delete: destroy } = useForm<{
         avatar: File | string | null,
         name: string,
         email: string,
@@ -37,7 +37,7 @@ export default function edit({ loguedUser }: ProfileProps) {
     }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        put(route('user.update', loguedUser.id), {
+        patch(route('user.update', loguedUser.id), {
             forceFormData: true,
         })
     }

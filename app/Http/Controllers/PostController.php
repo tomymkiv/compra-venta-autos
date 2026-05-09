@@ -210,14 +210,13 @@ class PostController extends Controller
         $images = $request->file('images');
         $validated = $request->validated();
         $carModel = $post->car->carModel;
-        // dd($validated['deleted_images']);
-        // $images_to_delete = PostImage::find($validated['deleted_images']);
+
         if (isset($validated['deleted_images'])) {
             foreach ($validated['deleted_images'] as $deleted_images) {
                 PostImage::destroy($deleted_images);
             }
         }
-        // dd($validated['moneda']);
+
         $carModel->update([
             'id_marca' => $validated['marca'],
             'modelo' => $validated['modelo'],
@@ -247,10 +246,24 @@ class PostController extends Controller
         ]);
         // obtengo TODAS las imagenes relacionadas a ese post
         $images = $request->file('images');
+        // si o si debo tener una imagen de portada. si no la tengo, no avanzo
+        if ($request['main_image'] === null) {
+            // dd($request['main_image']);
+            return redirect()->back();
+        }
 
-        $lastOrder = PostImage::where('id_post', $post->id)->max('orden') ?? 0;
+        $path_mainImage = $request['main_image']->store('posts', 'public');
+        // busco el posteo a editar y tambien su imagen principal (orden = 1)
+        PostImage::where('id_post', $post->id)
+            ->where('orden', 1)
+            ->update([
+                'url' => $path_mainImage,
+                'orden' => 1,
+            ]);
+
+        $lastOrder = PostImage::where('id_post', $post->id)->max('orden') ?? 1;
         // si existen imagenes en el post, tomo el valor con el orden más alto (para arrancar desde ahi).
-        // sino, empiezo con 0
+        // sino, empiezo con 1, ya que si empezara de 0 modificaria la imagen principal
 
         if ($images) {
             foreach ($images as $image) {
@@ -264,14 +277,12 @@ class PostController extends Controller
                 ]);
             }
         }
-        // dd($img);
 
         return redirect()->route('posts.index');
     }
 
     public function destroy(Post $post)
     {
-        // dd($post);
         $post->delete();
 
         return redirect()->route('posts.index');

@@ -7,15 +7,17 @@ import { Link, useForm } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import React, { useEffect, useState } from "react";
 import { type Images } from '@/types/types';
+import AppFront from "@/AppFront";
 
 export default function edit({ carBrands, postData, loguedUser, car_types, currencies, provincias }: EditProps) {
+    const [mainImage, setMainImage] = useState<File | Images | undefined>(postData.main_image);
     const [newImg, setNewImg] = useState<File[]>([]);
-    const [deletedImg, setDeletedImg] = useState<Number[]>([]); // solo para enviar los id's de las imagenes EXISTENTES que se deseen eliminar
+    const [_DeletedImg, setDeletedImg] = useState<Number[]>([]); // solo para enviar los id's de las imagenes EXISTENTES que se deseen eliminar
     const [provinciaId, setProvinciaId] = useState<number | ''>(postData.municipio.provincia.id);
     const [municipiosState, setMunicipiosState] = useState<Municipio[]>([]);
-    const [municipioId, setMunicipioId] = useState<number | ''>('');
+    const [_MunicipioId, setMunicipioId] = useState<number | ''>('');
     const [existingImg, setExistingImg] = useState<Images[]>(postData.post_image)
-    const { data, setData, put, processing, errors, delete: destroy } = useForm({
+    const { data, setData, patch, processing, errors, delete: destroy } = useForm({
         marca: postData.car.car_model.car_brand.id,
         modelo: postData.car.car_model.modelo,
         anio: postData.car.anio,
@@ -28,7 +30,9 @@ export default function edit({ carBrands, postData, loguedUser, car_types, curre
         moneda: postData.id_currency,
         images: [] as File[],
         deleted_images: [] as number[],
+        main_image: postData.main_image
     })
+    // console.log(data.main_image)
     const altProvinciaMunicipio = () => {
         if (!provinciaId) { // si no elijo ninguna, dejo los estados vacíos.
             setMunicipiosState([]);
@@ -69,12 +73,6 @@ export default function edit({ carBrands, postData, loguedUser, car_types, curre
         //...files: imagenes entrantes (nuevas)
         // seteo las imagenes para enviarlas al backend
     }
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        put(route('posts.update', postData.id), {
-            forceFormData: true,
-        });
-    }
     const removeExistingImage = (id: number) => {
         if (existingImg.length > 1) {
             confirm('¿Estás seguro que quieres eliminar esta imagen?') &&
@@ -98,22 +96,44 @@ export default function edit({ carBrands, postData, loguedUser, car_types, curre
             setData('images', data.images.filter((_, i) => i !== index));
         }
     }
+    const handleMainImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
+        const file = e.target.files[0];
+        setMainImage(file);
+        setData('main_image', file as any);           // el File recién elegido
+    }
+    const removeMainImage = () => {
+        if (confirm('¿Estás seguro que quieres eliminar esta imagen?')) {
+            setData('main_image', null as any);
+            setMainImage(undefined);
+        }
+    }
+    // eliminar post
     const handleDelete = (id: number) => {
         confirm('¿Seguro que quieres eliminar este post? La acción será irreversible.') ?
             destroy(route('posts.destroy', id)) : '';
     }
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        patch(route('posts.update', postData.id), {
+            forceFormData: true,
+        });
+    }
     useEffect(() => {
         altProvinciaMunicipio();
+        // console.log(mainImage)
     }, [provinciaId]);
-    return <>
-        <section className="flex flex-col my-20 items-center justify-center">
+
+
+    return <AppFront>
+        <section>
             {
                 loguedUser.id === postData.user.id ?
-                    <>
+                    <div className="flex flex-col my-20 items-center justify-center  min-w-0">
                         <div>
                             <h2 className="text-2xl text-center">Editar publicación</h2>
                         </div>
-                        <form action="" onSubmit={handleSubmit} className="grid lg:grid-cols-2 items-center justify-center gap-8 lg:gap-4 my-5 lg:my-0 mx-3">
+                        <form onSubmit={handleSubmit} className="flex flex-col sm:grid lg:grid-cols-2 sm:items-center sm:justify-center gap-8 lg:gap-4 my-5 lg:my-0 mx-3">
                             <div className="mt-5 flex flex-col gap-2">
                                 {
                                     errors.marca && (
@@ -252,13 +272,39 @@ export default function edit({ carBrands, postData, loguedUser, car_types, curre
                                         <p className='text-red-500 font-[500] text-sm'>{errors.images}</p>
                                     )
                                 }
-                                <Label htmlFor="tipo">Imagen/es del vehiculo</Label>
+                                <Label htmlFor="tipo">Elige la imagen principal (*)</Label>
+                                <p className="text-xs">La imágen principal se usará de portada para que los usuarios tengan una primera impresión del vehiculo antes de ver la publicación</p>
+                                <input className="p-3 bg-slate-700 cursor-pointer" type="file" accept="image/*" onChange={handleMainImage} />
+                                {
+                                    mainImage ?
+                                        <div
+                                            className="relative cursor-pointer w-fit"
+                                            onClick={removeMainImage}
+                                        >
+                                            <img
+                                                src={
+                                                    mainImage instanceof File
+                                                        ? URL.createObjectURL(mainImage)        // imagen nueva → blob URL
+                                                        : `/storage/${mainImage.url}` // imagen existente → ruta de storage
+                                                }
+                                                className="w-full max-w-[550px] h-32 object-cover rounded"
+                                            />
+                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm opacity-0 hover:opacity-100 transition">
+                                                Eliminar
+                                            </div>
+                                        </div>
+                                        : <p className="text-red-500">No elegiste una imagen de portada</p>
+                                }
+                                <div className="flex items-center justify-between w-full">
+                                    <Label htmlFor="tipo">Imagen/es del vehiculo</Label>
+                                </div>
                                 <input className="p-3 bg-slate-700" type="file" accept="image/*" multiple onChange={handleImages} />
                                 <h4>Imagenes actuales del post</h4>
                                 <div className={existingImg.length !== 0 ? `grid grid-cols-4 gap-4 max-w-[550px]` : ''}>
                                     {
                                         existingImg.length != 0 ?
                                             existingImg.map(img => (
+                                                img.id != postData.main_image.id &&
                                                 <div
                                                     key={img.id}
                                                     onClick={() => removeExistingImage(img.id)}
@@ -314,12 +360,12 @@ export default function edit({ carBrands, postData, loguedUser, car_types, curre
                                 } */}
                             </div>
                         </form>
-                    </>
+                    </div>
                     :
                     <div>
                         <p>Esta publicación no te pertenece, por lo que no podés editarlo.</p>
                     </div>
             }
         </section >
-    </>;
+    </AppFront>;
 }
