@@ -17,8 +17,7 @@ import Pagination from "./pagination";
 import { Link, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
-export default function Filtro({ posts, loguedUser, showPages, carBrands, carType, currencies, provincias, municipios, roles }: FilterProps) {
-    // console.log(roles)
+export default function Filtro({ posts, showPages, carBrands, carType, currencies, provincias, municipios }: FilterProps) {
     const [currencySelected, setCurrencySelected] = useState(false);
     const filtros = ['Precio', 'Marca', 'Año', 'Tipo', 'Ubicación'];
     const [provinciaId, setProvinciaId] = useState<number | ''>('');
@@ -237,12 +236,12 @@ export default function Filtro({ posts, loguedUser, showPages, carBrands, carTyp
                         }
                     </div>
                 </div>
-                <div className=''>
+                <div>
                     <div className={`grid ${posts.data.length > 0 ? 'md:grid-cols-3 lg:grid-cols-4' : 'grid-cols-auto'} items-center gap-4 p-1`}>
                         {
                             posts.data.length > 0 ? posts.data.map(post => (
                                 <div key={post.id} className="snap-center">
-                                    <CarCards post={post} loguedUser={loguedUser} />
+                                    <CarCards post={post} />
                                 </div>
                             )) :
                                 <>

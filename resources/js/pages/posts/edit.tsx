@@ -3,13 +3,16 @@ import { Label } from "@/components/ui/label";
 import { EditProps, Municipio } from "@/types/types";
 import { Select } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
-import { Link, useForm } from "@inertiajs/react";
+import { Link, useForm, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import React, { useEffect, useState } from "react";
 import { type Images } from '@/types/types';
 import AppFront from "@/AppFront";
+import { User } from "@/types";
 
-export default function edit({ carBrands, postData, loguedUser, car_types, currencies, provincias }: EditProps) {
+export default function edit({ carBrands, postData, car_types, currencies, provincias }: EditProps) {
+    const { user: UserProps } = usePage().props;
+    const user = UserProps as User;
     const [mainImage, setMainImage] = useState<File | Images | undefined>(postData.main_image);
     const [newImg, setNewImg] = useState<File[]>([]);
     const [_DeletedImg, setDeletedImg] = useState<Number[]>([]); // solo para enviar los id's de las imagenes EXISTENTES que se deseen eliminar
@@ -128,7 +131,7 @@ export default function edit({ carBrands, postData, loguedUser, car_types, curre
     return <AppFront>
         <section>
             {
-                loguedUser.id === postData.user.id ?
+                user.id === postData.user.id ?
                     <div className="flex flex-col my-20 items-center justify-center  min-w-0">
                         <div>
                             <h2 className="text-2xl text-center">Editar publicación</h2>

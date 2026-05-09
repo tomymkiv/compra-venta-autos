@@ -47,7 +47,6 @@ export interface CreateProps {
 export interface EditProps {
     carBrands: CarBrand[],
     postData: Post,
-    loguedUser: User,
     car_types: CarType[],
     currencies: Currency[],
     provincias: Provincia[],
@@ -123,19 +122,17 @@ export interface Paginated<T> {
 
 export interface AppComponentProps {
     children?: React.ReactNode,
-    loguedUser?: User,
     initialQuery?: string,
 }
 export interface FilterProps {
     posts: Paginated<Post>, // están paginados los posts
-    loguedUser: User,
     carBrands: CarBrand[],
     showPages?: boolean | false,
     carType: CarType[],
     provincias: Provincia[],
     municipios: Municipio[],
     currencies: Currency[],
-    roles: Rol[],
+    // roles: Rol[],
 }
 export interface CarCardsProps {
     post: Post,

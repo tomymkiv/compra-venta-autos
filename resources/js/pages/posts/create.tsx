@@ -112,7 +112,7 @@ export default function create({ carBrands, loguedUser, car_types, currencies, p
     useEffect(() => {
         altProvinciaMunicipio()
     }, [provinciaId]);
-    return <AppFront loguedUser={loguedUser}>
+    return <AppFront>
         <section className="flex flex-col min-w-0">
             <div>
                 <h2 className="text-2xl text-center">Crear publicación</h2>

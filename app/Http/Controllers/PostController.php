@@ -65,7 +65,6 @@ class PostController extends Controller
 
         return inertia('posts/show', [
             'post' => $post,
-            'loguedUser' => $this->loguedUser,
         ]);
     }
 
@@ -77,7 +76,6 @@ class PostController extends Controller
                 ->latest()
                 ->where('id_user', $user->id)
                 ->paginate($this->paginateLimit),
-            'loguedUser' => $this->loguedUser,
             'carBrands' => Post::with('car.carModel.carBrand')
                 ->get()
                 ->pluck('car.carModel.carBrand')
@@ -185,7 +183,6 @@ class PostController extends Controller
             'car' => new Post,
             'carBrands' => CarsBrand::orderBy('marca', 'asc')->get(),
             'car_types' => CarType::orderBy('tipo', 'asc')->get(),
-            'loguedUser' => $this->loguedUser,
             'currencies' => Currency::get(),
             'provincias' => Provincia::orderBy('nombre', 'asc')->get(),
         ]);
@@ -197,7 +194,6 @@ class PostController extends Controller
             'postData' => Post::with('user', 'car.carModel.carBrand', 'postImage', 'mainImage', 'municipio.provincia')
                 ->findOrFail($id),
             'carBrands' => CarsBrand::orderBy('marca', 'asc')->get(),
-            'loguedUser' => $this->loguedUser,
             'car_types' => CarType::orderBy('tipo', 'asc')->get(),
             'currencies' => Currency::get(),
             'provincias' => Provincia::orderBy('nombre', 'asc')->get(),

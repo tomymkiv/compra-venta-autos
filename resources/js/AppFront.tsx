@@ -6,8 +6,12 @@ import { AppComponentProps } from './types/types';
 import CategoriasSlots from './components/CategoriasSlots';
 import DropdownButton from './components/DropdownButton';
 import SearchInput from './components/SearchInput';
+import { usePage } from '@inertiajs/react';
+import { User } from './types';
 
-export default function AppFront({ loguedUser, children, initialQuery }: AppComponentProps) {
+export default function AppFront({ children, initialQuery }: AppComponentProps) {
+  const { user: UserProps } = usePage().props;
+  const user = UserProps as User;
   const categoriasRefDesk = useRef<HTMLUListElement>(null!)
   const categoriasRefMob = useRef<HTMLUListElement>(null!)
   const menuRef = useRef<HTMLUListElement>(null!) // esto sirve para referenciar el ul del menu explicitamente. 
@@ -56,10 +60,10 @@ export default function AppFront({ loguedUser, children, initialQuery }: AppComp
           <nav className='bg-[#111]'>
             <ul ref={menuRef} id='menu' className='flex flex-col gap-10 justify-center overflow-hidden fixed left-0 bg-[#1117] backdrop-blur-sm transition-[width] duration-350 ease-in-out w-0 h-screen z-50'>
               {
-                loguedUser &&
-                <Link href={route('user.show', loguedUser.id)} className='w-fit p-5 flex items-center gap-2 flex-col'>
-                  <img src={loguedUser.avatar?.includes('api') ? loguedUser.avatar : `/storage/${loguedUser.avatar}`} className="rounded-full w-20 h-20 object-cover" alt={"Imagen del usuario"} />
-                  <p className='text-xl text-[#ccc]'>{loguedUser.name}</p>
+                user &&
+                <Link href={route('user.show', user.id)} className='w-fit p-5 flex items-center gap-2 flex-col'>
+                  <img src={user.avatar?.includes('api') ? user.avatar : `/storage/${user.avatar}`} className="rounded-full w-20 h-20 object-cover" alt={"Imagen del usuario"} />
+                  <p className='text-xl text-[#ccc]'>{user.name}</p>
                 </Link>
               }
               <PageLinks title="Inicio" link='/' clases='!text-xl' />
@@ -67,10 +71,10 @@ export default function AppFront({ loguedUser, children, initialQuery }: AppComp
               <ul className='text-[#ccc] flex flex-col ml-5 hidden' ref={categoriasRefMob}>
                 <CategoriasSlots text="Ver publicaciones" link="/posts" clases='w-[85%]' />
                 <CategoriasSlots text="Crear publicación" link="/posts/create" clases='w-[85%]' />
-                {loguedUser && <CategoriasSlots text="Editar publicación" link={`/posts/user/${loguedUser?.id}`} clases='w-[85%]' />}
+                {user && <CategoriasSlots text="Editar publicación" link={`/posts/user/${user?.id}`} clases='w-[85%]' />}
               </ul>
               {
-                loguedUser ?
+                user ?
                   <li className='text-[#ccc] pl-5 text-xl'>
                     <button title="Cerrar sesión" className='flex items-center gap-2 p-2 cursor-pointer' onClick={handleLogout} >Cerrar sesión</button>
                   </li>
@@ -90,10 +94,10 @@ export default function AppFront({ loguedUser, children, initialQuery }: AppComp
             <ul className='hidden lg:flex items-center justify-evenly w-full gap-10 p-3'>
               <div className='flex gap-5'>
                 {
-                  loguedUser &&
-                  <Link href={route('user.show', loguedUser.id)} className='w-fit flex items-center justify-center flex-col gap-2'>
-                    <img src={loguedUser.avatar?.includes('api') ? loguedUser.avatar : `/storage/${loguedUser.avatar}`} className="rounded-full w-15 h-15 object-cover" alt={"Imagen del usuario"} />
-                    <p>{loguedUser.name}</p>
+                  user &&
+                  <Link href={route('user.show', user.id)} className='w-fit flex items-center justify-center flex-col gap-2'>
+                    <img src={user.avatar?.includes('api') ? user.avatar : `/storage/${user.avatar}`} className="rounded-full w-15 h-15 object-cover" alt={"Imagen del usuario"} />
+                    <p>{user.name}</p>
                   </Link>
                 }
               </div>
@@ -107,15 +111,15 @@ export default function AppFront({ loguedUser, children, initialQuery }: AppComp
                     <CategoriasSlots text="Ver publicaciones" clases='w-fit' link="/posts" onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
                     <CategoriasSlots text="Crear publicación" clases='w-fit' link="/posts/create" onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
                     {
-                      loguedUser &&
-                      <CategoriasSlots text="Editar publicación" clases='w-fit' link={`/posts/user/${loguedUser?.id}`} onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
+                      user &&
+                      <CategoriasSlots text="Editar publicación" clases='w-fit' link={`/posts/user/${user?.id}`} onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
                     }
                   </ul>
                 </div>
                 <SearchInput enviarData={(e: React.FormEvent) => submit(e)} setQuery={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)} initialQuery={query} />
               </div>
               {
-                loguedUser ?
+                user ?
                   <li className='text-[#ccc] pl-5'>
                     <button className='flex items-center gap-2 p-2 cursor-pointer text-xl text-shadow-gray-300 hover:text-shadow-md transition-all duration-300' onClick={handleLogout}>Cerrar sesión</button>
                   </li>
