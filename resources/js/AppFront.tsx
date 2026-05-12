@@ -12,6 +12,7 @@ import { User } from './types';
 export default function AppFront({ children, initialQuery }: AppComponentProps) {
   const { user: UserProps } = usePage().props;
   const user = UserProps as User;
+  console.log(user.name);
   const categoriasRefDesk = useRef<HTMLUListElement>(null!)
   const categoriasRefMob = useRef<HTMLUListElement>(null!)
   const menuRef = useRef<HTMLUListElement>(null!) // esto sirve para referenciar el ul del menu explicitamente. 

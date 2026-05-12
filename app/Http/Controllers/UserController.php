@@ -13,7 +13,6 @@ class UserController extends Controller
     {
         // dd($this->paginatedCarPosts);
         return inertia('welcome', [
-            'loguedUser' => $this->loguedUser,
             'posts' => $this->paginatedCarPosts,
         ]);
     }
@@ -27,16 +26,13 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         return inertia('user/show', [
-            'loguedUser' => $this->loguedUser,
             'post' => $post,
-            'user' => $user,
+            'profileUser' => $user, // renombrado para no pisar el shared prop 'user' (usuario logueado)
         ]);
     }
     public function edit()
     {
-        return inertia('user/edit', [
-            'loguedUser' => $this->loguedUser,
-        ]);
+        return inertia('user/edit');
     }
     public function update(UserEditRequest $request)
     {

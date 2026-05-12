@@ -3,11 +3,15 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ProfileProps } from '@/types/types'
 import { Button } from '@/components/ui/button'
-import { useForm } from '@inertiajs/react'
+import { useForm, usePage } from '@inertiajs/react'
 import { route } from 'ziggy-js'
 import { useRef, useState } from 'react'
-export default function edit({ loguedUser }: ProfileProps) {
+import { User } from '@/types'
+
+export default function edit() {
     const [inputBg, setInputBg] = useState('');
+    const { user } = usePage().props;
+    const loguedUser = user as User;
     const fileInputRef = useRef<HTMLInputElement>(null)
     const { data, setData, patch, processing, errors, delete: destroy } = useForm<{
         avatar: File | string | null,
@@ -45,7 +49,7 @@ export default function edit({ loguedUser }: ProfileProps) {
         e.preventDefault();
         confirm('¿Estás seguro que quieres eliminar tu cuenta? Se eliminarán toda la información relacionada.') && destroy(route('user.destroy', loguedUser.id));
     }
-    return <ProfileSection loguedUser={loguedUser} user={loguedUser}>
+    return <ProfileSection user={loguedUser}>
         <section>
             <form onSubmit={handleSubmit} className='flex flex-col gap-2 items-center justify-center'>
                 <div className='flex flex-col gap-2 w-full p-3'>

@@ -197,7 +197,7 @@ class PostController extends Controller
             'car_types' => CarType::orderBy('tipo', 'asc')->get(),
             'currencies' => Currency::get(),
             'provincias' => Provincia::orderBy('nombre', 'asc')->get(),
-            'permissions' => $this->loguedUser->getAllPermissions()->pluck('name'),
+            // 'permissions' => $this->loguedUser->getAllPermissions()->pluck('name'),
         ]);
     }
 

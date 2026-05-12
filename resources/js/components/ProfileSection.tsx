@@ -3,9 +3,10 @@ import { ProfileProps } from "@/types/types";
 import { useEffect, useState } from "react";
 import CloseButton from "./close-button";
 
-export default function ProfileSection({ loguedUser, children, user }: ProfileProps) {
+export default function ProfileSection({ children, profileUser }: ProfileProps) {
     const [isImageOpen, setIsImageOpen] = useState(false);
-
+    // console.log("Usuario del post: \n", user);
+    // console.log("Usuario del logueado: \n", loguedUser);
     // Abro o cierro la imagen, dependiendo el estado
     const toggleImg = () => setIsImageOpen(!isImageOpen);
 
@@ -24,23 +25,23 @@ export default function ProfileSection({ loguedUser, children, user }: ProfilePr
     }, [isImageOpen]); // dependo de este valor
 
     return (
-        <AppFront loguedUser={loguedUser}>
+        <AppFront>
             <section className="max-w-4xl h-fit w-full p-3 rounded-md border flex flex-col gap-3">
                 {!location.href.includes("edit") && (
                     <>
                         <div className="w-fit flex flex-col items-center gap-5 p-2 rounded-md">
                             <div onClick={toggleImg} className="cursor-pointer flex items-center">
-                                {user.avatar && (
+                                {profileUser.avatar && (
                                     <img
                                         // si la imagen tiene "api" en el src, la muestro directamente, si no, la muestro desde storage
-                                        src={user.avatar?.includes("api") ? user.avatar : `/storage/${user.avatar}`}
+                                        src={profileUser.avatar?.includes("api") ? profileUser.avatar : `/storage/${profileUser.avatar}`}
                                         className="rounded-full object-cover w-80 h-80 transition-transform duration-300 group-hover:scale-105"
                                         alt={"Imagen del usuario"}
                                     />
                                 )}
                             </div>
                             <div className="flex gap-3 text-3xl">
-                                <p>{user.name}</p>
+                                <p>{profileUser.name}</p>
                             </div>
                         </div>
                         <hr className="animate-box-pulse" />
@@ -54,7 +55,7 @@ export default function ProfileSection({ loguedUser, children, user }: ProfilePr
                         {/* Full Image Container (when i click the image) */}
                         <div className="relative max-w-full max-h-full flex items-center justify-center animate-in zoom-in-90 duration-300">
                             <img
-                                src={user.avatar?.includes("api") ? user.avatar : `/storage/${user.avatar}`}
+                                src={profileUser.avatar?.includes("api") ? profileUser.avatar : `/storage/${profileUser.avatar}`}
                                 // Muestra la foto COMPLETA (sin rounded-full) y centrada.
                                 className="rounded-md object-contain shadow-2xl border-2 border-white/20 max-w-[95vw] max-h-[90vh]"
                                 alt={"Imagen del usuario ampliada"}

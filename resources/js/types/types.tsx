@@ -138,8 +138,7 @@ export interface CarCardsProps {
     post: Post,
 }
 export interface ProfileProps {
-    loguedUser: User,
     post?: Post[],
     children: React.ReactNode,
-    user: User,
+    profileUser: User,
 }

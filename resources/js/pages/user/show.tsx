@@ -1,17 +1,23 @@
 import ProfileSection from "@/components/ProfileSection";
+import { User } from "@/types";
 import { ProfileProps } from "@/types/types";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
-export default function show({ loguedUser, post, user }: ProfileProps) {
-    return <ProfileSection loguedUser={loguedUser} post={post} user={user}>
+export default function show({ post, profileUser }: ProfileProps) {
+    const { user: UserProps } = usePage().props;
+    const user = UserProps as User;
+    // "user" es el usuario logueado
+    // "profileUser" es el usuario del perfil
+
+    return <ProfileSection post={post} profileUser={profileUser}>
         <div className="flex items-center gap-10 md:gap-0 justify-between m-3 flex-wrap">
             <div>
                 {
                     post && post.length > 0 ?
                         <div className="flex justify-start flex-wrap w-full gap-3">
                             <p>Publicaciones: {post.length}.</p>
-                            <Link href={route('user.posts', user.id)} className="text-blue-500 hover:underline">Ver publicaciones.
+                            <Link href={route('user.posts', profileUser.id)} className="text-blue-500 hover:underline">Ver publicaciones.
                             </Link>
                         </div>
                         :
@@ -20,9 +26,9 @@ export default function show({ loguedUser, post, user }: ProfileProps) {
             </div>
             <div>
                 {
-                    loguedUser ? loguedUser.name === user.name &&
-                        <Link href={route('user.edit')} className="text-blue-500 hover:underline w-full">Editar perfil</Link>
-                        : null
+                    user && user.name === profileUser.name &&
+                    <Link href={route('user.edit')} className="text-blue-500 hover:underline w-full">Editar perfil</Link>
+                    // : 'NO PODES EDITAR'
                 }
             </div>
         </div>
