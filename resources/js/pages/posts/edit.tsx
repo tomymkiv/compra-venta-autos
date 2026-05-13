@@ -124,19 +124,18 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
     }
     useEffect(() => {
         altProvinciaMunicipio();
-        // console.log(mainImage)
     }, [provinciaId]);
 
 
     return <AppFront>
-        <section>
+        <section className="flex flex-col min-w-0">
             {
                 user.id === postData.user.id ?
                     <div className="flex flex-col my-20 items-center justify-center  min-w-0">
                         <div>
                             <h2 className="text-2xl text-center">Editar publicación</h2>
                         </div>
-                        <form onSubmit={handleSubmit} className="flex flex-col sm:grid lg:grid-cols-2 sm:items-center sm:justify-center gap-8 lg:gap-4 my-5 lg:my-0 mx-3">
+                        <form onSubmit={handleSubmit} className="flex flex-col sm:grid grid-cols-2 sm:items-start sm:justify-center gap-4 my-5 mx-3 w-full">
                             <div className="mt-5 flex flex-col gap-2">
                                 {
                                     errors.marca && (
