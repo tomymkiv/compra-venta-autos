@@ -8,8 +8,10 @@ class CarType extends Model
 {
     protected $fillable = ['id', 'tipo'];
 
-    public function car()
+    // Un tipo puede tener muchos autos (ej: SUV → varios autos de tipo SUV)
+    // FK en cars: id_type → car_types.id
+    public function cars()
     {
-        return $this->hasMany(Car::class, 'id_car');
+        return $this->hasMany(Car::class, 'id_type');
     }
 }

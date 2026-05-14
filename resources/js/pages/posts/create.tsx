@@ -13,7 +13,7 @@ import AppFront from "@/AppFront";
  * 
  * 
  */
-export default function create({ carBrands, loguedUser, car_types, currencies, provincias }: CreateProps) {
+export default function create({ carBrands, car_types, currencies, provincias }: CreateProps) {
     const [newImg, setNewImg] = useState<File[]>([]);
     const [mainImage, setMainImage] = useState<File>();
     const [provinciaId, setProvinciaId] = useState<number | ''>('');

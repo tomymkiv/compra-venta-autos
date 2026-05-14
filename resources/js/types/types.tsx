@@ -38,7 +38,6 @@ interface CarType {
 // lo que recibo cuando creo un auto (array de las marcas pre-hechas)
 export interface CreateProps {
     carBrands: CarBrand[],
-    loguedUser: User,
     car_types: CarType[],
     currencies: Currency[],
     provincias: Provincia[],

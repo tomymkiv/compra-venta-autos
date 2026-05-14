@@ -14,7 +14,7 @@ class Car extends Model
     }
     public function post()
     {
-        return $this->hasOne(Post::class, 'id_car');
+        return $this->hasOne(Post::class, 'id_car', 'id');
     }
     public function car_type()
     {

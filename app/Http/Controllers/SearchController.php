@@ -15,6 +15,14 @@ class SearchController extends Controller
 {
     public function index(Request $request)
     {
+        // dump(CarType::whereHas('car.post')->get()->toArray());
+        dd(Post::with('car.car_type')
+            ->get()
+            ->pluck('car.car_type')
+            ->filter()
+            ->unique('id')
+            ->values()
+            ->toArray());
         // tengo 2 caminos:
         // si no filtro nada y selecciono filtrar O busco en el buscador, me envía acá.
         if ($request->filled('q')) { // si se trata de una búsqueda...
@@ -47,7 +55,7 @@ class SearchController extends Controller
                     ->filter()
                     ->unique('id')
                     ->values(),
-                Post::with('municipio.provincia')
+                'provincias' => Post::with('municipio.provincia')
                     ->get()
                     ->pluck('municipio.provincia')
                     ->filter()

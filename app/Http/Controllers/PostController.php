@@ -10,6 +10,7 @@ use App\Models\CarsModel;
 use App\Models\CarType;
 use App\Models\Currency;
 use App\Models\Post;
+use App\Models\Municipio;
 use App\Models\PostImage;
 use App\Models\Provincia;
 use App\Models\User;
@@ -23,32 +24,29 @@ class PostController extends Controller
 {
     public function index()
     {
+        /**
+         * muestro esta informacion en los filtros
+         */
         return inertia('posts/index', [
-            'posts' => $this->paginatedCarPosts,
-            'carBrands' => Post::with('car.carModel.carBrand')
-                ->get()
-                ->pluck('car.carModel.carBrand')
-                ->unique('id')
-                ->values(),
-            'carType' => Post::with('car.car_type')
-                ->get()
-                ->pluck('car.car_type')
-                ->filter()
-                ->unique('id')
-                ->values(),
-            'provincias' => Post::with('municipio.provincia')
-                ->get()
-                ->pluck('municipio.provincia')
-                ->filter()
-                ->unique('id')
-                ->values(),
-            'municipios' => Post::with('municipio')
-                ->get()
-                ->pluck('municipio')
-                ->flatten()
-                ->filter()
-                ->unique('id')
-                ->values(),
+            'posts' => Post::with('mainImage', 'car.carModel.carBrand', 'user', 'municipio.provincia', 'car.car_type')
+                ->whereHas('mainImage') // mainImage = imagen con orden = 1
+                ->latest()
+                ->paginate($this->paginateLimit),
+            // whereHas encadenado: la DB filtra solo los registros que tienen posts asociados.
+            // Funciona gracias a las relaciones hasMany correctamente definidas en cada modelo.
+
+            // Marcas que tienen al menos un modelo → auto → post
+            'carBrands' => CarsBrand::whereHas('carModels.cars.post')->orderBy('marca', 'asc')->get(),
+
+            // Tipos de auto que tienen al menos un auto → post
+            'carType' => CarType::whereHas('cars.post')->orderBy('tipo', 'asc')->get(),
+
+            // Provincias que tienen al menos un municipio → post
+            'provincias' => Provincia::whereHas('municipios.posts')->orderBy('nombre', 'asc')->get(),
+
+            // Municipios que tienen al menos un post
+            'municipios' => Municipio::whereHas('posts')->orderBy('nombre', 'asc')->get(),
+
             'currencies' => Currency::get(),
             'roles' => Role::get(),
         ]);
@@ -72,34 +70,16 @@ class PostController extends Controller
     {
         return inertia('user/posts', [
             'posts' => Post::with('mainImage', 'car.carModel.carBrand', 'user', 'municipio.provincia')
-                ->whereHas('mainImage') // mainImage = imagen con orden = 1
+                ->whereHas('mainImage')
                 ->latest()
                 ->where('id_user', $user->id)
                 ->paginate($this->paginateLimit),
-            'carBrands' => Post::with('car.carModel.carBrand')
-                ->get()
-                ->pluck('car.carModel.carBrand')
-                ->unique('id')
-                ->values(),
-            'carType' => Post::with('car.car_type')
-                ->get()
-                ->pluck('car.car_type')
-                ->filter()
-                ->unique('id')
-                ->values(),
-            'provincias' => Post::with('municipio.provincia')
-                ->get()
-                ->pluck('municipio.provincia')
-                ->filter()
-                ->unique('id')
-                ->values(),
-            'municipios' => Post::with('municipio')
-                ->get()
-                ->pluck('municipio')
-                ->flatten()
-                ->filter()
-                ->unique('id')
-                ->values(),
+
+            // whereHas encadenado: misma lógica que index(), la DB filtra solo lo necesario.
+            'carBrands' => CarsBrand::whereHas('carModels.cars.post')->orderBy('marca', 'asc')->get(),
+            'carType' => CarType::whereHas('cars.post')->orderBy('tipo', 'asc')->get(),
+            'provincias' => Provincia::whereHas('municipios.posts')->orderBy('nombre', 'asc')->get(),
+            'municipios' => Municipio::whereHas('posts')->orderBy('nombre', 'asc')->get(),
             'currencies' => Currency::get(),
         ]);
     }
@@ -203,6 +183,8 @@ class PostController extends Controller
 
     public function update(PostUpdateRequest $request, Post $post, Car $car)
     {
+        $main_image = $request->file('main_image');
+        // dd($main_image);
         $images = $request->file('images');
         $validated = $request->validated();
         $carModel = $post->car->carModel;
@@ -242,20 +224,18 @@ class PostController extends Controller
         ]);
         // obtengo TODAS las imagenes relacionadas a ese post
         $images = $request->file('images');
-        // si o si debo tener una imagen de portada. si no la tengo, no avanzo
-        if ($request['main_image'] === null) {
-            // dd($request['main_image']);
-            return redirect()->back();
-        }
 
-        $path_mainImage = $request['main_image']->store('posts', 'public');
-        // busco el posteo a editar y tambien su imagen principal (orden = 1)
-        PostImage::where('id_post', $post->id)
-            ->where('orden', 1)
-            ->update([
-                'url' => $path_mainImage,
-                'orden' => 1,
-            ]);
+
+        // Si se cambió la imagen principal (tiene valor), la actualizo
+        if ($main_image) {
+            $path_mainImage = $main_image->store('posts', 'public');
+            // busco el posteo a editar y tambien su imagen principal (orden = 1)
+            PostImage::where('id_post', $post->id)
+                ->where('orden', 1)
+                ->update([
+                    'url' => $path_mainImage,
+                ]);
+        }
 
         $lastOrder = PostImage::where('id_post', $post->id)->max('orden') ?? 1;
         // si existen imagenes en el post, tomo el valor con el orden más alto (para arrancar desde ahi).

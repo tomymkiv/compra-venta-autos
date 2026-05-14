@@ -8,7 +8,10 @@ class CarsBrand extends Model
 {
     protected $fillable = ['marca'];
 
-    public function carModel(){
-        return $this->hasOne(CarsModel::class, 'id_modelo');
+    // Una marca puede tener muchos modelos de auto (ej: Toyota → Corolla, Hilux, RAV4...)
+    // FK en cars_models: id_marca → cars_brands.id
+    public function carModels()
+    {
+        return $this->hasMany(CarsModel::class, 'id_marca');
     }
 }

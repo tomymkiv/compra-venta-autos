@@ -13,7 +13,10 @@ class UserController extends Controller
     {
         // dd($this->paginatedCarPosts);
         return inertia('welcome', [
-            'posts' => $this->paginatedCarPosts,
+            'posts' => Post::with('mainImage', 'car.carModel.carBrand', 'user', 'municipio.provincia', 'car.car_type')
+                ->whereHas('mainImage') // mainImage = imagen con orden = 1
+                ->latest()
+                ->paginate($this->paginateLimit),
         ]);
     }
     public function show($id)
