@@ -9,21 +9,12 @@ use App\Models\Municipio;
 use App\Models\Post;
 use App\Models\Provincia;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rules\Unique;
 
 class SearchController extends Controller
 {
     public function index(Request $request)
     {
-        // dump(CarType::whereHas('car.post')->get()->toArray());
-        dd(Post::with('car.car_type')
-            ->get()
-            ->pluck('car.car_type')
-            ->filter()
-            ->unique('id')
-            ->values()
-            ->toArray());
-        // tengo 2 caminos:
+        // tengo 2 caminos: busqueda, filtros
         // si no filtro nada y selecciono filtrar O busco en el buscador, me envía acá.
         if ($request->filled('q')) { // si se trata de una búsqueda...
             $query = $request->input('q'); // lo que recibo del buscador
@@ -48,26 +39,10 @@ class SearchController extends Controller
             return inertia('search/index', [
                 'loguedUser' => $this->loguedUser,
                 'posts' => $posts,
-                'carBrands' => CarsBrand::get(),
-                'carType' => Post::with('car.car_type')
-                    ->get()
-                    ->pluck('car.car_type')
-                    ->filter()
-                    ->unique('id')
-                    ->values(),
-                'provincias' => Post::with('municipio.provincia')
-                    ->get()
-                    ->pluck('municipio.provincia')
-                    ->filter()
-                    ->unique('id')
-                    ->values(),
-                'municipios' => Post::with('municipio')
-                    ->get()
-                    ->pluck('municipio')
-                    ->flatten()
-                    ->filter()
-                    ->unique('id')
-                    ->values(),
+                'carBrands' => CarsBrand::whereHas('carModels.cars.post')->get(),
+                'carType' => CarType::whereHas('cars.post')->get(),
+                'provincias' => Provincia::whereHas('municipios.posts')->get(),
+                'municipios' => Municipio::whereHas('posts')->get(),
             ]);
         } else { // si se trata de un filtro...
             $posts = Post::query()
@@ -89,16 +64,19 @@ class SearchController extends Controller
                     $qBuilder->whereHas('car.carModel.carBrand', function ($q) use ($request) {
                         $q->where('id', $request->brandId);
                     });
+                    // busco por marca...
                 })
                 ->when($request->yearFrom, function ($qBuilder) use ($request) {
                     $qBuilder->whereHas('car', function ($q) use ($request) {
                         $q->where('anio', '>=', $request->yearFrom);
                     });
+                    // busco por año (desde)
                 })
                 ->when($request->yearTo, function ($qBuilder) use ($request) {
                     $qBuilder->whereHas('car', function ($q) use ($request) {
                         $q->where('anio', '<=', $request->yearTo);
                     });
+                    // busco por año (hasta)
                 })
                 ->when($request->typeId, function ($qBuilder) use ($request) {
                     // $qBuilder es un parámetro, el cual tiene la funcionalidad de $request. 
@@ -106,16 +84,19 @@ class SearchController extends Controller
                     $qBuilder->whereHas('car', function ($q) use ($request) {
                         $q->where('id_type', $request->typeId);
                     });
+                    // busco por tipo de auto
                 })
                 ->when($request->provinciaId, function ($qBuilder) use ($request) {
                     $qBuilder->whereHas('municipio', function ($q) use ($request) {
                         $q->where('id_provincia', $request->provinciaId);
                     });
+                    // busco por provincia...
                 })
                 ->when($request->municipioId, function ($qBuilder) use ($request) {
                     $qBuilder->whereHas('municipio', function ($q) use ($request) {
                         $q->where('id', $request->municipioId);
                     });
+                    // busco por municipio (primero tuve que elegir la provincia)
                 })
                 ->with([
                     'car.carModel.carBrand',
@@ -130,31 +111,11 @@ class SearchController extends Controller
             return inertia('search/index', [
                 'loguedUser' => $this->loguedUser,
                 'posts' => $posts,
-                'carBrands' => Post::with('car.carModel.carBrand')
-                    ->get()
-                    ->pluck('car.carModel.carBrand')
-                    ->unique('id')
-                    ->values(),
-                'carType' => Post::with('car.car_type')
-                    ->get()
-                    ->pluck('car.car_type')
-                    ->filter()
-                    ->unique('id')
-                    ->values(),
-                'provincias' => Post::with('municipio.provincia')
-                    ->get()
-                    ->pluck('municipio.provincia')
-                    ->filter()
-                    ->unique('id')
-                    ->values(),
-                'municipios' => Post::with('municipio')
-                    ->get()
-                    ->pluck('municipio')
-                    ->flatten()
-                    ->filter()
-                    ->unique('id')
-                    ->values(),
-                'currencies' => Currency::get(),
+                'carBrands' => CarsBrand::whereHas('carModels.cars.post')->get(),
+                'carType' => CarType::whereHas('cars.post')->get(),
+                'provincias' => Provincia::whereHas('municipios.posts')->get(),
+                'municipios' => Municipio::whereHas('posts')->get(),
+                'currencies' => Currency::whereHas('post')->get(),
             ]);
         }
     }
