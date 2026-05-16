@@ -16,6 +16,7 @@ class RegisterController extends Controller
     public function register(RegisterRequest $request)
     {
         $validated = $request->validated();
+        // dd($validated);
         if ($validated['password'] !== $request->password_confirmation) {
             return back()->withErrors([
                 'password' => 'Las contraseñas no coinciden',
@@ -28,7 +29,7 @@ class RegisterController extends Controller
             $path = $request->file('avatar')->store('avatars', 'public');
             $validated['avatar'] = $path;
         }
-
+        // $user
         $user = User::create($validated);
         $user->assignRole('USER');
         Auth::login($user);

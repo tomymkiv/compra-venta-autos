@@ -15,12 +15,14 @@ export default function Register() {
         email: string,
         password: string,
         password_confirmation: string,
+        contacto: number,
     }>({
         avatar: null,
         name: '',
         email: '',
         password: '',
         password_confirmation: '',
+        contacto: 0,
     })
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,6 +39,12 @@ export default function Register() {
         setImgBtn('hidden');
         inputRef.current && (inputRef.current.value = '');
     }
+    const handleContacto = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value.length > 8) {
+            e.target.value = e.target.value.slice(0, 8);
+        }
+        setData('contacto', Number(e.target.value));
+    }
     return <AuthLayout title="Registro">
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <div className="flex flex-col gap-2">
@@ -48,6 +56,11 @@ export default function Register() {
                 <p className="text-red-600">{errors.email}</p>
                 <label htmlFor="email">Correo</label>
                 <InputComp type="email" name="email" id="email" value={data.email} onChange={(e) => setData('email', e.target.value)} placeholder="Correo" />
+            </div>
+            <div className="flex flex-col gap-2">
+                <p className="text-red-600">{errors.contacto}</p>
+                <label htmlFor="contacto">Número de contacto <small>(sin codigo de area)</small></label>
+                <InputComp max={99999999} type="number" name="contacto" id="contacto" value={String(data.contacto)} onChange={handleContacto} placeholder="12345678" />
             </div>
             <div className="flex flex-col gap-2">
                 <p className="text-red-600">{errors.password}</p>

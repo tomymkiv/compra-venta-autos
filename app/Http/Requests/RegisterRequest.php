@@ -24,8 +24,9 @@ class RegisterRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
+            'contacto' => 'required|integer|max:99999999|min:1000000',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|confirmed',
         ];
     }
     public function messages(): array
@@ -36,7 +37,9 @@ class RegisterRequest extends FormRequest
             'email.required' => 'El correo es obligatorio.',
             'email.email' => 'El correo debe ser un correo válido.',
             'email.max' => 'El correo debe tener como máximo 255 caracteres.',
-            'avatar.required' => 'La imagen es obligatoria.',
+            'contacto.required' => 'El número de contacto es obligatorio.',
+            'contacto.max' => 'El número de contacto debe tener como máximo 8 caracteres.',
+            'contacto.min' => 'El número de contacto debe tener como mínimo 8 caracteres.',
             'avatar.image' => 'La imagen debe ser una imagen.',
             'avatar.mimes' => 'La imagen debe ser una imagen de tipo jpeg, png o jpg.',
             'avatar.max' => 'La imagen debe tener como máximo 2048 kilobytes.',

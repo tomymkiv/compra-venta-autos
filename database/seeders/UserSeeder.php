@@ -33,6 +33,7 @@ class UserSeeder extends Seeder
                 'name' => 'User (admin)',
                 'password' => 'password',
                 'email_verified_at' => now(),
+                'contacto' => 1132556232,
             ]
         );
         $userUser = User::firstOrCreate(
@@ -41,6 +42,7 @@ class UserSeeder extends Seeder
                 'name' => 'User',
                 'password' => 'password',
                 'email_verified_at' => now(),
+                'contacto' => 1122113322,
             ]
         );
         /**

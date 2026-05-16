@@ -96,7 +96,7 @@ export default function VehiculosItem({ post }: CarCardsProps) {
 
         setTranslateX(0);
     }
-    return <AppFront loguedUser={user as User}>
+    return <AppFront>
         {
             <div className="flex flex-col items-center justify-center gap-8">
                 <div className="flex lg:items-center flex-col lg:flex-row gap-5 max-w-2xl lg:max-w-7xl">
@@ -187,7 +187,7 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                 </div>
                 {
                     user ? <div className="w-[50%] flex flex-col lg:flex-row gap-4 items-center justify-center">
-                        <a href={`https://wa.me/541123454230?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Consultar</a>
+                        <a href={`https://wa.me/54${post.user.contacto}?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Consultar</a>
                         {
                             (user as User).id === post.user.id ? <Link href={`/posts/${post.id}/edit`} className="p-3 bg-gray-800 rounded-lg hover:bg-blue-600 hover:text-gray-200 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Editar publicación</Link> : ''
                         }
