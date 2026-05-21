@@ -12,7 +12,6 @@ import { User } from './types';
 export default function AppFront({ children, initialQuery, hero }: AppComponentProps) {
   const { user: UserProps } = usePage().props;
   const user = UserProps as User;
-
   const categoriasRefDesk = useRef<HTMLUListElement>(null!)
   const categoriasRefMob = useRef<HTMLUListElement>(null!)
   const menuRef = useRef<HTMLUListElement>(null!) // esto sirve para referenciar el ul del menu explicitamente. 
@@ -136,9 +135,9 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
           {hero}
         </div>
       )}
-      <main className={`relative bg-[#111] z-40 text-[#ccc] min-h-screen flex items-center justify-center`}>
+      <main className={`${innerWidth < 768 && 'py-16'} relative bg-[#111] z-40 text-[#ccc] min-h-screen flex items-center justify-center`}>
         {/* Transición suave desde el hero hacia abajo */}
-        <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-[#111] to-transparent z-30 pointer-events-none" />
+        {/* <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-[#111] to-transparent z-30 pointer-events-none" /> */}
         <section className='max-w-7xl bg-[#111] z-20 px-5  flex items-center justify-center w-full'>
           {children}
         </section>

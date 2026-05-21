@@ -183,11 +183,8 @@ class PostController extends Controller
 
     public function update(PostUpdateRequest $request, Post $post, Car $car)
     {
-        // dd($request['main_image']);
-        $main_image_url = $request['main_image']['url'];
-        dd($main_image_url);
+        // dd(is_file($request->file('main_image')) ? true : false);
         $main_image = $request->file('main_image');
-        // dd($main_image);
         $images = $request->file('images');
         $validated = $request->validated();
         $carModel = $post->car->carModel;
@@ -229,8 +226,15 @@ class PostController extends Controller
         $images = $request->file('images');
 
         // Si se cambió la imagen principal (tiene valor), la actualizo
-        if (!is_null($request['main_image'])) {
-            $path_mainImage = $main_image->store('posts', 'public');
+        if ($request['main_image']) {
+            if (is_file($request->file('main_image'))) {
+                // si la imagen cambió (es otra diferente a la que ya tenia), la almaceno y reemplazo
+                $path_mainImage = $main_image->store('posts', 'public');
+            } else {
+                // si la imagen es la misma que ya estaba, la conservo.
+                $path_mainImage = $request['main_image']['url'];
+            }
+
             // busco el posteo a editar y tambien su imagen principal (orden = 1)
             PostImage::where('id_post', $post->id)
                 ->where('orden', 1)
@@ -238,7 +242,7 @@ class PostController extends Controller
                     'url' => $path_mainImage,
                 ]);
         } else {
-            dd("sin imagen principal");
+            return redirect()->back();
         }
 
         $lastOrder = PostImage::where('id_post', $post->id)->max('orden') ?? 1;
