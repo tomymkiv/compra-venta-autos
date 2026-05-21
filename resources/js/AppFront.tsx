@@ -9,7 +9,7 @@ import SearchInput from './components/SearchInput';
 import { usePage } from '@inertiajs/react';
 import { User } from './types';
 
-export default function AppFront({ children, initialQuery }: AppComponentProps) {
+export default function AppFront({ children, initialQuery, hero }: AppComponentProps) {
   const { user: UserProps } = usePage().props;
   const user = UserProps as User;
 
@@ -55,8 +55,8 @@ export default function AppFront({ children, initialQuery }: AppComponentProps) 
     });
   };
   return (
-    <>
-      <header className={`relative z-30 flex items-center justify-center bg-[#111b] sticky top-0 w-full`}>
+    <div className='bg-[#111]'>
+      <header className={`relative z-100 flex items-center justify-center bg-[#111b] sticky top-0 w-full`}>
         <div id='mobile-nav' className='lg:hidden'>
           <nav className='bg-[#111]'>
             <ul ref={menuRef} id='menu' className='flex flex-col gap-10 justify-center overflow-hidden fixed left-0 bg-[#1117] backdrop-blur-sm transition-[width] duration-350 ease-in-out w-0 h-screen z-50'>
@@ -130,16 +130,24 @@ export default function AppFront({ children, initialQuery }: AppComponentProps) 
           </nav>
         </div>
       </header>
-      <main className={`${innerWidth < 550 ? 'my-16' : 'my-10'} mx-5 text-[#ccc] min-h-screen flex items-center justify-center`}>
-        <section className='max-w-7xl flex items-center justify-center w-full'>
+      {/* imagen principal, donde está la información principal */}
+      {hero && (
+        <div className="relative w-full z-20">
+          {hero}
+        </div>
+      )}
+      <main className={`relative bg-[#111] z-40 text-[#ccc] min-h-screen flex items-center justify-center`}>
+        {/* Transición suave desde el hero hacia abajo */}
+        <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-[#111] to-transparent z-30 pointer-events-none" />
+        <section className='max-w-7xl bg-[#111] z-20 px-5  flex items-center justify-center w-full'>
           {children}
         </section>
       </main>
       <footer>
-        <div className='bg-[#111] text-center p-5 text-[#ccc]'>
+        <div className='relative z-40 bg-[#111] text-center p-5 py-8 text-[#ccc]'>
           &copy; {year} Silvetti Automotores. Todos los derechos reservados.
         </div>
       </footer>
-    </>
+    </div>
   )
 }

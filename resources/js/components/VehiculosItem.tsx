@@ -125,7 +125,7 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                     <div className="order-1 lg:order-2 xl:flex justify-center">
                         <div className="mx-3 mb-8 flex justify-center">
                             {/* esto es la imagen principal (la que está siendo mostrada en grande) */}
-                            <img src={`/${post.post_image[indexImg].url}`} alt="" className="max-w-[90vw] md:min-w-[700px] md:min-h-[700px] md:max-h-[700px] md:max-w-[700px] object-contain cursor-pointer" onClick={openSlide} />
+                            <img src={`/${post.post_image[indexImg].url}`} alt={`imagen ${indexImg}`} className="max-w-[90vw] min-h-[300px] max-h-[300px] md:min-w-[700px] md:min-h-[700px] md:max-h-[700px] md:max-w-[700px] object-contain cursor-pointer" onClick={openSlide} />
                         </div>
                         <div className='xl:w-[33%] space-y-2 md:mt-3 mx-3 lg:mx-6 md:flex flex-col gap-5'>
                             <div>
