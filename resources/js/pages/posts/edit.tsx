@@ -10,17 +10,33 @@ import { type Images } from '@/types/types';
 import AppFront from "@/AppFront";
 import { User } from "@/types";
 
+type EditForm = {
+    marca: number;
+    modelo: string;
+    anio: number;
+    kilometraje: number;
+    precio: string;
+    descripcion: string;
+    tipo: number;
+    provincia: number;
+    municipio: number;
+    moneda: number;
+    images: File[];
+    deleted_images: number[];
+    main_image: File | Images | null;
+};
+
 export default function edit({ carBrands, postData, car_types, currencies, provincias }: EditProps) {
     const { user: UserProps } = usePage().props;
     const user = UserProps as User;
     const [mainImage, setMainImage] = useState<File | Images | undefined>(postData.main_image);
     const [newImg, setNewImg] = useState<File[]>([]);
-    const [_DeletedImg, setDeletedImg] = useState<Number[]>([]); // solo para enviar los id's de las imagenes EXISTENTES que se deseen eliminar
+    const [_DeletedImg, setDeletedImg] = useState<number[]>([]); // solo para enviar los id's de las imagenes EXISTENTES que se deseen eliminar
     const [provinciaId, setProvinciaId] = useState<number | ''>(postData.municipio.provincia.id);
     const [municipiosState, setMunicipiosState] = useState<Municipio[]>([]);
     const [_MunicipioId, setMunicipioId] = useState<number | ''>('');
     const [existingImg, setExistingImg] = useState<Images[]>(postData.post_image)
-    const { data, setData, patch, processing, errors, delete: destroy } = useForm({
+    const { data, setData, patch, processing, errors, delete: destroy } = useForm<EditForm>({
         marca: postData.car.car_model.car_brand.id,
         modelo: postData.car.car_model.modelo,
         anio: postData.car.anio,
@@ -35,7 +51,7 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
         deleted_images: [] as number[],
         main_image: postData.main_image
     })
-    // console.log(data.main_image)
+
     const altProvinciaMunicipio = () => {
         if (!provinciaId) { // si no elijo ninguna, dejo los estados vacíos.
             setMunicipiosState([]);
@@ -45,8 +61,8 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
         //  Si elijo una, hago la petición.
         fetch(`/api/municipios/${provinciaId}`)
             .then(res => res.json())
-            .then(data => {
-                setMunicipiosState(data);
+            .then((municipios: Municipio[]) => {
+                setMunicipiosState(municipios);
                 setMunicipioId('');
             });
     }
@@ -103,11 +119,11 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
         if (!e.target.files) return;
         const file = e.target.files[0];
         setMainImage(file);
-        setData('main_image', file as any);           // el File recién elegido
+        setData('main_image', file);
     }
     const removeMainImage = () => {
         if (confirm('¿Estás seguro que quieres eliminar esta imagen?')) {
-            setData('main_image', null as any);
+            setData('main_image', null);
             setMainImage(undefined);
         }
     }

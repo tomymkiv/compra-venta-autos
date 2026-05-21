@@ -8,7 +8,8 @@ import { usePage } from '@inertiajs/react';
 import { User } from "@/types";
 
 export default function VehiculosItem({ post }: CarCardsProps) {
-    const { user } = usePage().props;
+    const { user: UserProps } = usePage().props;
+    const user = UserProps as User;
     const blueDolarUrl = 'https://api.bluelytics.com.ar/v2/latest';
     const [USDPrice, setUSDPrice] = useState(post.precio);
     const [ARSPrice, setARSPrice] = useState(post.precio);
@@ -187,9 +188,13 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                 </div>
                 {
                     user ? <div className="w-[50%] flex flex-col lg:flex-row gap-4 items-center justify-center">
-                        <a href={`https://wa.me/54${post.user.contacto}?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Consultar</a>
                         {
-                            (user as User).id === post.user.id ? <Link href={`/posts/${post.id}/edit`} className="p-3 bg-gray-800 rounded-lg hover:bg-blue-600 hover:text-gray-200 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Editar publicación</Link> : ''
+                            user.id !== post.user.id && (
+                                <a href={`https://wa.me/54${post.user.contacto}?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Consultar</a>
+                            )
+                        }
+                        {
+                            user.id === post.user.id ? <Link href={`/posts/${post.id}/edit`} className="p-3 bg-gray-800 rounded-lg hover:bg-blue-600 hover:text-gray-200 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Editar publicación</Link> : ''
                         }
                     </div> :
                         <div>
