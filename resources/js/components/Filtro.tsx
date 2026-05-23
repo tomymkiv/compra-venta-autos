@@ -10,6 +10,7 @@ type Filters = {
     municipioId?: number;
 };
 
+import { createPortal } from "react-dom";
 import { FilterProps, Municipio } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import CarCards from "./CarCards";
@@ -96,7 +97,8 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
     }, [provinciaId])
 
     return <>
-        <div className={`${filterOn ? `fixed ${innerWidth > 1024 ? 'w-[25%]' : 'w-full'}` : 'hidden w-0'} flex flex-col justify-center items-center overflow-hidden left-0 z-50 top-0 h-screen bg-black/85 space-y-12 text-gray-200 transition-all duration-300`}>
+
+        {createPortal(<div className={`${filterOn ? `fixed ${innerWidth > 1024 ? 'w-[25%]' : 'w-full'}` : 'hidden w-0'} flex flex-col justify-center items-center overflow-hidden left-0 z-50 top-0 h-screen bg-black/85 space-y-12 text-gray-200 transition-all duration-300`}>
             <div className="flex items-center justify-between w-[80%] mx-2">
                 <h4 className="mx-5 text-xl font-[500]">Filtros</h4>
                 <svg onClick={handleOpenFilter} className="fill-gray-200 w-15 p-2 bg-red-800 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -216,6 +218,10 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
                 </ul>
             </div>
         </div >
+            , document.body
+        )}
+
+
         <section className="space-y-8">
             <section id='categorias' className='flex flex-col items-center justify-center'>
                 <div className={`flex ${posts.data.length > 0 ? 'justify-start' : 'justify-center'} gap-5 w-full`}>
