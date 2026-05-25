@@ -18,7 +18,7 @@ export default function Welcome({ posts }: PageProps) {
             {/* Degradé lateral izquierdo (desktop) */}
             {/* <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-black/70 via-black/20 to-transparent" /> */}
             {/* Texto superpuesto */}
-            <div className="relative z-20 flex flex-col justify-center h-full px-3 md:px-10">
+            <div className="relative -top-20 z-20 flex flex-col justify-center h-full px-3 md:px-10">
                 <div className='max-w-[388px] lg:max-w-[33%] space-y-5'>
                     <h1 className='text-4xl text-left animate-text-pulse md:text-5xl lg:text-6xl text-[#ccc] font-[200]'>Silvetti Automotores</h1>
                     <p className='text-white'>Somos un grupo de vendedores independientes dedicados a la compra, venta y permuta de vehículos, unidos por la transparencia y el trato directo.</p>
