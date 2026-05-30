@@ -131,7 +131,6 @@ export interface FilterProps {
     provincias: Provincia[],
     municipios: Municipio[],
     currencies: Currency[],
-    // roles: Rol[],
 }
 export interface CarCardsProps {
     post: Post,

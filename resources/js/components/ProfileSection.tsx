@@ -2,12 +2,14 @@ import AppFront from "@/AppFront";
 import { ProfileProps } from "@/types/types";
 import { useEffect, useState } from "react";
 import CloseButton from "./close-button";
+import { User } from "@/types";
+import { usePage } from "@inertiajs/react";
 
 export default function ProfileSection({ children, profileUser }: ProfileProps) {
+    const { user: UserProps, user_role: UserRoleProp } = usePage().props;
+    const user = UserProps as User;
+    const user_role = UserRoleProp as string;
     const [isImageOpen, setIsImageOpen] = useState(false);
-    // console.log("Usuario del post: \n", user);
-    // console.log("Usuario del logueado: \n", loguedUser);
-    // Abro o cierro la imagen, dependiendo el estado
     const toggleImg = () => setIsImageOpen(!isImageOpen);
 
     useEffect(() => {
@@ -41,7 +43,7 @@ export default function ProfileSection({ children, profileUser }: ProfileProps) 
                                 )}
                             </div>
                             <div className="flex gap-3 text-3xl">
-                                <p>{profileUser.name}</p>
+                                <p>{profileUser.name} <small>({user_role.toLowerCase()})</small></p>
                             </div>
                         </div>
                         <hr className="animate-box-pulse" />

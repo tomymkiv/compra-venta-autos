@@ -31,11 +31,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
 
     const handleRole = () => {
         const rol = initialRol;
-        console.log(rol);
-        setShowContacto(rol === 'V');
-        if (rol !== 'V') {
-            setData('contacto', 0);
-        }
+        setShowContacto(rol === 'V'); // si esto es verdadero, showContacto = true
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -62,9 +58,8 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
     useEffect(() => {
         handleRole();
     }, [initialRol]);
-    return <AuthLayout title="Registro">
+    return <AuthLayout title={`Registro (${initialRol === 'V' ? 'vendedor' : 'comprador'})`}>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
-            {/* <RoleSelector mensajeError={errors.rol} handleRole={handleRole} value={rolSelected} /> */}
             <RegisterFormData errorMsg={errors.name} name="Nombre" type="text" setData={(e) => setData('name', e.target.value)} value={data.name} />
             <RegisterFormData errorMsg={errors.email} name="Correo" type="email" setData={(e) => setData('email', e.target.value)} value={data.email} />
             {/* si elegí "vendedor", muestro el campo del contacto */}

@@ -6,6 +6,7 @@ use Auth;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Mockery\Undefined;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -38,6 +39,11 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
+        if (Auth::user()) {
+            $user_role = Auth::user()->roles->first()->name;
+        } else {
+            $user_role = '';
+        }
 
         return [
             ...parent::share($request),
@@ -48,6 +54,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'user' => Auth::user(), // objeto del usuario
+            'user_role' => $user_role
         ];
     }
 }

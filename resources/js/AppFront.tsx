@@ -10,8 +10,12 @@ import { usePage } from '@inertiajs/react';
 import { User } from './types';
 
 export default function AppFront({ children, initialQuery, hero }: AppComponentProps) {
-  const { user: UserProps } = usePage().props;
+  const {
+    user: UserProps,
+    user_role: UserRoleProp
+  } = usePage().props;
   const user = UserProps as User;
+  const user_role = UserRoleProp as string;
   const categoriasRefDesk = useRef<HTMLUListElement>(null!)
   const categoriasRefMob = useRef<HTMLUListElement>(null!)
   const menuRef = useRef<HTMLUListElement>(null!) // esto sirve para referenciar el ul del menu explicitamente. 
@@ -97,7 +101,10 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
                   user &&
                   <Link href={route('user.show', user.id)} className='w-fit flex items-center justify-center flex-col gap-2'>
                     <img src={user.avatar?.includes('api') ? user.avatar : `/storage/${user.avatar}`} className="rounded-full w-15 h-15 object-cover" alt={"Imagen del usuario"} />
-                    <p>{user.name}</p>
+                    <div className='flex gap-1 items-center justify-center'>
+                      <p>{user.name}</p>
+                      {user_role && <p className='text-sm text-[#ccc]'>({user_role.toLowerCase()})</p>}
+                    </div>
                   </Link>
                 }
               </div>
