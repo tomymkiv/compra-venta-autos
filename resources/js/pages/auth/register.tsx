@@ -1,17 +1,19 @@
-import InputComp from "@/components/InputComp";
 import { Input } from "@/components/ui/input";
 import AuthLayout from "@/layouts/auth-layout";
 import { Link, useForm } from "@inertiajs/react"
-import React, { useRef, useState } from "react";
+import React, { useEffect, useEffectEvent, useRef, useState } from "react";
 import { route } from "ziggy-js";
 import RegisterFormData from "@/components/RegisterFormData";
 
-export default function Register() {
+export default function Register({ rol: initialRol = '' }: { rol: string }) {
     const [inputBg, setInputBg] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
     const [imgBtn, setImgBtn] = useState('hidden');
+    const [showContacto, setShowContacto] = useState(initialRol === 'V');
+
     const { data, setData, post, processing, errors } = useForm<{
         avatar: File | null,
+        rol: string,
         name: string,
         email: string,
         password: string,
@@ -19,12 +21,23 @@ export default function Register() {
         contacto: number,
     }>({
         avatar: null,
+        rol: initialRol,
         name: '',
         email: '',
         password: '',
         password_confirmation: '',
         contacto: 0,
     })
+
+    const handleRole = () => {
+        const rol = initialRol;
+        console.log(rol);
+        setShowContacto(rol === 'V');
+        if (rol !== 'V') {
+            setData('contacto', 0);
+        }
+    }
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(route('auth.register'));
@@ -46,23 +59,23 @@ export default function Register() {
         }
         setData('contacto', Number(e.target.value));
     }
+    useEffect(() => {
+        handleRole();
+    }, [initialRol]);
     return <AuthLayout title="Registro">
-        {/* <div className="absolute left-0 top-0 z-50 bg-[#111] h-screen w-screen flex flex-col items-center justify-center">
-            <h2 className="text-center text-xl">Elegí tu rol</h2>
-            <RoleCard userType="COMPRADOR" />
-            <RoleCard userType="VENDEDOR" />
-        </div> */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+            {/* <RoleSelector mensajeError={errors.rol} handleRole={handleRole} value={rolSelected} /> */}
             <RegisterFormData errorMsg={errors.name} name="Nombre" type="text" setData={(e) => setData('name', e.target.value)} value={data.name} />
             <RegisterFormData errorMsg={errors.email} name="Correo" type="email" setData={(e) => setData('email', e.target.value)} value={data.email} />
-            <RegisterFormData errorMsg={errors.contacto} name="Número de contacto (sin codigo de area)" type="number" setData={handleContacto} value={String(data.contacto)} />
+            {/* si elegí "vendedor", muestro el campo del contacto */}
+            {showContacto && <RegisterFormData errorMsg={errors.contacto} name="Número de contacto (sin codigo de area)" type="number" setData={handleContacto} value={String(data.contacto)} />}
             <RegisterFormData errorMsg={errors.password} name="Contraseña" type="password" setData={(e) => setData('password', e.target.value)} value={data.password} />
             <RegisterFormData errorMsg={errors.password_confirmation} name="Confirmar contraseña" type="password" setData={(e) => setData('password_confirmation', e.target.value)} value={data.password_confirmation} />
             <div className="flex flex-col gap-2">
                 <p className="text-red-600">{errors.avatar}</p>
                 <label htmlFor="avatar">Avatar <small>(opcional)</small></label>
 
-                <Input ref={inputRef} type="file" name="avatar" id="avatar" onChange={handleImageInput} accept="image/*" placeholder="Avatar" className={`${inputBg} w-full`} />
+                <Input ref={inputRef} type="file" name="avatar" id="avatar" onChange={handleImageInput} accept="image/*" placeholder="Avatar" className={`${inputBg} cursor-pointer w-full`} />
                 {data.avatar &&
                     <button onClick={handleRemoveImage} className={`text-red-500 w-full text-center cursor-pointer bg-red-500/30 hover:bg-red-500/60 transition-colors duration-300 p-2 rounded-md ${imgBtn} w-fit`}>
                         Eliminar imagen

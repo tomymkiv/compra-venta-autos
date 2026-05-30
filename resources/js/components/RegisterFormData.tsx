@@ -8,7 +8,6 @@ type FormDataTypes = {
     setData: (e: React.ChangeEvent<HTMLInputElement>) => void,
 }
 
-
 export default function RegisterFormData({ errorMsg, type, name, setData, value }: FormDataTypes) {
     return (
         <div className="flex flex-col gap-2">

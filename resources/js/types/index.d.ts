@@ -35,7 +35,11 @@ export interface User {
     name: string;
     email: string;
     avatar?: string;
-    contacto: number;
+    contact: {
+        id: number,
+        user_id: number,
+        contacto: number,
+    },
     email_verified_at: string | null;
     two_factor_enabled?: boolean;
     created_at: string;

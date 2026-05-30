@@ -57,7 +57,7 @@ class PostController extends Controller
         $post->load([
             'postImage' => fn($q) => $q->orderBy('orden'),
             'car.carModel.carBrand',
-            'user',
+            'user.contact',
             'municipio.provincia',
         ]);
 

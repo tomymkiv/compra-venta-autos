@@ -5,14 +5,23 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\ForceRoleSelected;
 use Illuminate\Support\Facades\Route;
 
 // autenticacion
-Route::get('register', [RegisterController::class, 'index'])->name('auth.register');
-Route::post('register', [RegisterController::class, 'register'])->name('auth.register');
+Route::get('role-selector', [RegisterController::class, 'roles'])->name('auth.roles');
+Route::post('role-selector', [RegisterController::class, 'storeRole'])->name('auth.storeRole');
+// no me puedo registrar si previamente no seleccioné un rol en "auth.roles".
+
+// para el registro, obligatoriamente tuve que haber elegido un rol anteriormente
+Route::get('register', [RegisterController::class, 'index'])
+    ->middleware(ForceRoleSelected::class)
+    ->name('auth.register');
+Route::post('register', [RegisterController::class, 'register'])
+    ->middleware(ForceRoleSelected::class)
+    ->name('auth.register');
 Route::get('/', [UserController::class, 'welcome'])->name('welcome');
 Route::delete('logout', [LoginController::class, 'logout']);
 Route::get('index', [LoginController::class, 'index'])->name('auth.login');

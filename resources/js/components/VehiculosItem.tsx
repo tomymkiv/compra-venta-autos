@@ -195,7 +195,7 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                     user ? <div className="w-[50%] flex flex-col lg:flex-row gap-4 items-center justify-center">
                         {
                             user.id !== post.user.id && (
-                                <a href={`https://wa.me/54${post.user.contacto}?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Consultar</a>
+                                <a href={`https://wa.me/54${post.user.contact.contacto}?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-[90vw] sm:w-[50%] lg:w-[40%] text-center font-[500]">Consultar</a>
                             )
                         }
                         {

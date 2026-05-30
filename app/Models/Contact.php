@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Contact extends Model
+{
+    protected $table = 'users_contactos';
+    protected $fillable = ['user_id', 'contacto'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+}

@@ -18,7 +18,6 @@ return new class extends Migration {
             $table->string('avatar')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->unsignedInteger('contacto')->unique();
             $table->rememberToken();
             $table->timestamps();
         });
@@ -27,7 +26,12 @@ return new class extends Migration {
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
-
+        Schema::create('users_contactos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->unsignedInteger('contacto')->unique();
+            $table->timestamps();
+        });
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
@@ -45,6 +49,7 @@ return new class extends Migration {
     {
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users_contactos');
         Schema::dropIfExists('sessions');
     }
 };

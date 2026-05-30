@@ -5,7 +5,6 @@ import { type User } from ".";
 export interface Rol {
     id: number,
     name: string,
-    guard_name: string,
 }
 
 export interface Permission {

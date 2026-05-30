@@ -23,7 +23,6 @@ class User extends Authenticatable
         'name',
         'avatar',
         'email',
-        'contacto',
         'password',
     ];
 
@@ -46,8 +45,13 @@ class User extends Authenticatable
      */
     public function post()
     {
-        return $this->hasMany(Post::class, 'id');
+        return $this->hasMany(Post::class, 'user_id');
     }
+    public function contact()
+    {
+        return $this->hasOne(Contact::class, 'user_id');
+    }
+
     protected function casts(): array
     {
         return [
