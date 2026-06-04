@@ -14,9 +14,8 @@ use App\Models\Municipio;
 use App\Models\PostImage;
 use App\Models\Provincia;
 use App\Models\User;
-use Http;
+use Gate;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use function Symfony\Component\Clock\now;
 
@@ -24,9 +23,6 @@ class PostController extends Controller
 {
     public function index()
     {
-        /**
-         * muestro esta informacion en los filtros
-         */
         return inertia('posts/index', [
             'posts' => Post::with('mainImage', 'car.carModel.carBrand', 'user', 'municipio.provincia', 'car.car_type')
                 ->whereHas('mainImage') // mainImage = imagen con orden = 1
@@ -74,7 +70,6 @@ class PostController extends Controller
                 ->latest()
                 ->where('id_user', $user->id)
                 ->paginate($this->paginateLimit),
-
             // whereHas encadenado: misma lógica que index(), la DB filtra solo lo necesario.
             'carBrands' => CarsBrand::whereHas('carModels.cars.post')->orderBy('marca', 'asc')->get(),
             'carType' => CarType::whereHas('cars.post')->orderBy('tipo', 'asc')->get(),
@@ -86,6 +81,10 @@ class PostController extends Controller
 
     public function store(PostCreateRequest $request)
     {
+        // si el gate no te autoriza, devuelve un error.
+        if (!Gate::allows('create-post', $this->loguedUser)) {
+            abort(403);
+        }
         // dd($request->file('main_image'));
         $images = $request->file('images');
         $mainImage = $request->file('main_image');
@@ -96,7 +95,7 @@ class PostController extends Controller
                 'id_marca' => $validated['marca'],
                 'modelo' => $validated['modelo'],
             ]);
-            // dd($validated['tipo']);
+
             // FUNCIONA
             $type_id = CarType::where('id', $validated['tipo'])
                 ->firstOrFail()
@@ -159,6 +158,11 @@ class PostController extends Controller
 
     public function create()
     {
+        // si el gate no te autoriza, devuelve un error.
+
+        if (!Gate::allows('create-post', $this->loguedUser)) {
+            abort(403);
+        }
         return inertia('posts/create', [
             'car' => new Post,
             'carBrands' => CarsBrand::orderBy('marca', 'asc')->get(),
@@ -170,19 +174,28 @@ class PostController extends Controller
 
     public function edit($id)
     {
+        $post = Post::with('user', 'car.carModel.carBrand', 'postImage', 'mainImage', 'municipio.provincia')
+            ->findOrFail($id);
+        // si el gate no te autoriza, devuelve un error.
+        if (!Gate::allows('update-post', $post)) {
+            abort(403);
+        }
         return inertia('posts/edit', [
-            'postData' => Post::with('user', 'car.carModel.carBrand', 'postImage', 'mainImage', 'municipio.provincia')
-                ->findOrFail($id),
+            'postData' => $post,
             'carBrands' => CarsBrand::orderBy('marca', 'asc')->get(),
             'car_types' => CarType::orderBy('tipo', 'asc')->get(),
             'currencies' => Currency::get(),
             'provincias' => Provincia::orderBy('nombre', 'asc')->get(),
-            // 'permissions' => $this->loguedUser->getAllPermissions()->pluck('name'),
         ]);
     }
 
     public function update(PostUpdateRequest $request, Post $post, Car $car)
     {
+        // si el gate no te autoriza, devuelve un error.
+        // doble autorizacion, ya que tambien hago este condicional en edit()
+        if (!Gate::allows('update-post', $post)) {
+            abort(403);
+        }
         // dd(is_file($request->file('main_image')) ? true : false);
         $main_image = $request->file('main_image');
         $images = $request->file('images');
@@ -267,6 +280,10 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
+        if (!Gate::allows('delete-post', $post)) {
+            abort(403);
+        }
+
         $post->delete();
 
         return redirect()->route('posts.index');

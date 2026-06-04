@@ -2,12 +2,10 @@ import AppFront from "@/AppFront";
 import { ProfileProps } from "@/types/types";
 import { useEffect, useState } from "react";
 import CloseButton from "./close-button";
-import { User } from "@/types";
 import { usePage } from "@inertiajs/react";
 
 export default function ProfileSection({ children, profileUser }: ProfileProps) {
-    const { user: UserProps, user_role: UserRoleProp } = usePage().props;
-    const user = UserProps as User;
+    const { user_role: UserRoleProp } = usePage().props;
     const user_role = UserRoleProp as string;
     const [isImageOpen, setIsImageOpen] = useState(false);
     const toggleImg = () => setIsImageOpen(!isImageOpen);

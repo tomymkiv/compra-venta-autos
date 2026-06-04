@@ -74,8 +74,12 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
               <DropdownButton title="Publicaciones" onclick={toggleCategoriasMobile} clases='!text-xl text-[#ccc] pl-7 flex items-center gap-2 p-2' />
               <ul className='text-[#ccc] flex flex-col ml-5 hidden' ref={categoriasRefMob}>
                 <CategoriasSlots text="Ver publicaciones" link="/posts" clases='w-[85%]' />
-                <CategoriasSlots text="Crear publicación" link="/posts/create" clases='w-[85%]' />
-                {user && <CategoriasSlots text="Editar publicación" link={`/posts/user/${user?.id}`} clases='w-[85%]' />}
+                {user && user_role === 'VENDEDOR' &&
+                  <>
+                    <CategoriasSlots text="Crear publicación" link="/posts/create" clases='w-[85%]' />
+                    <CategoriasSlots text="Editar publicación" link={`/posts/user/${user?.id}`} clases='w-[85%]' />
+                  </>
+                }
               </ul>
               {
                 user ?
@@ -116,10 +120,11 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
                 <div className='absolute'>
                   <ul className='text-[#ccc] flex flex-col hidden absolute bg-[#111] top-1.5 left-40 mt-8.5 border border-gray-700' ref={categoriasRefDesk}>
                     <CategoriasSlots text="Ver publicaciones" clases='w-fit' link="/posts" onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
-                    <CategoriasSlots text="Crear publicación" clases='w-fit' link="/posts/create" onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
-                    {
-                      user &&
-                      <CategoriasSlots text="Editar publicación" clases='w-fit' link={`/posts/user/${user?.id}`} onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
+                    {user && user_role === 'VENDEDOR' &&
+                      <>
+                        <CategoriasSlots text="Crear publicación" clases='w-fit' link="/posts/create" onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
+                        <CategoriasSlots text="Editar publicación" clases='w-fit' link={`/posts/user/${user?.id}`} onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
+                      </>
                     }
                   </ul>
                 </div>

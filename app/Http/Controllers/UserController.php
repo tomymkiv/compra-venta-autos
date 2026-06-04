@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserEditRequest;
 use App\Models\Post;
 use App\Models\User;
+use Gate;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -40,6 +41,12 @@ class UserController extends Controller
     public function update(UserEditRequest $request)
     {
         $user = $this->loguedUser;
+
+        // si el gate no te autoriza, devuelve un error.
+        if (!Gate::allows('update-user', $user)) {
+            abort(403);
+        }
+
         $validated = $request->validated();
         // Si no quiere cambiar contraseña, no la enviamos al update
         if (empty($validated['password'])) {
@@ -73,6 +80,10 @@ class UserController extends Controller
     }
     public function destroy(User $user)
     {
+        if (!Gate::allows('delete-user', $user)) {
+            abort(403);
+        }
+
         $user->delete();
         return redirect()->route('welcome');
     }

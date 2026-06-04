@@ -22,8 +22,8 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'name' => 'required|string|max:32',
+            'email' => 'required|email|max:128',
             'contacto' => 'exclude_unless:rol,V|required|integer|min:10000000|max:99999999',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'password' => 'required|string|min:8|confirmed',
@@ -40,10 +40,10 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name.required' => 'El nombre es obligatorio.',
-            'name.max' => 'El nombre debe tener como máximo 255 caracteres.',
+            'name.max' => 'El nombre debe tener como máximo 32 caracteres.',
             'email.required' => 'El correo es obligatorio.',
             'email.email' => 'El correo debe ser un correo válido.',
-            'email.max' => 'El correo debe tener como máximo 255 caracteres.',
+            'email.max' => 'El correo debe tener como máximo 128 caracteres.',
             'contacto.required' => 'El número de contacto es obligatorio para vendedores.',
             'contacto.min' => 'El número de contacto debe tener como mínimo 8 dígitos.',
             'contacto.max' => 'El número de contacto debe tener como máximo 8 dígitos.',

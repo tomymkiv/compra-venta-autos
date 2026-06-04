@@ -122,6 +122,7 @@ export interface AppComponentProps {
     children?: React.ReactNode,
     initialQuery?: string,
     hero?: React.ReactNode,
+    roles?: Rol[],
 }
 export interface FilterProps {
     posts: Paginated<Post>, // están paginados los posts

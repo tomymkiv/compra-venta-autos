@@ -31,9 +31,9 @@ class UserPolicy
         return $user->can('CREATE_USER') ? Response::allow() : Response::denyAsNotFound();
     }
 
-    public function createPost(User $user): Response
+    public function createPost(User $user, User $model): Response
     {
-        return $user->can('CREATE_POST') ? Response::allow() : Response::denyAsNotFound();
+        return ($user->can('CREATE_POST') && $user->id === $model->id) ? Response::allow() : Response::denyAsNotFound();
     }
 
     /**
@@ -41,12 +41,9 @@ class UserPolicy
      */
     public function updateUser(User $user, User $model): Response
     {
-        return $user->can('EDIT_USER') ? Response::allow() : Response::denyAsNotFound();
-    }
-
-    public function updatePost(User $user, User $model): Response
-    {
-        return $user->can('EDIT_POST') ? Response::allow() : Response::denyAsNotFound();
+        return ($user->can('EDIT_USER') && $user->id === $model->id)
+            ? Response::allow()
+            : Response::denyAsNotFound();
     }
 
     /**
@@ -54,12 +51,9 @@ class UserPolicy
      */
     public function deleteUser(User $user, User $model): Response
     {
-        return $user->can('DELETE_USER') ? Response::allow() : Response::denyAsNotFound();
-    }
-
-    public function deletePost(User $user, User $model): Response
-    {
-        return $user->can('DELETE_POST') ? Response::allow() : Response::denyAsNotFound();
+        return ($user->can('DELETE_USER') && $user->id === $model->id)
+            ? Response::allow()
+            : Response::denyAsNotFound();
     }
 
     /**

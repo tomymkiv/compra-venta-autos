@@ -15,10 +15,11 @@ import { FilterProps, Municipio } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import CarCards from "./CarCards";
 import Pagination from "./pagination";
-import { Link, router } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
 export default function Filtro({ posts, showPages, carBrands, carType, currencies, provincias, municipios }: FilterProps) {
+    const { user, user_role } = usePage().props;
     const [currencySelected, setCurrencySelected] = useState(false);
     const filtros = ['Precio', 'Marca', 'Año', 'Tipo', 'Ubicación'];
     const [provinciaId, setProvinciaId] = useState<number | ''>('');
@@ -252,7 +253,7 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
                             )) :
                                 <>
                                     <p className="text-xl">No hay publicaciones disponibles en este momento</p>
-                                    <Link href={'/posts/create'} className="text-center hover:underline text-blue-500 font-md">Crear una publicación</Link>
+                                    {user && user_role === 'VENDEDOR' && <Link href={'/posts/create'} className="text-center hover:underline text-blue-500 font-md">Crear una publicación</Link>}
                                 </>
                         }
                     </div>

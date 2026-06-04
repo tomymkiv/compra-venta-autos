@@ -23,8 +23,8 @@ class UserEditRequest extends FormRequest
     {
         return [
             'avatar' => 'nullable|max:2048',
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|max:255',
+            'name' => 'sometimes|string|max:32',
+            'email' => 'sometimes|email|max:128',
             'password' => 'nullable|string|min:8|confirmed',
             'password_confirmation' => 'nullable|string|min:8',
         ];
@@ -32,9 +32,9 @@ class UserEditRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.max' => 'El nombre no puede exceder los 255 caracteres',
+            'name.max' => 'El nombre no puede exceder los 32 caracteres',
             'email.email' => 'El email debe ser un email valido',
-            'email.max' => 'El email no puede exceder los 255 caracteres',
+            'email.max' => 'El email no puede exceder los 128 caracteres',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres',
             'avatar.max' => 'La imagen no puede exceder los 2048kb',
             'password_confirmation.min' => 'La confirmación de la contraseña debe tener al menos 8 caracteres',
