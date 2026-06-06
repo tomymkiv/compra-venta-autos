@@ -12,10 +12,10 @@ import { User } from './types';
 export default function AppFront({ children, initialQuery, hero }: AppComponentProps) {
   const {
     user: UserProps,
-    user_role: UserRoleProp
+    my_user_role: UserRoleProp
   } = usePage().props;
   const user = UserProps as User;
-  const user_role = UserRoleProp as string;
+  const my_user_role = UserRoleProp as string;
   const categoriasRefDesk = useRef<HTMLUListElement>(null!)
   const categoriasRefMob = useRef<HTMLUListElement>(null!)
   const menuRef = useRef<HTMLUListElement>(null!) // esto sirve para referenciar el ul del menu explicitamente. 
@@ -74,7 +74,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
               <DropdownButton title="Publicaciones" onclick={toggleCategoriasMobile} clases='!text-xl text-[#ccc] pl-7 flex items-center gap-2 p-2' />
               <ul className='text-[#ccc] flex flex-col ml-5 hidden' ref={categoriasRefMob}>
                 <CategoriasSlots text="Ver publicaciones" link="/posts" clases='w-[85%]' />
-                {user && user_role === 'VENDEDOR' &&
+                {user && my_user_role === 'VENDEDOR' &&
                   <>
                     <CategoriasSlots text="Crear publicación" link="/posts/create" clases='w-[85%]' />
                     <CategoriasSlots text="Editar publicación" link={`/posts/user/${user?.id}`} clases='w-[85%]' />
@@ -107,7 +107,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
                     <img src={user.avatar?.includes('api') ? user.avatar : `/storage/${user.avatar}`} className="rounded-full w-15 h-15 object-cover" alt={"Imagen del usuario"} />
                     <div className='flex gap-1 items-center justify-center'>
                       <p>{user.name}</p>
-                      {user_role && <p className='text-sm text-[#ccc]'>({user_role.toLowerCase()})</p>}
+                      {my_user_role && <p className='text-sm text-[#ccc]'>({my_user_role.toLowerCase()})</p>}
                     </div>
                   </Link>
                 }
@@ -120,7 +120,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
                 <div className='absolute'>
                   <ul className='text-[#ccc] flex flex-col hidden absolute bg-[#111] top-1.5 left-40 mt-8.5 border border-gray-700' ref={categoriasRefDesk}>
                     <CategoriasSlots text="Ver publicaciones" clases='w-fit' link="/posts" onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
-                    {user && user_role === 'VENDEDOR' &&
+                    {user && my_user_role === 'VENDEDOR' &&
                       <>
                         <CategoriasSlots text="Crear publicación" clases='w-fit' link="/posts/create" onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
                         <CategoriasSlots text="Editar publicación" clases='w-fit' link={`/posts/user/${user?.id}`} onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />

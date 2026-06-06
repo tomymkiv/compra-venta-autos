@@ -7,6 +7,7 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Mockery\Undefined;
+use Spatie\Permission\Models\Role;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -38,12 +39,16 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $my_user_role = $request->user()->roles->first()->name;
+
+        if ($request->routeIs('user.show')) { // si voy a ver el perfil de un usuario, busco su rol
+            $user_role = $request->route('user');
+            $user_role = Role::where('id', $user_role)->first()->name;
+        } else {
+            $user_role = null;
+        }
+
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
-        // if (Auth::user()) {
-        //     $user_role = Auth::user()->roles->first()->name;
-        // } else {
-        //     $user_role = '';
-        // }
 
         return [
             ...parent::share($request),
@@ -54,7 +59,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'user' => Auth::user(), // objeto del usuario
-            // 'user_role' => $user_role
+            'user_role' => $user_role,
+            'my_user_role' => $my_user_role,
         ];
     }
 }

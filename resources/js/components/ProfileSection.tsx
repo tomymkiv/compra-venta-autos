@@ -6,8 +6,8 @@ import { usePage } from "@inertiajs/react";
 import { createPortal } from "react-dom";
 
 export default function ProfileSection({ children, profileUser }: ProfileProps) {
-    // const { user_role: UserRoleProp } = usePage().props;
-    // const user_role = UserRoleProp as string;
+    const { user_role: UserRoleProp } = usePage().props;
+    const user_role = UserRoleProp as string;
     const [isImageOpen, setIsImageOpen] = useState(false);
     const toggleImg = () => setIsImageOpen(!isImageOpen);
 
@@ -42,8 +42,7 @@ export default function ProfileSection({ children, profileUser }: ProfileProps) 
                                 )}
                             </div>
                             <div className="flex gap-3 text-3xl">
-                                {/*  <small>({user_role.toLowerCase()})</small> */}
-                                <p>{profileUser.name}</p>
+                                <p>{profileUser.name} <small>({user_role.toLowerCase()})</small></p>
                             </div>
                         </div>
                         <hr className="animate-box-pulse" />
