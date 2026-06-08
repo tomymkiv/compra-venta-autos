@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Actions\Fortify;
+namespace App\Actions\User;
 
+use App\Actions\Fortify\PasswordValidationRules;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;

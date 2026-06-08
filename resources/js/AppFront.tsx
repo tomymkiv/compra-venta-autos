@@ -8,6 +8,7 @@ import DropdownButton from './components/DropdownButton';
 import SearchInput from './components/SearchInput';
 import { usePage } from '@inertiajs/react';
 import { User } from './types';
+import NavButtonLines from './components/ui/nav-button-lines';
 
 export default function AppFront({ children, initialQuery, hero }: AppComponentProps) {
   const {
@@ -68,6 +69,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
                 <Link href={route('user.show', user.id)} className='w-fit p-5 flex items-center gap-2 flex-col'>
                   <img src={user.avatar?.includes('api') ? user.avatar : `/storage/${user.avatar}`} className="rounded-full w-20 h-20 object-cover" alt={"Imagen del usuario"} />
                   <p className='text-xl text-[#ccc]'>{user.name}</p>
+                  <p className='text-xl text-[#ccc]'>({my_user_role.toLowerCase()})</p>
                 </Link>
               }
               <PageLinks title="Inicio" link='/' clases='!text-xl' />
@@ -92,9 +94,9 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
             </ul>
           </nav>
           <button className='fixed top-0 left-0 z-50 flex flex-col gap-1 p-5 bg-[#2228] outline outline-gray-200/40' onClick={toggleMenu}>
-            <div className="h-[2px] w-[30px] bg-[#ccc] shadow-lg"></div>
-            <div className="h-[2px] w-[20px] bg-[#ccc] shadow-lg"></div>
-            <div className="h-[2px] w-[10px] bg-[#ccc] shadow-lg"></div>
+            <NavButtonLines width='30px' />
+            <NavButtonLines width='20px' />
+            <NavButtonLines width='10px' />
           </button>
         </div>
         <div id='desktop-nav' className='w-full'>
@@ -105,7 +107,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
                   user &&
                   <Link href={route('user.show', user.id)} className='w-fit flex items-center justify-center flex-col gap-2'>
                     <img src={user.avatar?.includes('api') ? user.avatar : `/storage/${user.avatar}`} className="rounded-full w-15 h-15 object-cover" alt={"Imagen del usuario"} />
-                    <div className='flex gap-1 items-center justify-center'>
+                    <div className='flex flex-col gap-1 items-center justify-center'>
                       <p>{user.name}</p>
                       {my_user_role && <p className='text-sm text-[#ccc]'>({my_user_role.toLowerCase()})</p>}
                     </div>
@@ -114,9 +116,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
               </div>
               <div className='flex gap-5'>
                 <PageLinks title="Inicio" link='/' clases='flex items-center gap-2 p-2 cursor-pointer text-xl text-shadow-gray-300 hover:text-shadow-md transition-all duration-300' />
-                <div>
-                  <DropdownButton clases='text-xl text-[#ccc] ml-5 cursor-pointer p-4' onmouseenter={toggleCategoriasDesktopOn} onmouseleave={toggleCategoriasDesktopOff} title='Publicaciones' />
-                </div>
+                <DropdownButton clases='text-xl text-[#ccc] ml-5 cursor-pointer p-4' onmouseenter={toggleCategoriasDesktopOn} onmouseleave={toggleCategoriasDesktopOff} title='Publicaciones' />
                 <div className='absolute'>
                   <ul className='text-[#ccc] flex flex-col hidden absolute bg-[#111] top-1.5 left-40 mt-8.5 border border-gray-700' ref={categoriasRefDesk}>
                     <CategoriasSlots text="Ver publicaciones" clases='w-fit' link="/posts" onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />

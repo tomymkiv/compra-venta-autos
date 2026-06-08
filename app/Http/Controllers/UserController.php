@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\User\UpdateUserAction;
 use App\Http\Requests\UserEditRequest;
 use App\Models\Post;
 use App\Models\User;
 use Gate;
-use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -38,43 +38,15 @@ class UserController extends Controller
     {
         return inertia('user/edit');
     }
-    public function update(UserEditRequest $request)
+    public function update(UserEditRequest $request, UpdateUserAction $action)
     {
         $user = $this->loguedUser;
 
-        // si el gate no te autoriza, devuelve un error.
         if (!Gate::allows('update-user', $user)) {
             abort(403);
         }
 
-        $validated = $request->validated();
-        // Si no quiere cambiar contraseña, no la enviamos al update
-        if (empty($validated['password'])) {
-            unset($validated['password']);
-        }
-        // si ya existe una imagen en este perfil...
-        if ($request->hasFile('avatar')) {
-            //  si recibo una imagen en formato archivo, la cambio
-            // (Opcional pero recomendado) borrar la anterior
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-
-            // Guardar la nueva imagen
-            $path = $request->file('avatar')->store('avatars', 'public');
-
-            // Guardar solo la ruta en la BD
-            $validated['avatar'] = $path;
-        } else if (!$request->hasFile('avatar') && !is_string($validated['avatar'])) {
-            // si no tengo un archivo Y lo que recibo como avatar NO es un string, mantengo mi foto de perfil
-            $validated['avatar'] = $user->avatar;
-        } else if (is_string($validated['avatar']) && str_contains($validated['avatar'], 'api')) {
-            // si recibo un string que contiene 'api', es porque el usuario quiere eliminar la imagen de perfil, por lo que obtendra una de sus primeras 2 iniciales.
-            $validated['avatar'] = $request['avatar'];
-        }
-        // Tampoco necesitamos guardar la confirmación
-        unset($validated['password_confirmation']);
-        $user->update($validated);
+        $action->execute($user, $request->validated(), $request);
 
         return redirect()->route('user.show', $user->id);
     }

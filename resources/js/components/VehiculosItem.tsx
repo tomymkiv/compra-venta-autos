@@ -7,6 +7,7 @@ import { route } from "ziggy-js";
 import CloseButton from "./close-button";
 import { usePage } from '@inertiajs/react';
 import { User } from "@/types";
+import CarPostData from "./ui/car-post-data";
 
 export default function VehiculosItem({ post }: CarCardsProps) {
     const { user: UserProps } = usePage().props;
@@ -130,17 +131,15 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                             <img src={`/${post.post_image[indexImg].url}`} alt={`imagen ${indexImg}`} className="max-w-[90vw] min-h-[300px] max-h-[300px] md:min-w-[700px] md:min-h-[700px] md:max-h-[700px] md:max-w-[700px] object-contain cursor-pointer" onClick={openSlide} />
                         </div>
                         <div className='xl:w-[33%] space-y-2 md:mt-3 mx-3 lg:mx-6 md:flex flex-col gap-5'>
+                            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8">{post.car.car_model.car_brand.marca} {post.car.car_model.modelo}</h2>
                             <div>
-                                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8">{post.car.car_model.car_brand.marca} {post.car.car_model.modelo}</h2>
-                                <p className="text-md md:text-lg lg:text-xl"><b>Año:</b> {post.car.anio}</p>
-                                <p className="text-md md:text-lg lg:text-xl"><b>Kilometraje:</b> {handleDots(post.car.kilometraje.toString())} km</p>
-                                <p className="text-md md:text-lg lg:text-xl"><b>Precio: </b>
-                                    {post.id_currency == 1 ? (priceBtnActive ? `$ ${handleDots(ARSPrice.toFixed(0))}` : `U$S ${handleDots(USDPrice.toFixed(0))}`) : (priceBtnActive ? `U$S ${handleDots(USDPrice.toFixed(0))}` : `$ ${handleDots(ARSPrice.toFixed(0))}`)}
-                                </p>
-                                <p className="text-md md:text-lg lg:text-xl"><b>Ubicación:</b> {post.municipio.nombre}, {post.municipio.provincia.nombre}</p>
+                                <CarPostData title="Año" data={`${post.car.anio}`} />
+                                <CarPostData title="Kilometraje" data={`${handleDots(post.car.kilometraje.toString())} km`} />
+                                <CarPostData title="Precio" data={`${post.id_currency == 1 ? (priceBtnActive ? `$ ${handleDots(ARSPrice.toFixed(0))}` : `U$S ${handleDots(USDPrice.toFixed(0))}`) : (priceBtnActive ? `U$S ${handleDots(USDPrice.toFixed(0))}` : `$ ${handleDots(ARSPrice.toFixed(0))}`)}`} />
+                                <CarPostData title="Ubicación" data={`${post.municipio.nombre}, ${post.municipio.provincia.nombre}`} />
                             </div>
                             <div>
-                                <p className="text-md"><b>Descripción:</b> {post.descripcion}</p>
+                                <CarPostData title="Descripción" data={`${post.descripcion}`} />
                             </div>
                             <div className="">
                                 <button className={`bg-cover bg-center bg-no-repeat rounded-lg text-black cursor-pointer transition-background shadow-md hover:shadow-gray-400 duration-300 text-center font-[700] ${post.id_currency == 1 ? (priceBtnActive ? 'bg-[url("/public/img/billete-100-dolares.webp")]' : 'bg-[url("/public/img/billete-1000-pesos.webp")]') : (priceBtnActive ? 'bg-[url("/public/img/billete-1000-pesos.webp")]' : 'bg-[url("/public/img/billete-100-dolares.webp")]')}`} onClick={convertUSDPrice}> <p className="p-3 bg-white/40 rounded-md">{post.id_currency == 1 ? (priceBtnActive ? 'Convertir a dólares (USD)' : 'Convertir a pesos (ARS)') : (priceBtnActive ? 'Convertir a pesos (ARS)' : 'Convertir a dólares (USD)')}</p></button>
