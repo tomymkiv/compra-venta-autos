@@ -39,7 +39,11 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $my_user_role = $request->user()->roles->first()->name;
+        if (Auth::user()) {
+            $my_user_role = $request->user()->roles->first()->name;
+        } else {
+            $my_user_role = null;
+        }
 
         if ($request->routeIs('user.show')) { // si voy a ver el perfil de un usuario, busco su rol
             $user_role = $request->route('user');
