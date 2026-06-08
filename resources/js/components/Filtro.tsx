@@ -19,7 +19,10 @@ import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
 export default function Filtro({ posts, showPages, carBrands, carType, currencies, provincias, municipios }: FilterProps) {
-    const { user, user_role } = usePage().props;
+    const {
+        my_user_role: UserRoleProp
+    } = usePage().props;
+    const my_user_role = UserRoleProp as string;
     const [currencySelected, setCurrencySelected] = useState(false);
     const filtros = ['Precio', 'Marca', 'Año', 'Tipo', 'Ubicación'];
     const [provinciaId, setProvinciaId] = useState<number | ''>('');
@@ -38,6 +41,7 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
             setSelectedFilter('');
         }
     }
+
     const altProvinciaMunicipio = () => {
         if (!provinciaId) { // si no elijo ninguna provincia, dejo los estados vacíos.
             setMunicipiosState([]);
@@ -253,7 +257,7 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
                             )) :
                                 <>
                                     <p className="text-xl">No hay publicaciones disponibles en este momento</p>
-                                    {user && user_role === 'VENDEDOR' && <Link href={'/posts/create'} className="text-center hover:underline text-blue-500 font-md">Crear una publicación</Link>}
+                                    {my_user_role === 'VENDEDOR' && <Link href={'/posts/create'} className="text-center hover:underline text-blue-500 font-md">Crear una publicación</Link>}
                                 </>
                         }
                     </div>

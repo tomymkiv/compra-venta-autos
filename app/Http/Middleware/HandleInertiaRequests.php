@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Auth;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
@@ -39,21 +40,23 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user_role = null;
+        $my_user_role = null;
+
         if (Auth::user()) {
             $my_user_role = $request->user()->roles->first()->name;
-        } else {
-            $my_user_role = null;
         }
 
         if ($request->routeIs('user.show')) { // si voy a ver el perfil de un usuario, busco su rol
-            $user_role = $request->route('user');
-            $user_role = Role::where('id', $user_role)->first()->name;
-        } else {
-            $user_role = null;
+            $user_role = User::where('id', $request->route('user'))
+                ->first()
+                ->roles
+                ->first()
+                ->name;
+            // dd($user_role);// buscar rol del usuario con id de $user_role
         }
 
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
-
         return [
             ...parent::share($request),
             'name' => config('app.name'),
