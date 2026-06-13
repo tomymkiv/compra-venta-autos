@@ -1,7 +1,6 @@
 import ProfileSection from '@/components/ProfileSection'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ProfileProps } from '@/types/types'
 import { Button } from '@/components/ui/button'
 import { useForm, usePage } from '@inertiajs/react'
 import { route } from 'ziggy-js'
@@ -49,7 +48,7 @@ export default function edit() {
         e.preventDefault();
         confirm('¿Estás seguro que quieres eliminar tu cuenta? Se eliminarán toda la información relacionada.') && destroy(route('user.destroy', loguedUser.id));
     }
-    return <ProfileSection user={loguedUser}>
+    return <ProfileSection profileUser={loguedUser}>
         <section>
             <form onSubmit={handleSubmit} className='flex flex-col gap-2 items-center justify-center'>
                 <div className='flex flex-col gap-2 w-full p-3'>

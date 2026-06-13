@@ -11,12 +11,13 @@ type Filters = {
 };
 
 import { createPortal } from "react-dom";
-import { FilterProps, Municipio } from "@/types/types";
-import React, { useEffect, useState } from "react";
+import { FilterProps } from "@/types/types";
+import React, { useMemo, useState } from "react";
 import CarCards from "./CarCards";
 import Pagination from "./pagination";
 import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
+import useProvinciaMunicipio from "@/hooks/useProvinciaMunicipio";
 
 export default function Filtro({ posts, showPages, carBrands, carType, currencies, provincias, municipios }: FilterProps) {
     const {
@@ -25,14 +26,16 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
     const my_user_role = UserRoleProp as string;
     const [currencySelected, setCurrencySelected] = useState(false);
     const filtros = ['Precio', 'Marca', 'Año', 'Tipo', 'Ubicación'];
-    const [provinciaId, setProvinciaId] = useState<number | ''>('');
-    const [municipioId, setMunicipioId] = useState<number | ''>('');
+    const { provinciaId, setProvinciaId, municipioId, setMunicipioId, municipiosState } = useProvinciaMunicipio();
+    // const [provinciaId, setProvinciaId] = useState<number | ''>('');
+    // const [municipioId, setMunicipioId] = useState<number | ''>('');
     const [disabledMunicipios, setDisabledMunicipios] = useState(true);
-    const [municipiosState, setMunicipiosState] = useState<Municipio[]>([]);
+    // const [municipiosState, setMunicipiosState] = useState<Municipio[]>([]);
     const [filters, setFilters] = useState<Filters>({}); // filtro elegido, para enviar al backend
     const [filterOn, setFilterOn] = useState(false); // abrir y cerrar el filtro
     const [selectedFilter, setSelectedFilter] = useState(''); // detecto el filtro seleccionado
 
+    // abro el filtro
     const handleOpenFilter = () => {
         if (!filterOn) {
             setFilterOn(true)
@@ -42,24 +45,6 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
         }
     }
 
-    const altProvinciaMunicipio = () => {
-        if (!provinciaId) { // si no elijo ninguna provincia, dejo los estados vacíos.
-            setMunicipiosState([]);
-            setMunicipioId('');
-            return; // salgo para no seguir ejecutando
-        }
-        //  Si elijo una, hago la petición y traigo los municipios de esa provincia.
-        fetch(`/api/municipios/${provinciaId}`)
-            .then(res => res.json())
-            .then((data: Municipio[]) => {
-                const municipiosCoincidentes = data.filter(m =>
-                    municipios.some(mu => mu.id === m.id)
-                );
-
-                setMunicipiosState(municipiosCoincidentes);
-                setMunicipioId('');
-            });
-    }
     const filterDetected = (e: string) => {
         setSelectedFilter(e);
         setFilters({}); // reinicio los filtros en caso de seleccionar otro filtro
@@ -69,11 +54,17 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
         setFilters(prev => ({ ...prev, provinciaId: Number(e.target.value) }))
         setProvinciaId(Number(e.target.value));
         setDisabledMunicipios(false);
-    }
+    } // devuelvo todos los municipios de la provincia elegida
     const handleMunicipio = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFilters(prev => ({ ...prev, municipioId: Number(e.target.value) }))
         setMunicipioId(Number(e.target.value));
-    }
+    } // devuelvo todos los municipios de la provincia elegida
+
+    // filtro los municipios de la provincia que elegí
+    // solo obtengo los municipios que estén asociados a un post
+    const municipiosFiltrados = useMemo(() => {
+        return municipiosState.filter(m => municipios.some(mu => mu.id === m.id));
+    }, [municipiosState, municipios]); // solo se ejecuta si "municipiosState" o "municipios" cambian
     const handleClearFilters = () => {
         setFilters({}); // quito los filtros para que el backend no envíe ninguno
         setSelectedFilter(''); // limpio la vista de los filtros elegidos
@@ -96,10 +87,6 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
             }
         );
     }
-
-    useEffect(() => {
-        altProvinciaMunicipio()
-    }, [provinciaId])
 
     return <>
 
@@ -209,7 +196,7 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
                                     <select value={municipioId} id="municipio" className={`${disabledMunicipios ? 'opacity-50 cursor-not-allowed' : ''} border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full`} onChange={handleMunicipio} disabled={disabledMunicipios}>
                                         <option value="" className="bg-black/90">Todos</option>
                                         {
-                                            municipiosState && municipiosState.map(e => (
+                                            municipiosFiltrados && municipiosFiltrados.map(e => (
                                                 <option key={e.id} value={e.id} className="bg-black/90">{e.nombre}</option>
                                             ))
                                         }

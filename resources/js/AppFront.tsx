@@ -94,9 +94,9 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
             </ul>
           </nav>
           <button className='fixed top-0 left-0 z-50 flex flex-col gap-1 p-5 bg-[#2228] outline outline-gray-200/40' onClick={toggleMenu}>
-            <NavButtonLines width='30px' />
-            <NavButtonLines width='20px' />
-            <NavButtonLines width='10px' />
+            <NavButtonLines width="30px" />
+            <NavButtonLines width="20px" />
+            <NavButtonLines width="10px" />
           </button>
         </div>
         <div id='desktop-nav' className='w-full'>

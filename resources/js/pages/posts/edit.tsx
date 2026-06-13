@@ -5,10 +5,16 @@ import { Select } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
 import { Link, useForm, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { type Images } from '@/types/types';
 import AppFront from "@/AppFront";
 import { User } from "@/types";
+import useProvinciaMunicipio from "@/hooks/useProvinciaMunicipio";
+import FormFieldFile from "@/components/FormFieldFile";
+import FormFieldFiles from "@/components/FormFieldFiles";
+import FormFieldSelect from "@/components/FormFieldSelect";
+import FormFieldTextarea from "@/components/FormFieldTextarea";
+import FormFieldInput from "@/components/FormFieldInput";
 
 type EditForm = {
     marca: number;
@@ -32,9 +38,7 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
     const [mainImage, setMainImage] = useState<File | Images | undefined>(postData.main_image);
     const [newImg, setNewImg] = useState<File[]>([]);
     const [_DeletedImg, setDeletedImg] = useState<number[]>([]); // solo para enviar los id's de las imagenes EXISTENTES que se deseen eliminar
-    const [provinciaId, setProvinciaId] = useState<number | ''>(postData.municipio.provincia.id);
-    const [municipiosState, setMunicipiosState] = useState<Municipio[]>([]);
-    const [_MunicipioId, setMunicipioId] = useState<number | ''>('');
+    const { provinciaId, setProvinciaId, municipioId, setMunicipioId, municipiosState } = useProvinciaMunicipio();
     const [existingImg, setExistingImg] = useState<Images[]>(postData.post_image)
     const { data, setData, patch, processing, errors, delete: destroy } = useForm<EditForm>({
         marca: postData.car.car_model.car_brand.id,
@@ -52,31 +56,17 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
         main_image: postData.main_image
     })
 
-    const altProvinciaMunicipio = () => {
-        if (!provinciaId) { // si no elijo ninguna, dejo los estados vacíos.
-            setMunicipiosState([]);
-            setMunicipioId('');
-            return;
-        }
-        //  Si elijo una, hago la petición.
-        fetch(`/api/municipios/${provinciaId}`)
-            .then(res => res.json())
-            .then((municipios: Municipio[]) => {
-                setMunicipiosState(municipios);
-                setMunicipioId('');
-            });
-    }
     const handlePrecio = (e: React.ChangeEvent<HTMLInputElement>) => {
         const raw = e.target.value.replace(/\D/g, "");
         setData('precio', raw)
     }
     const handleProvincia = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setData('provincia', Number(e.target.value));
         setProvinciaId(Number(e.target.value));
+        setData('provincia', Number(e.target.value)); // esta línea es específica de cada página, queda acá
     }
     const handleMunicipio = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setData('municipio', Number(e.target.value));
         setMunicipioId(Number(e.target.value));
+        setData('municipio', Number(e.target.value)); // esta línea es específica de cada página, queda acá
     }
     // funcion para agregar más imagenes al post (tambien para mostrar las que se van a agregar)
     const handleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,10 +128,6 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
             forceFormData: true,
         });
     }
-    useEffect(() => {
-        altProvinciaMunicipio();
-    }, [provinciaId]);
-
 
     return <AppFront>
         <section className="flex flex-col min-w-0">
@@ -152,219 +138,34 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
                             <h2 className="text-2xl text-center">Editar publicación</h2>
                         </div>
                         <form onSubmit={handleSubmit} className="flex flex-col sm:grid grid-cols-2 sm:items-start sm:justify-center gap-4 my-5 mx-3 w-full">
-                            <div className="mt-5 flex flex-col gap-2">
-                                {
-                                    errors.marca && (
-                                        <p className='text-red-500 font-[500] text-sm'>{errors.marca}</p>
-                                    )
-                                }
-                                <Label htmlFor="marca">Marca:</Label>
-                                <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={data.marca} id="marca" onChange={e => setData('marca', Number(e.target.value))} >
-                                    <option value="" disabled>Selecciona la marca del vehiculo</option>
-                                    {carBrands.map(brand => (
-                                        <option key={brand.id} value={brand.id}>{brand.marca}</option>
-                                    ))}
-                                </Select>
-                            </div>
-                            <div className="mt-5 flex flex-col gap-2">
-                                {
-                                    errors.modelo && (
-                                        <p className='text-red-500 font-[500] text-sm'>{errors.modelo}</p>
-                                    )
-                                }
-                                <Label htmlFor="modelo">Modelo:</Label>
-                                <Input type="text" className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" value={data.modelo} placeholder="Ej: Fiesta ST, Mustang GT 5.0, MX-5" id="modelo" onChange={e => setData('modelo', e.target.value)} />
-                            </div>
-                            <div className="mt-5 flex flex-col gap-2">
-                                {
-                                    errors.anio && (
-                                        <p className='text-red-500 font-[500] text-sm'>{errors.anio}</p>
-                                    )
-                                }
-                                <Label htmlFor="anio">Año:</Label>
-                                <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="anio" id="anio" value={data.anio} onChange={e => setData('anio', Number(e.target.value))}>
-                                    <option value="" disabled>Selecciona el año</option>
-                                    {
-                                        Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i).map(year => (
-                                            <option key={year} value={year}>{year}</option>
-                                        ))
-                                    }
-                                </Select>
-                            </div>
-                            <div className="mt-5 flex flex-col gap-2">
-                                {
-                                    errors.kilometraje && (
-                                        <p className='text-red-500 font-[500] text-sm'>{errors.kilometraje}</p>
-                                    )
-                                }
-                                <Label htmlFor="kilometraje">Kilometraje:</Label>
-                                <Input type="number" value={data.kilometraje} className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" id="kilometraje" onChange={e => setData('kilometraje', Number(e.target.value))} />
-                            </div>
-                            <div className="mt-5 flex flex-col gap-2">
-                                {
-                                    errors.precio && (
-                                        <p className='text-red-500 font-[500] text-sm'>{errors.precio}</p>
-                                    )
-                                }
-                                <Label htmlFor="precio">Precio:</Label>
-                                <Input type="text" value={Number(data.precio).toLocaleString("es-AR")} className="outline-none rounded-lg w-full max-w-[400px] focus:bg-slate-700 transition-colors duration-300" id="precio" maxLength={15} onChange={handlePrecio} />
-                            </div>
-                            <div className="mt-5 flex flex-col gap-2">
-                                {
-                                    errors.moneda && (
-                                        <p className='text-red-500 font-[500] text-sm'>{errors.moneda}</p>
-                                    )
-                                }
-                                <Label htmlFor="moneda">Moneda:</Label>
-                                <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="moneda" id="moneda" value={data.moneda} onChange={e => setData('moneda', Number(e.target.value))}>
-                                    <option value="" disabled>Selecciona la moneda</option>
-                                    {
-                                        currencies.map(currency => (
-                                            <option key={currency.id} value={currency.id}>{currency.nombre}</option>
-                                        ))
-                                    }
-                                </Select>
-                            </div>
-                            <div className="mt-5 flex flex-col gap-2">
-                                {
-                                    errors.descripcion && (
-                                        <p className='text-red-500 font-[500] text-sm'>{errors.descripcion}</p>
-                                    )
-                                }
-                                <Label htmlFor="descripcion">Descripción:</Label>
-                                <textarea className="border-input file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive" id="descripcion" value={data.descripcion} onChange={e => setData('descripcion', e.target.value)} />
-                            </div>
-                            <div className="mt-5 flex flex-col gap-4">
-                                {
-                                    errors.provincia && (
-                                        <p className='text-red-500 font-[500] text-sm'>{errors.provincia}</p>
-                                    )
-                                }
-                                <Label htmlFor="provincia">Provincia:</Label>
-                                <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={data.provincia} id="provincia" onChange={handleProvincia}>
-                                    <option value="" disabled>Selecciona una provincia</option>
-                                    {provincias.map(provincia => (
-                                        // si elijo una provincia, los municipios que saldrán serán solo los de esa provincia. hay que compararlos por id_provincia
-                                        <option key={provincia.id} disabled={provincia.id === 78 || provincia.id === 86} value={provincia.id}>{provincia.nombre}</option>
-                                    ))}
-                                </Select>
-                                <div className="mt-5">
-                                    {
-                                        provinciaId && (
-                                            <div className="flex flex-col gap-4">
-                                                {
-                                                    errors.municipio &&
-                                                    <p className='text-red-500 font-[500] text-sm'>{errors.provincia}</p>
-                                                }
-                                                <Label htmlFor="municipio">Municipio:</Label>
-                                                <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={data.municipio} id="municipio" name="municipio" onChange={handleMunicipio}>
-                                                    <option value="" disabled>Selecciona un municipio</option>
-                                                    {municipiosState.map(municipio => (
-                                                        <option key={municipio.id} value={municipio.id}>{municipio.nombre}</option>
-                                                    ))}
-                                                </Select>
-                                            </div>
-                                        )
-                                    }
-                                </div>
-                            </div>
-                            <div className="mt-5 flex flex-col gap-2">
-                                {
-                                    errors.tipo && (
-                                        <p className='text-red-500 font-[500] text-sm'>{errors.tipo}</p>
-                                    )
-                                }
-                                <Label htmlFor="tipo">Tipo de vehiculo:</Label>
-                                <Select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" value={data.tipo} id="tipo" onChange={e => setData('tipo', Number(e.target.value))} >
-                                    <option value="" disabled>Selecciona el tipo de vehículo</option>
-                                    {
-                                        car_types ? car_types.map(tipo => (
-                                            <option value={tipo.id} key={tipo.id}>{tipo.tipo}</option>
-                                        )) : ''
-                                    }
-                                </Select>
-                            </div>
-                            <div className="mt-5 flex flex-col gap-2">
-                                {
-                                    errors.images && (
-                                        <p className='text-red-500 font-[500] text-sm'>{errors.images}</p>
-                                    )
-                                }
-                                <Label htmlFor="tipo">Elige la imagen principal (*)</Label>
-                                <p className="text-xs">La imágen principal se usará de portada para que los usuarios tengan una primera impresión del vehiculo antes de ver la publicación</p>
-                                <input className="p-3 bg-slate-700 cursor-pointer" type="file" accept="image/*" onChange={handleMainImage} />
-                                {
-                                    mainImage ?
-                                        <div
-                                            className="relative cursor-pointer w-fit"
-                                            onClick={removeMainImage}
-                                        >
-                                            <img
-                                                src={
-                                                    mainImage instanceof File
-                                                        ? URL.createObjectURL(mainImage)        // imagen nueva → blob URL
-                                                        : `/storage/${mainImage.url}` // imagen existente → ruta de storage
-                                                }
-                                                className="w-full max-w-[550px] h-32 object-cover rounded"
-                                            />
-                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm opacity-0 hover:opacity-100 transition">
-                                                Eliminar
-                                            </div>
-                                        </div>
-                                        : <p className="text-red-500">No elegiste una imagen de portada</p>
-                                }
-                                <div className="flex items-center justify-between w-full">
-                                    <Label htmlFor="tipo">Imagen/es del vehiculo</Label>
-                                </div>
-                                <input className="p-3 bg-slate-700" type="file" accept="image/*" multiple onChange={handleImages} />
-                                <h4>Imagenes actuales del post</h4>
-                                <div className={existingImg.length !== 0 ? `grid grid-cols-4 gap-4 max-w-[550px]` : ''}>
-                                    {
-                                        existingImg.length != 0 ?
-                                            existingImg.map(img => (
-                                                img.id != postData.main_image.id &&
-                                                <div
-                                                    key={img.id}
-                                                    onClick={() => removeExistingImage(img.id)}
-                                                    className="relative cursor-pointer"
-                                                >
-                                                    <img
-                                                        src={`/storage/${img.url}`}
-                                                        className="w-full h-32 object-cover rounded"
-                                                    />
-
-                                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm opacity-0 hover:opacity-100 transition">
-                                                        Eliminar
-                                                    </div>
-                                                </div>
-                                            ))
-                                            :
-                                            <p>No hay imagenes en este post</p>
-                                    }
-                                </div>
-                                <h4>Imagenes nuevas: </h4>
-                                <div className={newImg.length !== 0 ? `grid grid-cols-4 gap-4 max-w-[550px]` : ''}>
-                                    {
-                                        newImg.length != 0 ? newImg.map((file, index) => (
-                                            <div
-                                                key={index}
-                                                onClick={() => removeNewImage(index)}
-                                                className="relative cursor-pointer"
-                                            >
-                                                <img
-                                                    src={URL.createObjectURL(file)}
-                                                    className="w-full h-32 object-cover rounded"
-                                                />
-
-                                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm opacity-0 hover:opacity-100 transition">
-                                                    Eliminar
-                                                </div>
-                                            </div>
-                                        ))
-                                            : <p>No hay imagenes agregadas</p>
-                                    }
-                                </div>
-                            </div>
+                            {/* marcas */}
+                            <FormFieldSelect options={carBrands.map(brand => ({ id: brand.id, nombre: brand.marca }))} titulo="Marca" errorsText={errors.marca} value={data.marca} onChangeEventSelect={e => setData('marca', Number(e.target.value))} />
+                            {/* modelos */}
+                            <FormFieldInput type="text" titulo="Modelo" placeholder="Ej: Fiesta ST, Mustang GT 5.0, MX-5" errorsText={errors.modelo} value={data.modelo} onChangeEventInput={e => setData('modelo', e.target.value)} />
+                            {/* años */}
+                            <FormFieldSelect options={Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => ({ id: 1900 + i, nombre: 1900 + i }))} titulo="Año" errorsText={errors.anio} value={data.anio} onChangeEventSelect={e => setData('anio', Number(e.target.value))} />
+                            {/* kilometraje */}
+                            <FormFieldInput type="number" titulo="Kilometraje" placeholder="Ej: 100000" errorsText={errors.kilometraje} value={data.kilometraje} onChangeEventInput={e => setData('kilometraje', Number(e.target.value))} />
+                            {/* precio */}
+                            <FormFieldInput type="text" max={15} titulo="Precio" errorsText={errors.precio} value={data.precio} onChangeEventInput={handlePrecio} />
+                            {/* moneda */}
+                            <FormFieldSelect options={currencies.map(currency => ({ id: currency.id, nombre: currency.nombre }))} titulo="Moneda" errorsText={errors.moneda} value={data.moneda} onChangeEventSelect={e => setData('moneda', Number(e.target.value))} />
+                            {/* descripción */}
+                            <FormFieldTextarea titulo="Descripción" errorsText={errors.descripcion} value={data.descripcion} onChangeEventTextarea={e => setData('descripcion', e.target.value)} />
+                            {/* provincia */}
+                            <FormFieldSelect options={provincias.map(provincia => ({ id: provincia.id, nombre: provincia.nombre }))} titulo="Provincia" errorsText={errors.provincia} value={data.provincia} onChangeEventSelect={handleProvincia} />
+                            {/* municipio */}
+                            {/* al elegir una provincia, muestro los municipios de esa provincia */}
+                            {
+                                provinciaId &&
+                                <FormFieldSelect options={municipiosState.map(municipio => ({ id: municipio.id, nombre: municipio.nombre }))} titulo="Municipio" errorsText={errors.municipio} value={municipioId} onChangeEventSelect={handleMunicipio} />
+                            }
+                            {/* tipos de vehiculos */}
+                            <FormFieldSelect options={car_types.map(car_type => ({ id: car_type.id, nombre: car_type.tipo }))} titulo="Tipo de vehiculo" errorsText={errors.tipo} value={data.tipo} onChangeEventSelect={e => setData('tipo', Number(e.target.value))} />
+                            {/* imagen principal */}
+                            <FormFieldFile image={mainImage} errors={errors.main_image} removeImage={removeMainImage} handleImage={handleMainImage} />
+                            {/* resto de las imagenes */}
+                            <FormFieldFiles editSection={true} errors={errors.images} removeNewImage={removeNewImage} handleImages={handleImages} newImg={newImg} existingImages={existingImg} removeExistingImages={removeExistingImage} />
                             <div className="flex flex-col gap-2">
                                 <Link href={route('posts.index')} className="w-full cursor-pointer transition-colors duration-300 p-2 text-center bg-slate-700 rounded-lg hover:bg-slate-800">Salir sin guardar</Link>
                                 <Button disabled={processing} type="submit" className="w-full cursor-pointer transition-colors duration-300">Enviar</Button>

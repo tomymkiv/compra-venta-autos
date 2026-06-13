@@ -7,9 +7,47 @@ export interface Rol {
     name: string,
 }
 
+// sirve para input (text, number), select y textarea
+export interface FormFieldsInterface {
+    max?: number | undefined,
+    type?: string,
+    options?: Array<SelectOptions>,
+    errorsText: string | undefined,
+    value: string | number,
+    placeholder?: string,
+    titulo: string,
+    onChangeEventInput?: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    onChangeEventSelect?: (e: React.ChangeEvent<HTMLSelectElement>) => void,
+    onChangeEventTextarea?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void,
+}
+
+// para un solo archivo
+export interface FormFieldFileProps {
+    image: File | Images | undefined,
+    errors: string | undefined,
+    removeImage: (index: number) => void,
+    handleImage: (e: React.ChangeEvent<HTMLInputElement>) => void,
+}
+
+// para multiples archivos
+export interface FormFieldFilesProps {
+    editSection: boolean,
+    newImg: File[],
+    errors: string | undefined,
+    removeNewImage: (index: number) => void,
+    handleImages: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    removeExistingImages?: (index: number) => void,
+    existingImages?: Images[],
+}
+
 export interface Permission {
     id: number,
     name: string,
+}
+
+interface SelectOptions {
+    id: number,
+    nombre: string | number,
 }
 
 export interface Images {
