@@ -132,7 +132,23 @@ export interface CreatePostForm {
     images: File[]
     moneda: string
     main_image: File | ''
+    deleted_images?: number[] // 👈 lo necesito para eliminar las imagenes existentes a la hora de editar
 }
+export interface EditForm {
+    marca: number;
+    modelo: string;
+    anio: number;
+    kilometraje: number;
+    precio: string;
+    descripcion: string;
+    tipo: number;
+    provincia: string;
+    municipio: string;
+    moneda: number;
+    images: File[];
+    deleted_images: number[];
+    main_image: File | Images | null;
+};
 
 // para varios autos
 export interface PageProps {

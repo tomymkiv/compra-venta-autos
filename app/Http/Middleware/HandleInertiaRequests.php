@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Post;
 use App\Models\User;
 use Auth;
 use Illuminate\Foundation\Inspiring;
@@ -42,6 +43,7 @@ class HandleInertiaRequests extends Middleware
     {
         $user_role = null;
         $my_user_role = null;
+        $post_info = null;
 
         if (Auth::user()) {
             $my_user_role = $request->user()->roles->first()->name;
@@ -55,7 +57,11 @@ class HandleInertiaRequests extends Middleware
                 ->name;
             // dd($user_role);// buscar rol del usuario con id de $user_role
         }
-
+        // obtengo el posts (con sus relaciones) para poder editarlo
+        if ($request->routeIs('posts.edit')) {
+            $post_info = Post::with('user', 'car.carModel.carBrand', 'postImage', 'mainImage', 'municipio.provincia')
+                ->find($request->route('post'));
+        }
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
         return [
             ...parent::share($request),
@@ -68,6 +74,7 @@ class HandleInertiaRequests extends Middleware
             'user' => Auth::user(), // objeto del usuario
             'user_role' => $user_role,
             'my_user_role' => $my_user_role,
+            'post_info' => $post_info
         ];
     }
 }

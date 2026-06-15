@@ -4,7 +4,6 @@ import FormFieldContainer from './FormFieldContainer'
 import { Label } from '@radix-ui/react-label'
 
 export default function FormFieldFiles({ errors, removeNewImage, handleImages, removeExistingImages, editSection, newImg, existingImages }: FormFieldFilesProps) {
-    console.log(existingImages)
     return <FormFieldContainer titulo="Elegí las imagenes del vehiculo" errorsText={errors}>
         {
             errors && (
