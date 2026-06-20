@@ -39,8 +39,6 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
     const { user: UserProps } = usePage().props;
     const user = UserProps as User;
 
-    // eliminar post
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         patch(route('posts.update', postData.id), {

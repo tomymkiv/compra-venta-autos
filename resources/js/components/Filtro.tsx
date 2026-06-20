@@ -12,7 +12,7 @@ type Filters = {
 
 import { createPortal } from "react-dom";
 import { FilterProps } from "@/types/types";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import CarCards from "./CarCards";
 import Pagination from "./pagination";
 import { Link, router, usePage } from "@inertiajs/react";
@@ -24,13 +24,12 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
         my_user_role: UserRoleProp
     } = usePage().props;
     const my_user_role = UserRoleProp as string;
+    const [filterMsg, setFilterMsg] = useState("");
+    const [selectedCurrency, setSelectedCurrency] = useState(""); // signo de peso o dolar, segun la divisa que eliga
     const [currencySelected, setCurrencySelected] = useState(false);
     const filtros = ['Precio', 'Marca', 'Año', 'Tipo', 'Ubicación'];
     const { provinciaId, setProvinciaId, municipioId, setMunicipioId, municipiosState } = useProvinciaMunicipio();
-    // const [provinciaId, setProvinciaId] = useState<number | ''>('');
-    // const [municipioId, setMunicipioId] = useState<number | ''>('');
     const [disabledMunicipios, setDisabledMunicipios] = useState(true);
-    // const [municipiosState, setMunicipiosState] = useState<Municipio[]>([]);
     const [filters, setFilters] = useState<Filters>({}); // filtro elegido, para enviar al backend
     const [filterOn, setFilterOn] = useState(false); // abrir y cerrar el filtro
     const [selectedFilter, setSelectedFilter] = useState(''); // detecto el filtro seleccionado
@@ -71,9 +70,33 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
         setFilterOn(false);
     }
     const handlePriceFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        // console.log(filters);
         setCurrencySelected(true);
         setFilters(prev => ({ ...prev, currencyId: Number(e.target.value) }))
+
+        if (e.target.value == "1") {
+            setSelectedCurrency("US$")
+        } else if (e.target.value == "2") {
+            setSelectedCurrency("$")
+        }
     }
+    const handlePriceFrom = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFilters(prev => ({ ...prev, [e.target.name]: Number(e.target.value) }))
+
+        if (!filters.priceTo) {
+            setFilterMsg(`Desde ${selectedCurrency}${e.target.value} hasta ♾️`);
+        }
+    }
+    const handlePriceTo = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFilters(prev => ({ ...prev, [e.target.name]: Number(e.target.value) }))
+
+        if (!e.target.value) {
+            setFilterMsg(`Desde ${selectedCurrency}${filters.priceFrom} hasta ♾️`);
+        } else {
+            setFilterMsg(`Desde ${selectedCurrency}${filters.priceFrom} hasta ${selectedCurrency}${e.target.value}`);
+        }
+    }
+
     const handleSubmit = (e: React.FormEvent) => {
         setFilterOn(false);
         e.preventDefault();
@@ -87,7 +110,17 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
             }
         );
     }
-
+    useEffect(() => {
+        if (filters.priceFrom && !filters.priceTo) {
+            setFilterMsg(`Desde ${selectedCurrency}${filters.priceFrom} hasta ♾️`);
+        } else if (!filters.priceFrom && filters.priceTo) {
+            setFilterMsg(`Desde ${selectedCurrency}0 hasta ${selectedCurrency}${filters.priceTo}`);
+        } else if (filters.priceFrom && filters.priceTo) {
+            setFilterMsg(`Desde ${selectedCurrency}${filters.priceFrom} hasta ${selectedCurrency}${filters.priceTo}`);
+        } else {
+            setFilterMsg("Sin limite");
+        }
+    }, [filters.priceFrom, filters.priceTo]);
     return <>
 
         {createPortal(<div className={`${filterOn ? `fixed ${innerWidth > 1024 ? 'w-[25%]' : 'w-full'}` : 'hidden w-0'} flex flex-col justify-center items-center overflow-hidden left-0 z-50 top-0 h-screen bg-black/85 space-y-12 text-gray-200 transition-all duration-300`}>
@@ -117,8 +150,8 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
                                             ))
                                         }
                                     </select>
-                                    <input disabled={!currencySelected} type="number" name="priceFrom" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder="Precio (desde):" onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilters(prev => ({ ...prev, priceFrom: Number(e.target.value) }))} />
-                                    <input disabled={!currencySelected} type="number" name="priceTo" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder="Precio (hasta):" onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilters(prev => ({ ...prev, priceTo: Number(e.target.value) }))} />
+                                    <input disabled={!currencySelected} min={0} type="number" name="priceFrom" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder={`${!filterMsg ? "Precio inicial" : filterMsg}`} onChange={handlePriceFrom} />
+                                    <input disabled={!currencySelected} min={0} type="number" name="priceTo" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder={`${!filterMsg ? "Precio final" : filterMsg}`} onChange={handlePriceTo} />
                                 </div>
                             }
                             {
