@@ -68,7 +68,7 @@ export interface CarBrand {
     id: number,
     marca: string,
 }
-interface CarType {
+export interface CarType {
     id: number,
     tipo: string,
 }

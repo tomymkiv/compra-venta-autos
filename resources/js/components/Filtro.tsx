@@ -19,6 +19,7 @@ import Pagination from "./pagination";
 import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import useProvinciaMunicipio from "@/hooks/useProvinciaMunicipio";
+import FilterSelect from "./FilterSelect";
 
 export default function Filtro({ posts, showPages, carBrands, carType, currencies, provincias, municipios }: FilterProps) {
     const {
@@ -47,7 +48,10 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
             setSelectedFilter('');
         }
     }
-
+    const encontrarLocalidad = (id: number | "") => {
+        const result = provincias.find(provincia => provincia.id === id);
+        return result ? result.nombre : '';
+    }
     const filterDetected = (e: string) => {
         setSelectedFilter(e);
         setFilters({}); // reinicio los filtros en caso de seleccionar otro filtro
@@ -74,7 +78,6 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
         setFilterOn(false);
     }
     const handlePriceFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        // console.log(filters);
         setCurrencySelected(true);
         setFilters(prev => ({ ...prev, currencyId: Number(e.target.value) }))
 
@@ -101,12 +104,22 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
         }
     }
     const handleYearFrom = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilters(prev => ({ ...prev, [e.target.name]: Number(e.target.value) }))
-        setYearsTo(years.filter(year => year >= Number(e.target.value)));
+        const value = e.target.value;
+        setFilters(prev => ({ ...prev, [e.target.name]: value ? Number(value) : undefined }));
+        setYearsTo(value ? years.filter(year => year >= Number(value)) : years);
     }
     const handleYearTo = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilters(prev => ({ ...prev, [e.target.name]: Number(e.target.value) }))
-        setYearsFrom(years.filter(year => year <= Number(e.target.value)));
+        const value = e.target.value;
+        setFilters(prev => ({ ...prev, [e.target.name]: value ? Number(value) : undefined }));
+        setYearsFrom(value ? years.filter(year => year <= Number(value)) : years);
+    }
+    const handleCarBrand = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        setFilters(prev => ({ ...prev, [e.target.name]: value ? Number(value) : undefined }));
+    }
+    const handleCarType = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        setFilters(prev => ({ ...prev, [e.target.name]: value ? Number(value) : undefined }));
     }
     const handleSubmit = (e: React.FormEvent) => {
         setFilterOn(false);
@@ -153,100 +166,34 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
                             {
                                 selectedFilter === 'Precio' &&
                                 <div className="flex flex-col gap-2">
-                                    <select className="bg-gray-950 border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full" name="price" id="price" onChange={handlePriceFilter}>
-                                        <option value="" disabled selected>Elegí la divisa</option>
-                                        {
-                                            currencies.map((el, index) => (
-                                                <option key={index} value={el.id}>{el.nombre}</option>
-                                            ))
-                                        }
-                                    </select>
+                                    <FilterSelect placeholder="Elegí la divisa" name="price" titulo="Filtro de monedas" onChangeHandler={handlePriceFilter} arr={currencies} />
+                                    <label htmlFor="">Desde:</label>
                                     <input disabled={!currencySelected} min={0} type="number" name="priceFrom" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder={`${!filterMsg ? "Precio inicial" : filterMsg}`} onChange={handlePriceFrom} />
+                                    <label htmlFor="">Hasta:</label>
                                     <input disabled={!currencySelected} min={0} type="number" name="priceTo" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder={`${!filterMsg ? "Precio final" : filterMsg}`} onChange={handlePriceTo} />
                                 </div>
                             }
                             {
                                 selectedFilter === 'Marca' &&
-                                <div>
-                                    <h4>Elige una marca para filtrar</h4>
-                                    <select name="marca" className="border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full" onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                                        setFilters(prev => ({ ...prev, brandId: Number(e.target.value) }))
-                                    }>
-                                        <option value="" className="bg-black/90">Todas</option>
-                                        {
-                                            carBrands && carBrands.map(e => (
-                                                <option key={e.id} value={e.id} className="bg-black/90">{e.marca}</option>
-                                            ))
-                                        }
-                                    </select>
-                                </div>
+                                <FilterSelect placeholder="Elegí una marca" name="brandId" titulo="Filtrar marcas" onChangeHandler={handleCarBrand} arr={carBrands} />
                             }
                             {
                                 selectedFilter === 'Año' && <div className="flex flex-col gap-2">
-                                    <select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="yearFrom" id="yearFrom" onChange={handleYearFrom}>
-                                        <option value="">Año (desde...)</option>
-                                        {
-                                            // years.map(year => (
-                                            //     <option key={year} disabled={filters.yearTo ? year > filters.yearTo : false} value={year}>{year}</option>
-                                            // ))
-                                            yearsFrom.map(year => (
-                                                <option key={year} value={year}>{year}</option>
-                                            ))
-                                        }
-                                    </select>
-                                    <select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="yearTo" id="yearTo" onChange={handleYearTo}>
-                                        <option value="">Año (hasta...)</option>
-                                        {
-                                            // years.map(year => (
-                                            //     <option key={year} disabled={filters.yearFrom ? year < filters.yearFrom : false} value={year}>{year}</option>
-                                            // ))
-                                            yearsTo.map(year => (
-                                                <option key={year} value={year}>{year}</option>
-                                            ))
-                                        }
-                                    </select>
+                                    <FilterSelect placeholder="Año (desde...)" name="yearFrom" titulo="Filtrar año (desde)" onChangeHandler={handleYearFrom} arr={yearsFrom} />
+                                    <FilterSelect placeholder="Año (hasta...)" name="yearTo" titulo="Filtrar año (hasta)" onChangeHandler={handleYearTo} arr={yearsTo} />
                                 </div>
                             }
                             {
                                 selectedFilter === 'Tipo' &&
-                                <div>
-                                    <h4>Elige el tipo de vehiculo a filtrar</h4>
-                                    <select className="border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full" onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                                        setFilters(prev => ({ ...prev, typeId: Number(e.target.value) }))
-                                    }>
-                                        <option value="" className="bg-black/90">Todos</option>
-                                        {
-                                            carType ? carType.map(e => (
-                                                <option key={e.id} value={e.id} className="bg-black/90">{e.tipo}</option>
-                                            )) : ''
-                                        }
-                                    </select>
-                                </div>
+                                <FilterSelect placeholder="Elegí un tipo" name="typeId" titulo="Filtrar tipo de auto" onChangeHandler={handleCarType} arr={carType} />
                             }
                             {
                                 selectedFilter === 'Ubicación' &&
-                                <div>
-                                    <div className="flex flex-col gap-3">
-                                        <h4>Elige la ubicación a filtrar</h4>
-                                        <label htmlFor="provincia">Provincia: </label>
-                                    </div>
-                                    <select value={provinciaId} id="provincia" className="border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full" onChange={handleProvincia}>
-                                        <option value="" className="bg-black/90">Todos</option>
-                                        {
-                                            provincias && provincias.map(e => (
-                                                <option key={e.id} value={e.id} className="bg-black/90">{e.nombre}</option>
-                                            ))
-                                        }
-                                    </select>
-                                    <label htmlFor="municipio">Localidad: </label>
-                                    <select value={municipioId} id="municipio" className={`${disabledMunicipios ? 'opacity-50 cursor-not-allowed' : ''} border border-gray-600 rounded-md mb-5 mt-2 p-3 w-full`} onChange={handleMunicipio} disabled={disabledMunicipios}>
-                                        <option value="" className="bg-black/90">Todos</option>
-                                        {
-                                            municipiosFiltrados && municipiosFiltrados.map(e => (
-                                                <option key={e.id} value={e.id} className="bg-black/90">{e.nombre}</option>
-                                            ))
-                                        }
-                                    </select>
+                                <div className="space-y-5">
+                                    <FilterSelect placeholder="Elegí una provincia" value={provinciaId} name="provincia" titulo="Filtrar provincias" onChangeHandler={handleProvincia} arr={provincias} />
+                                    {
+                                        !!provinciaId && <FilterSelect placeholder="Elegí una localidad" disabled={disabledMunicipios} value={municipioId} name="municipio" titulo={`Filtrar localidades de ${encontrarLocalidad(provinciaId)}`} onChangeHandler={handleMunicipio} arr={municipiosFiltrados} />
+                                    }
                                 </div>
                             }
                         </div>
@@ -257,7 +204,8 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
             </div>
         </div >
             , document.body
-        )}
+        )
+        }
 
 
         <section className="space-y-8">
