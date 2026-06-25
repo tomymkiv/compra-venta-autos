@@ -1,3 +1,4 @@
+
 type Filters = {
     currencyId?: number,
     priceFrom?: number;
@@ -24,6 +25,9 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
         my_user_role: UserRoleProp
     } = usePage().props;
     const my_user_role = UserRoleProp as string;
+    const years = Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i);
+    const [yearsFrom, setYearsFrom] = useState<number[]>(Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i));
+    const [yearsTo, setYearsTo] = useState<number[]>(Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i));
     const [filterMsg, setFilterMsg] = useState("");
     const [selectedCurrency, setSelectedCurrency] = useState(""); // signo de peso o dolar, segun la divisa que eliga
     const [currencySelected, setCurrencySelected] = useState(false);
@@ -96,7 +100,14 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
             setFilterMsg(`Desde ${selectedCurrency}${filters.priceFrom} hasta ${selectedCurrency}${e.target.value}`);
         }
     }
-
+    const handleYearFrom = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilters(prev => ({ ...prev, [e.target.name]: Number(e.target.value) }))
+        setYearsTo(years.filter(year => year >= Number(e.target.value)));
+    }
+    const handleYearTo = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilters(prev => ({ ...prev, [e.target.name]: Number(e.target.value) }))
+        setYearsFrom(years.filter(year => year <= Number(e.target.value)));
+    }
     const handleSubmit = (e: React.FormEvent) => {
         setFilterOn(false);
         e.preventDefault();
@@ -172,22 +183,24 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
                             }
                             {
                                 selectedFilter === 'Año' && <div className="flex flex-col gap-2">
-                                    <select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="anio" id="anio" onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                                        setFilters(prev => ({ ...prev, yearFrom: Number(e.target.value) }))
-                                    }>
+                                    <select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="yearFrom" id="yearFrom" onChange={handleYearFrom}>
                                         <option value="">Año (desde...)</option>
                                         {
-                                            Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i).map(year => (
+                                            // years.map(year => (
+                                            //     <option key={year} disabled={filters.yearTo ? year > filters.yearTo : false} value={year}>{year}</option>
+                                            // ))
+                                            yearsFrom.map(year => (
                                                 <option key={year} value={year}>{year}</option>
                                             ))
                                         }
                                     </select>
-                                    <select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="anio" id="anio" onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                                        setFilters(prev => ({ ...prev, yearTo: Number(e.target.value) }))
-                                    }>
+                                    <select className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name="yearTo" id="yearTo" onChange={handleYearTo}>
                                         <option value="">Año (hasta...)</option>
                                         {
-                                            Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i).map(year => (
+                                            // years.map(year => (
+                                            //     <option key={year} disabled={filters.yearFrom ? year < filters.yearFrom : false} value={year}>{year}</option>
+                                            // ))
+                                            yearsTo.map(year => (
                                                 <option key={year} value={year}>{year}</option>
                                             ))
                                         }
