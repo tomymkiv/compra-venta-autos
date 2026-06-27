@@ -8,14 +8,12 @@ import CloseButton from "./close-button";
 import { usePage } from '@inertiajs/react';
 import { User } from "@/types";
 import CarPostData from "./ui/car-post-data";
+import usePriceConverter from "@/hooks/use-price-converter";
 
 export default function VehiculosItem({ post }: CarCardsProps) {
     const { user: UserProps } = usePage().props;
     const user = UserProps as User;
-    const blueDolarUrl = 'https://api.bluelytics.com.ar/v2/latest';
-    const [USDPrice, setUSDPrice] = useState(post.precio);
-    const [ARSPrice, setARSPrice] = useState(post.precio);
-    const [priceBtnActive, setPriceBtnActive] = useState(false);
+    const { convertPrice, priceBtnActive, USDPrice, ARSPrice } = usePriceConverter({ post });
     const limit = 6;
     const minHeightWidthCards = 60;
     const imgContainerRef = useRef<HTMLDivElement>(null);
@@ -47,23 +45,23 @@ export default function VehiculosItem({ post }: CarCardsProps) {
         document.body.classList.toggle('overflow-hidden')
         imgContainerRef.current?.classList.add('hidden')
     }
-    const convertUSDPrice = () => {
-        !priceBtnActive ? setPriceBtnActive(true) : setPriceBtnActive(false);
+    // const convertUSDPrice = () => {
+    //     !priceBtnActive ? setPriceBtnActive(true) : setPriceBtnActive(false);
 
-        fetch(blueDolarUrl)
-            .then(data => data.json())
-            .then(data => {
-                const blueDolarValue = data.blue.value_avg;
+    //     fetch(blueDolarUrl)
+    //         .then(data => data.json())
+    //         .then(data => {
+    //             const blueDolarValue = data.blue.value_avg;
 
-                if (post.id_currency == 1) {
-                    const USD_TO_ARS = blueDolarValue * post.precio;
-                    setARSPrice(USD_TO_ARS);
-                } else if (post.id_currency == 2) {
-                    const ARS_TO_USD = Number(post.precio) / blueDolarValue;
-                    setUSDPrice(ARS_TO_USD);
-                }
-            })
-    }
+    //             if (post.id_currency == 1) {
+    //                 const USD_TO_ARS = blueDolarValue * post.precio;
+    //                 setARSPrice(USD_TO_ARS);
+    //             } else if (post.id_currency == 2) {
+    //                 const ARS_TO_USD = Number(post.precio) / blueDolarValue;
+    //                 setUSDPrice(ARS_TO_USD);
+    //             }
+    //         })
+    // }
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {
             if (e.key == 'ArrowRight') nextSlide();
@@ -142,7 +140,7 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                                 <CarPostData title="Descripción" data={`${post.descripcion}`} />
                             </div>
                             <div className="">
-                                <button className={`bg-cover bg-center bg-no-repeat rounded-lg text-black cursor-pointer transition-background shadow-md hover:shadow-gray-400 duration-300 text-center font-[700] ${post.id_currency == 1 ? (priceBtnActive ? 'bg-[url("/public/img/billete-100-dolares.webp")]' : 'bg-[url("/public/img/billete-1000-pesos.webp")]') : (priceBtnActive ? 'bg-[url("/public/img/billete-1000-pesos.webp")]' : 'bg-[url("/public/img/billete-100-dolares.webp")]')}`} onClick={convertUSDPrice}> <p className="p-3 bg-white/40 rounded-md">{post.id_currency == 1 ? (priceBtnActive ? 'Convertir a dólares (USD)' : 'Convertir a pesos (ARS)') : (priceBtnActive ? 'Convertir a pesos (ARS)' : 'Convertir a dólares (USD)')}</p></button>
+                                <button className={`bg-cover bg-center bg-no-repeat rounded-lg text-black cursor-pointer transition-background shadow-md hover:shadow-gray-400 duration-300 text-center font-[700] ${post.id_currency == 1 ? (priceBtnActive ? 'bg-[url("/public/img/billete-100-dolares.webp")]' : 'bg-[url("/public/img/billete-1000-pesos.webp")]') : (priceBtnActive ? 'bg-[url("/public/img/billete-1000-pesos.webp")]' : 'bg-[url("/public/img/billete-100-dolares.webp")]')}`} onClick={convertPrice}> <p className="p-3 bg-white/40 rounded-md">{post.id_currency == 1 ? (priceBtnActive ? 'Convertir a dólares (USD)' : 'Convertir a pesos (ARS)') : (priceBtnActive ? 'Convertir a pesos (ARS)' : 'Convertir a dólares (USD)')}</p></button>
                             </div>
                             <hr className="my-5 lg:hidden" />
                             <div className="flex flex-col gap-2">
