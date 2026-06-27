@@ -9,6 +9,7 @@ import { usePage } from '@inertiajs/react';
 import { User } from "@/types";
 import CarPostData from "./ui/car-post-data";
 import usePriceConverter from "@/hooks/use-price-converter";
+import UserAvatar from "./UserAvatar";
 
 export default function VehiculosItem({ post }: CarCardsProps) {
     const { user: UserProps } = usePage().props;
@@ -45,23 +46,6 @@ export default function VehiculosItem({ post }: CarCardsProps) {
         document.body.classList.toggle('overflow-hidden')
         imgContainerRef.current?.classList.add('hidden')
     }
-    // const convertUSDPrice = () => {
-    //     !priceBtnActive ? setPriceBtnActive(true) : setPriceBtnActive(false);
-
-    //     fetch(blueDolarUrl)
-    //         .then(data => data.json())
-    //         .then(data => {
-    //             const blueDolarValue = data.blue.value_avg;
-
-    //             if (post.id_currency == 1) {
-    //                 const USD_TO_ARS = blueDolarValue * post.precio;
-    //                 setARSPrice(USD_TO_ARS);
-    //             } else if (post.id_currency == 2) {
-    //                 const ARS_TO_USD = Number(post.precio) / blueDolarValue;
-    //                 setUSDPrice(ARS_TO_USD);
-    //             }
-    //         })
-    // }
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {
             if (e.key == 'ArrowRight') nextSlide();
@@ -154,7 +138,7 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                                     })} (UTC-3)</p>
                             </div>
                             <div className="flex items-center w-full gap-2">
-                                <Link href={route('user.show', post.user.id)}><img src={!post.user.avatar?.includes('ui-avatars') ? `/storage/${post.user.avatar}` : `${post.user.avatar}`} className="object-cover rounded-full w-20 h-20" alt="" /></Link>
+                                <UserAvatar center={false} avatar={post.user.avatar && post.user.avatar || ""} userId={post.user.id} />
                             </div>
                             <hr className="my-5 lg:hidden" />
                         </div>

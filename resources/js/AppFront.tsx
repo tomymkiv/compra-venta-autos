@@ -9,6 +9,7 @@ import SearchInput from './components/SearchInput';
 import { usePage } from '@inertiajs/react';
 import { User } from './types';
 import NavButtonLines from './components/ui/nav-button-lines';
+import UserAvatar from './components/UserAvatar';
 
 export default function AppFront({ children, initialQuery, hero }: AppComponentProps) {
   const {
@@ -66,11 +67,9 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
             <ul ref={menuRef} id='menu' className='flex flex-col gap-10 justify-center overflow-hidden fixed left-0 bg-[#1117] backdrop-blur-sm transition-[width] duration-350 ease-in-out w-0 h-screen z-50'>
               {
                 user &&
-                <Link href={route('user.show', user.id)} className='w-fit p-5 flex items-center gap-2 flex-col'>
-                  <img src={user.avatar?.includes('api') ? user.avatar : `/storage/${user.avatar}`} className="rounded-full w-20 h-20 object-cover" alt={"Imagen del usuario"} />
-                  <p className='text-xl text-[#ccc]'>{user.name}</p>
-                  <p className='text-xl text-[#ccc]'>({my_user_role.toLowerCase()})</p>
-                </Link>
+                <>
+                  <UserAvatar center={true} name={user.name} avatar={user.avatar && user.avatar || ""} userId={user.id} role={my_user_role.toLowerCase()} />
+                </>
               }
               <PageLinks title="Inicio" link='/' clases='!text-xl' />
               <DropdownButton title="Publicaciones" onclick={toggleCategoriasMobile} clases='!text-xl text-[#ccc] pl-7 flex items-center gap-2 p-2' />
@@ -101,17 +100,11 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
         </div>
         <div id='desktop-nav' className='w-full'>
           <nav>
-            <ul className='hidden lg:flex items-center justify-evenly w-full gap-10 p-3'>
+            <ul className='hidden lg:flex items-center justify-evenly w-full gap-10 py-2 px-3'>
               <div className='flex gap-5'>
                 {
                   user &&
-                  <Link href={route('user.show', user.id)} className='w-fit flex items-center justify-center flex-col gap-2'>
-                    <img src={user.avatar?.includes('api') ? user.avatar : `/storage/${user.avatar}`} className="rounded-full w-15 h-15 object-cover" alt={"Imagen del usuario"} />
-                    <div className='flex flex-col gap-1 items-center justify-center'>
-                      <p>{user.name}</p>
-                      {my_user_role && <p className='text-sm text-[#ccc]'>({my_user_role.toLowerCase()})</p>}
-                    </div>
-                  </Link>
+                  <UserAvatar center={true} name={user.name} avatar={user.avatar && user.avatar || ""} userId={user.id} role={my_user_role.toLowerCase()} />
                 }
               </div>
               <div className='flex gap-5'>
