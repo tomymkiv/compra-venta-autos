@@ -8,6 +8,7 @@ use App\Models\Currency;
 use App\Models\Municipio;
 use App\Models\Post;
 use App\Models\Provincia;
+use Cache;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -24,12 +25,12 @@ class SearchController extends Controller
                         $q->where('modelo', 'like', "%{$query}%")
                             ->orWhereHas('carBrand', function ($q) use ($query) {
                                 $q->where('marca', 'like', "%{$query}%");
-                            });
+                            })
+                            ->orWhere('anio', 'like', "%{$query}%");
                     });
                 })
                 ->with([
                     'car.carModel.carBrand',
-                    'postImage',
                     'mainImage',
                     'municipio.provincia',
                 ])
@@ -39,10 +40,28 @@ class SearchController extends Controller
             return inertia('search/index', [
                 'loguedUser' => $this->loguedUser,
                 'posts' => $posts,
-                'carBrands' => CarsBrand::whereHas('carModels.cars.post')->get(),
-                'carType' => CarType::whereHas('cars.post')->get(),
-                'provincias' => Provincia::whereHas('municipios.posts')->get(),
-                'municipios' => Municipio::whereHas('posts')->get(),
+                // realiza un cache, pensado por si muchos usuarios realizan consultas al mismo tiempo.
+                // si los datos no están en caché, los busca en la BDD y los guarda en la caché. durante 3600 segundos (1 hora).
+                'carBrands' => Cache::remember(
+                    'sidebar_brands',
+                    3600,
+                    fn() => CarsBrand::whereHas('carModels.cars.post')->select('id')->get()
+                ),
+                'carType' => Cache::remember(
+                    'sidebar_car_types',
+                    3600,
+                    fn() => CarType::whereHas('cars.post')->select('id')->get()
+                ),
+                'provincias' => Cache::remember(
+                    'sidebar_provincias',
+                    3600,
+                    fn() => Provincia::whereHas('municipios.posts')->select('id')->get()
+                ),
+                'municipios' => Cache::remember(
+                    'sidebar_municipios',
+                    3600,
+                    fn() => Municipio::whereHas('posts')->select('id')->get()
+                ),
             ]);
         } else { // si se trata de un filtro...
             $posts = Post::query()
@@ -102,7 +121,6 @@ class SearchController extends Controller
                     'car.carModel.carBrand',
                     'car.car_type',
                     'municipio.provincia',
-                    'postImage',
                     'mainImage',
                 ])
                 ->paginate($this->paginateLimit)
@@ -111,11 +129,13 @@ class SearchController extends Controller
             return inertia('search/index', [
                 'loguedUser' => $this->loguedUser,
                 'posts' => $posts,
-                'carBrands' => CarsBrand::whereHas('carModels.cars.post')->get(),
-                'carType' => CarType::whereHas('cars.post')->get(),
-                'provincias' => Provincia::whereHas('municipios.posts')->get(),
-                'municipios' => Municipio::whereHas('posts')->get(),
-                'currencies' => Currency::whereHas('post')->get(),
+                // realiza un cache, pensado por si muchos usuarios realizan consultas al mismo tiempo.
+                // si los datos no están en caché, los busca en la BDD y los guarda en la caché. durante 3600 segundos (1 hora).
+                'carBrands' => Cache::remember('sidebar_brands', 3600, fn() => CarsBrand::whereHas('carModels.cars.post')->select('id')->get()),
+                'carType' => Cache::remember('sidebar_car_types', 3600, fn() => CarType::whereHas('cars.post')->select('id')->get()),
+                'provincias' => Cache::remember('sidebar_provincias', 3600, fn() => Provincia::whereHas('municipios.posts')->select('id')->get()),
+                'municipios' => Cache::remember('sidebar_municipios', 3600, fn() => Municipio::whereHas('posts')->select('id')->get()),
+                'currencies' => Cache::remember('sidebar_currencies', 3600, fn() => Currency::whereHas('post')->select('id')->get()),
             ]);
         }
     }
