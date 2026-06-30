@@ -14,6 +14,7 @@ use App\Models\Post;
 use App\Models\Municipio;
 use App\Models\Provincia;
 use App\Models\User;
+use Cache;
 use Gate;
 use Spatie\Permission\Models\Role;
 
@@ -30,19 +31,44 @@ class PostController extends Controller
             // Funciona gracias a las relaciones hasMany correctamente definidas en cada modelo.
 
             // Marcas que tienen al menos un modelo → auto → post
-            'carBrands' => CarsBrand::whereHas('carModels.cars.post')->orderBy('marca', 'asc')->get(),
+            'carBrands' => Cache::remember(
+                'sidebar_brands',
+                3600,
+                fn() => CarsBrand::whereHas('carModels.cars.post')->orderBy('marca', 'asc')->get()
+            ),
 
             // Tipos de auto que tienen al menos un auto → post
-            'carType' => CarType::whereHas('cars.post')->orderBy('tipo', 'asc')->get(),
+            'carType' => Cache::remember(
+                'sidebar_car_types',
+                3600,
+                fn() => CarType::whereHas('cars.post')->orderBy('tipo', 'asc')->get()
+            ),
 
             // Provincias que tienen al menos un municipio → post
-            'provincias' => Provincia::whereHas('municipios.posts')->orderBy('nombre', 'asc')->get(),
+            'provincias' => Cache::remember(
+                'sidebar_provincias',
+                3600,
+                fn() => Provincia::whereHas('municipios.posts')->orderBy('nombre', 'asc')->get()
+            ),
 
             // Municipios que tienen al menos un post
-            'municipios' => Municipio::whereHas('posts')->orderBy('nombre', 'asc')->get(),
+            'municipios' => Cache::remember(
+                'sidebar_municipios',
+                3600,
+                fn() => Municipio::whereHas('posts')->orderBy('nombre', 'asc')->get()
+            ),
 
-            'currencies' => Currency::get(),
-            'roles' => Role::get(),
+            // Divisas que tienen al menos un post
+            'currencies' => Cache::remember(
+                'sidebar_currencies',
+                3600,
+                fn() => Currency::whereHas('post')->select('id')->get()
+            ),
+            'roles' => Cache::remember(
+                'sidebar_roles',
+                3600,
+                fn() => Role::get()
+            ),
         ]);
     }
 
@@ -69,11 +95,31 @@ class PostController extends Controller
                 ->where('id_user', $user->id)
                 ->paginate($this->paginateLimit),
             // whereHas encadenado: misma lógica que index(), la DB filtra solo lo necesario.
-            'carBrands' => CarsBrand::whereHas('carModels.cars.post')->orderBy('marca', 'asc')->get(),
-            'carType' => CarType::whereHas('cars.post')->orderBy('tipo', 'asc')->get(),
-            'provincias' => Provincia::whereHas('municipios.posts')->orderBy('nombre', 'asc')->get(),
-            'municipios' => Municipio::whereHas('posts')->orderBy('nombre', 'asc')->get(),
-            'currencies' => Currency::get(),
+            'carBrands' => Cache::remember(
+                'sidebar_brands',
+                3600,
+                fn() => CarsBrand::whereHas('carModels.cars.post')->orderBy('marca', 'asc')->get()
+            ),
+            'carType' => Cache::remember(
+                'sidebar_car_types',
+                3600,
+                fn() => CarType::whereHas('cars.post')->orderBy('tipo', 'asc')->get()
+            ),
+            'provincias' => Cache::remember(
+                'sidebar_provincias',
+                3600,
+                fn() => Provincia::whereHas('municipios.posts')->orderBy('nombre', 'asc')->get()
+            ),
+            'municipios' => Cache::remember(
+                'sidebar_municipios',
+                3600,
+                fn() => Municipio::whereHas('posts')->orderBy('nombre', 'asc')->get()
+            ),
+            'currencies' => Cache::remember(
+                'sidebar_currencies',
+                3600,
+                fn() => Currency::whereHas('post')->select('id')->get()
+            ),
         ]);
     }
 
