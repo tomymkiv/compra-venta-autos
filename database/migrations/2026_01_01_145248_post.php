@@ -13,7 +13,8 @@ return new class extends Migration {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_user')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('id_car')->constrained('cars')->cascadeOnDelete();
+            $table->foreignId('id_model')->constrained('vehicle_models')->cascadeOnDelete();
+            $table->foreignId('id_body')->constrained('vehicle_bodies')->cascadeOnDelete();
             $table->foreignId('id_currency')->constrained('currencies')->cascadeOnDelete();
             $table->foreignId('id_municipio')->constrained('municipios')->cascadeOnDelete();
             $table->bigInteger('precio')->default(0);
@@ -36,7 +37,9 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        // Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('post_images');
         Schema::dropIfExists('posts');
+        // Schema::enableForeignKeyConstraints();
     }
 };

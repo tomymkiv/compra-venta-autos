@@ -1,24 +1,20 @@
 import AppFront from "@/AppFront";
 import Filtro from "@/components/Filtro";
-import { User } from "@/types";
 import { FilterProps } from "@/types/types";
-import { usePage } from "@inertiajs/react";
 
-export default function SearchIndex({ posts, carBrands, carType, provincias, municipios, currencies, roles }: FilterProps) {
-    const { user: UserProps } = usePage().props;
-    const user = UserProps as User;
+
+export default function SearchIndex({ posts, carBrands, vehicleBodies, provincias, municipios, currencies }: FilterProps) {
 
     return (
-        <AppFront loguedUser={user}>
+        <AppFront >
             <Filtro
                 posts={posts}
                 carBrands={carBrands}
                 showPages={true}
-                carType={carType}
+                vehicleBodies={vehicleBodies}
                 provincias={provincias}
                 municipios={municipios}
                 currencies={currencies}
-                roles={roles}
             />
         </AppFront>
     );

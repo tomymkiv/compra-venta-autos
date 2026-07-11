@@ -18,23 +18,13 @@ class UpdatePostAction
             }
         }
 
-        $carModel = $post->car->carModel;
-        $carModel->update([
-            'id_marca' => $validated['marca'],
-            'modelo' => $validated['modelo'],
-        ]);
-
-        $car = $post->car;
-        $car->update([
-            'id_modelo' => $carModel->id,
-            'id_type' => CarType::findOrFail($validated['tipo'])->id,
-            'kilometraje' => $validated['kilometraje'],
-            'anio' => $validated['anio'],
-        ]);
-
         $post->update([
             'id_currency' => $validated['moneda'],
             'id_municipio' => $validated['municipio'],
+            'id_model' => $validated['modelo'],
+            'id_body' => $validated['tipo'],
+            'kilometraje' => $validated['kilometraje'],
+            'anio' => $validated['anio'],
             'precio' => $validated['precio'],
             'descripcion' => $validated['descripcion'],
         ]);

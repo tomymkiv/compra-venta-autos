@@ -8,8 +8,8 @@ class Currency extends Model
 {
     protected $fillable = ['nombre'];
 
-    public function post()
+    public function posts()
     {
-        return $this->belongsTo(Post::class, 'id');
+        return $this->hasMany(Post::class, 'id_currency');
     }
 }

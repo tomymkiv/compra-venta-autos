@@ -5,10 +5,11 @@ namespace Database\Seeders;
 use App\Models\CarsBrand;
 use App\Models\CarType;
 use App\Models\Currency;
-use App\Models\Localidad;
 use App\Models\Municipio;
 use App\Models\Provincia;
-use App\Models\User;
+use App\Models\VehicleBody;
+use App\Models\VehicleBrand;
+use App\Models\VehicleModel;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,13 +19,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $marcas = ['Chevrolet', 'Volkswagen', 'Ford', 'Toyota', 'Peugeot', 'BMW', 'Audi', 'Mercedes-Benz', 'Renault', 'Honda', 'Hyundai', 'Kia', 'Nissan', 'Subaru', 'Suzuki', 'Volvo', 'Porsche', 'Ferrari', 'Lamborghini', 'Maserati', 'Bentley', 'Rolls-Royce', 'McLaren', 'Aston Martin', 'Jaguar', 'Land Rover', 'Mini', 'Smart', 'Acura', 'Infiniti', 'Alfa Romeo', 'Citroën', 'Dacia', 'DS', 'Fiat', 'Jeep', 'Lancia', 'Lexus', 'Lotus', 'Mitsubishi', 'Opel', 'Saab', 'Seat', 'Skoda', 'Tata', 'Yamaha', 'Motomel', 'Zanella', 'Corven', 'Gilera', 'Kymco'];
-        $types = ['Auto', 'Camioneta/Camion', 'Moto'];
+        $types = "http://api-autos-arg.test/api/types";
+        $types_json = json_decode(file_get_contents($types), true);
+        $marcas = "http://api-autos-arg.test/api/brands";
+        $marcas_json = json_decode(file_get_contents($marcas), true);
+        $models = "http://api-autos-arg.test/api/models";
+        $models_json = json_decode(file_get_contents($models), true);
         $divisas = ['Dolar', 'Pesos'];
         $provincias_json = json_decode(file_get_contents("https://infra.datos.gob.ar/georef/provincias.json"));
         $provincias = $provincias_json->provincias;
         $localidades_json = json_decode(file_get_contents("https://infra.datos.gob.ar/georef/municipios.json"));
         $localidades = $localidades_json->municipios;
+
+        $this->call([
+            UserSeeder::class
+        ]);
 
         foreach ($provincias as $provincia) {
             Provincia::create([
@@ -39,14 +48,23 @@ class DatabaseSeeder extends Seeder
                 'id_provincia' => $localidad->provincia->id,
             ]);
         }
-        foreach ($marcas as $marca) {
-            CarsBrand::create([
-                'marca' => $marca,
+        foreach ($marcas_json['data'] as $marca) {
+            VehicleBrand::create([
+                'name' => $marca['name'],
+                'logo' => 'logo',
+                'external_id' => $marca['id']
             ]);
         }
-        foreach ($types as $type) {
-            CarType::create([
-                'tipo' => $type,
+        foreach ($models_json['data'] as $modelo) {
+            VehicleModel::create([
+                'brand_id' => VehicleBrand::where('external_id', $modelo['brand_id'])->first()->id,
+                'name' => $modelo['name'],
+                'external_model_id' => $modelo['id'],
+            ]);
+        }
+        foreach ($types_json['data'] as $type) {
+            VehicleBody::create([
+                'name' => $type['name'],
             ]);
         }
         foreach ($divisas as $divisa) {
@@ -54,8 +72,5 @@ class DatabaseSeeder extends Seeder
                 'nombre' => $divisa
             ]);
         }
-        $this->call([
-            UserSeeder::class
-        ]);
     }
 }

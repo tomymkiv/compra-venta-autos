@@ -11,7 +11,7 @@ import FormFieldTextarea from "@/components/FormFieldTextarea";
 import FormFieldInput from "@/components/FormFieldInput";
 import HandlePostInfo from "@/components/HandlePostInfo";
 
-export default function edit({ carBrands, postData, car_types, currencies, provincias }: EditProps) {
+export default function edit({ carBrands, postData, vehicleBodies, currencies, provincias }: EditProps) {
     const {
         removeMainImage,
         removeNewImage,
@@ -22,6 +22,9 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
         handlePrecio,
         handleMainImage,
         handleDelete,
+        handleBrand,
+        brandSelected,
+        modelsState,
         municipioId,
         provinciaId,
         municipiosState,
@@ -35,7 +38,6 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
         errors,
         existingImg,
     } = HandlePostInfo(postData.post_image);
-
     const { user: UserProps } = usePage().props;
     const user = UserProps as User;
 
@@ -45,7 +47,6 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
             forceFormData: true,
         });
     }
-
     return <AppFront>
         <section className="flex flex-col min-w-0">
             {
@@ -56,9 +57,12 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
                         </div>
                         <form onSubmit={handleSubmit} className="flex flex-col sm:grid grid-cols-2 sm:items-start sm:justify-center gap-4 my-5 mx-3 w-full">
                             {/* marcas */}
-                            <FormFieldSelect options={carBrands.map(brand => ({ id: brand.id, nombre: brand.marca }))} titulo="Marca" errorsText={errors.marca} value={data.marca} onChangeEventSelect={e => setData('marca', Number(e.target.value))} />
+                            <FormFieldSelect options={carBrands.map(brand => ({ id: brand.id, nombre: brand.name }))} titulo="Marca" errorsText={errors.marca} value={data.marca} onChangeEventSelect={handleBrand} />
                             {/* modelos */}
-                            <FormFieldInput type="text" titulo="Modelo" placeholder="Ej: Fiesta ST, Mustang GT 5.0, MX-5" errorsText={errors.modelo} value={data.modelo} onChangeEventInput={e => setData('modelo', e.target.value)} />
+                            {
+                                !!brandSelected &&
+                                <FormFieldSelect options={modelsState.map(model => ({ id: model.id, nombre: model.name }))} titulo="Modelo" errorsText={errors.modelo} value={data.modelo} onChangeEventSelect={e => setData('modelo', e.target.value)} />
+                            }
                             {/* años */}
                             <FormFieldSelect options={Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => ({ id: 1900 + i, nombre: 1900 + i }))} titulo="Año" errorsText={errors.anio} value={data.anio} onChangeEventSelect={e => setData('anio', Number(e.target.value))} />
                             {/* kilometraje */}
@@ -74,11 +78,12 @@ export default function edit({ carBrands, postData, car_types, currencies, provi
                             {/* municipio */}
                             {/* al elegir una provincia, muestro los municipios de esa provincia */}
                             {
-                                provinciaId &&
+                                // !!provinciaId para que no muestre un 0 en caso de elegir la opcion "seleccionar"
+                                !!provinciaId &&
                                 <FormFieldSelect options={municipiosState.map(municipio => ({ id: municipio.id, nombre: municipio.nombre }))} titulo="Municipio" errorsText={errors.municipio} value={municipioId} onChangeEventSelect={handleMunicipio} />
                             }
                             {/* tipos de vehiculos */}
-                            <FormFieldSelect options={car_types.map(car_type => ({ id: car_type.id, nombre: car_type.tipo }))} titulo="Tipo de vehiculo" errorsText={errors.tipo} value={data.tipo} onChangeEventSelect={e => setData('tipo', Number(e.target.value))} />
+                            <FormFieldSelect options={vehicleBodies.map(vehicleBody => ({ id: vehicleBody.id, nombre: vehicleBody.name }))} titulo="Tipo de vehiculo" errorsText={errors.tipo} value={data.tipo} onChangeEventSelect={e => setData('tipo', Number(e.target.value))} />
                             {/* imagen principal */}
                             <FormFieldFile image={mainImage} errors={errors.main_image} removeImage={removeMainImage} handleImage={handleMainImage} />
                             {/* resto de las imagenes */}

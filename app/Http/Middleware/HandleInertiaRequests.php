@@ -59,7 +59,7 @@ class HandleInertiaRequests extends Middleware
         }
         // obtengo el posts (con sus relaciones) para poder editarlo
         if ($request->routeIs('posts.edit')) {
-            $post_info = Post::with('user', 'car.carModel.carBrand', 'postImage', 'mainImage', 'municipio.provincia')
+            $post_info = Post::with('user', 'carModel.carBrand', 'postImage', 'mainImage', 'municipio.provincia')
                 ->find($request->route('post'));
         }
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');

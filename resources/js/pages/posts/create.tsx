@@ -8,18 +8,21 @@ import FormFieldFile from "@/components/FormFieldFile";
 import FormFieldFiles from "@/components/FormFieldFiles";
 import HandlePostInfo from "@/components/HandlePostInfo";
 
-export default function create({ carBrands, car_types, currencies, provincias }: CreateProps) {
+export default function create({ carBrands, vehicleBodies, currencies, provincias }: CreateProps) {
     const {
         removeMainImage,
         removeNewImage,
+        handleBrand,
         handleImages,
         handleProvincia,
         handleMunicipio,
         handlePrecio,
         handleMainImage,
+        brandSelected,
         municipioId,
         provinciaId,
         municipiosState,
+        modelsState,
         data,
         setData,
         precio,
@@ -36,7 +39,6 @@ export default function create({ carBrands, car_types, currencies, provincias }:
             forceFormData: true, // fuerzo un "formData", para que me tome todos los archivos (imagenes)
         });
     }
-
     return <AppFront>
         <section className="flex flex-col min-w-0">
             <div>
@@ -44,9 +46,12 @@ export default function create({ carBrands, car_types, currencies, provincias }:
             </div>
             <form action="" onSubmit={handleSubmit} className="flex flex-col sm:grid grid-cols-2 sm:items-center sm:justify-center gap-4 my-5 mx-3 w-full">
                 {/* marcas */}
-                <FormFieldSelect options={carBrands.map(brand => ({ id: brand.id, nombre: brand.marca }))} titulo="Marca" errorsText={errors.marca} value={data.marca} onChangeEventSelect={e => setData('marca', Number(e.target.value))} />
+                <FormFieldSelect options={carBrands.map(brand => ({ id: brand.id, nombre: brand.name }))} titulo="Marca" errorsText={errors.marca} value={data.marca} onChangeEventSelect={handleBrand} />
                 {/* modelos */}
-                <FormFieldInput type="text" titulo="Modelo" placeholder="Ej: Fiesta ST, Mustang GT 5.0, MX-5" errorsText={errors.modelo} value={data.modelo} onChangeEventInput={e => setData('modelo', e.target.value)} />
+                {
+                    !!brandSelected &&
+                    <FormFieldSelect options={modelsState.map(model => ({ id: model.id, nombre: model.name }))} titulo="Modelo" errorsText={errors.modelo} value={data.modelo} onChangeEventSelect={e => setData('modelo', e.target.value)} />
+                }
                 {/* años */}
                 <FormFieldSelect options={Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => ({ id: 1900 + i, nombre: 1900 + i }))} titulo="Año" errorsText={errors.anio} value={data.anio} onChangeEventSelect={e => setData('anio', Number(e.target.value))} />
                 {/* kilometraje */}
@@ -62,11 +67,11 @@ export default function create({ carBrands, car_types, currencies, provincias }:
                 {/* municipio */}
                 {/* al elegir una provincia, muestro los municipios de esa provincia */}
                 {
-                    provinciaId &&
+                    !!provinciaId &&
                     <FormFieldSelect options={municipiosState.map(municipio => ({ id: municipio.id, nombre: municipio.nombre }))} titulo="Municipio" errorsText={errors.municipio} value={municipioId} onChangeEventSelect={handleMunicipio} />
                 }
                 {/* tipos de vehiculos */}
-                <FormFieldSelect options={car_types.map(car_type => ({ id: car_type.id, nombre: car_type.tipo }))} titulo="Tipo de vehiculo" errorsText={errors.tipo} value={data.tipo} onChangeEventSelect={e => setData('tipo', e.target.value)} />
+                <FormFieldSelect options={vehicleBodies.map(vehicleBody => ({ id: vehicleBody.id, nombre: vehicleBody.name }))} titulo="Tipo de vehiculo" errorsText={errors.tipo} value={data.tipo} onChangeEventSelect={e => setData('tipo', e.target.value)} />
                 {/* imagen principal */}
                 <FormFieldFile image={mainImage} errors={errors.main_image} removeImage={removeMainImage} handleImage={handleMainImage} />
                 {/* resto de las imagenes */}

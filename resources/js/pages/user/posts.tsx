@@ -2,8 +2,8 @@ import { FilterProps } from '@/types/types';
 import AppFront from '@/AppFront';
 import Filtro from '@/components/Filtro';
 
-export default function userPosts({ posts, loguedUser, provincias, municipios, carType, carBrands, currencies }: FilterProps) {
-    return <AppFront loguedUser={loguedUser}>
-        <Filtro posts={posts} loguedUser={loguedUser} provincias={provincias} municipios={municipios} carType={carType} carBrands={carBrands} currencies={currencies} />
+export default function userPosts({ posts, provincias, municipios, vehicleBodies, carBrands, currencies }: FilterProps) {
+    return <AppFront>
+        <Filtro posts={posts} provincias={provincias} municipios={municipios} vehicleBodies={vehicleBodies} carBrands={carBrands} currencies={currencies} />
     </AppFront>;
 }

@@ -64,26 +64,33 @@ export interface Municipio {
     id_provincia: number,
     nombre: string,
 }
-export interface CarBrand {
+export interface VehicleBrand {
     id: number,
-    marca: string,
+    name: string,
 }
-export interface CarType {
+export interface VehicleBody {
     id: number,
-    tipo: string,
+    name: string,
+}
+export interface VehicleModel {
+    id: number,
+    name: string,
+    external_model_id?: number,
+    brand_id?: number,
 }
 // lo que recibo cuando creo un auto (array de las marcas pre-hechas)
 export interface CreateProps {
-    carBrands: CarBrand[],
-    car_types: CarType[],
+    carBrands: VehicleBrand[],
+    models: VehicleModel[],
+    vehicleBodies: VehicleBody[],
     currencies: Currency[],
     provincias: Provincia[],
 }
 // lo que recibo a la hora de editar un post
 export interface EditProps {
-    carBrands: CarBrand[],
+    carBrands: VehicleBrand[],
     postData: Post,
-    car_types: CarType[],
+    vehicleBodies: VehicleBody[],
     currencies: Currency[],
     provincias: Provincia[],
     permissions: Permission[],
@@ -94,29 +101,29 @@ export interface Currency {
 }
 export interface Post {
     id: number,
-    fecha_publicacion: string,
     precio: number,
     descripcion: string,
     id_currency: number,
+    id_body: number,
+    id_model: number,
+    kilometraje: number,
+    anio: number,
     currency: Currency,
     user: User,
-    post_image: Images[], // todas las imagenes
+    post_image: Images[], // todas las imagenes, menos la principal
     main_image: Images, // solo una imagen (orden = 1)
-    car: {
-        id_type: number,
-        car_type: CarType,
-        kilometraje: number,
-        anio: number,
-        car_model: {
-            modelo: string,
-            car_brand: CarBrand
-        } // al hacer todo en cascada, estoy relacionando cada tipo correctamente, siguiendo el hilo de lo que recibo en el backend con las relaciones entre FK.
+    car_model: {
+        car_brand: VehicleBrand,
+        name: string,
     },
+    vehicle_body: VehicleBody,
     municipio: {
         id: number,
         nombre: string,
         provincia: Provincia
     },
+    created_at: string,
+    updated_at: string,
 }
 
 export interface CreatePostForm {
@@ -180,9 +187,9 @@ export interface AppComponentProps {
 }
 export interface FilterProps {
     posts: Paginated<Post>, // están paginados los posts
-    carBrands: CarBrand[],
+    carBrands: VehicleBrand[],
     showPages?: boolean | false,
-    carType: CarType[],
+    vehicleBodies: VehicleBody[],
     provincias: Provincia[],
     municipios: Municipio[],
     currencies: Currency[],

@@ -21,7 +21,7 @@ import { route } from "ziggy-js";
 import useProvinciaMunicipio from "@/hooks/useProvinciaMunicipio";
 import FilterSelect from "./FilterSelect";
 
-export default function Filtro({ posts, showPages, carBrands, carType, currencies, provincias, municipios }: FilterProps) {
+export default function Filtro({ posts, showPages, carBrands, vehicleBodies, currencies, provincias, municipios }: FilterProps) {
     const {
         my_user_role: UserRoleProp
     } = usePage().props;
@@ -185,7 +185,7 @@ export default function Filtro({ posts, showPages, carBrands, carType, currencie
                             }
                             {
                                 selectedFilter === 'Tipo' &&
-                                <FilterSelect placeholder="Elegí un tipo" name="typeId" titulo="Filtrar tipo de auto" onChangeHandler={handleCarType} arr={carType} />
+                                <FilterSelect placeholder="Elegí un tipo" name="typeId" titulo="Filtrar tipo de auto" onChangeHandler={handleCarType} arr={vehicleBodies} />
                             }
                             {
                                 selectedFilter === 'Ubicación' &&

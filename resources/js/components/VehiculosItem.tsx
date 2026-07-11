@@ -113,10 +113,10 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                             <img src={`/${post.post_image[indexImg].url}`} alt={`imagen ${indexImg}`} className="max-w-[90vw] min-h-[300px] max-h-[300px] md:min-w-[700px] md:min-h-[700px] md:max-h-[700px] md:max-w-[700px] object-contain cursor-pointer" onClick={openSlide} />
                         </div>
                         <div className='xl:w-[33%] space-y-2 md:mt-3 mx-3 lg:mx-6 md:flex flex-col gap-5'>
-                            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8">{post.car.car_model.car_brand.marca} {post.car.car_model.modelo}</h2>
+                            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8">{post.car_model.car_brand.name} {post.car_model.name}</h2>
                             <div>
-                                <CarPostData title="Año" data={`${post.car.anio}`} />
-                                <CarPostData title="Kilometraje" data={`${handleDots(post.car.kilometraje.toString())} km`} />
+                                <CarPostData title="Año" data={`${post.anio}`} />
+                                <CarPostData title="Kilometraje" data={`${handleDots(post.kilometraje.toString())} km`} />
                                 <CarPostData title="Precio" data={`${post.id_currency == 1 ? (priceBtnActive ? `$ ${handleDots(ARSPrice.toFixed(0))}` : `U$S ${handleDots(USDPrice.toFixed(0))}`) : (priceBtnActive ? `U$S ${handleDots(USDPrice.toFixed(0))}` : `$ ${handleDots(ARSPrice.toFixed(0))}`)}`} />
                                 <CarPostData title="Ubicación" data={`${post.municipio.nombre}, ${post.municipio.provincia.nombre}`} />
                             </div>
@@ -128,10 +128,10 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                             </div>
                             <hr className="my-5 lg:hidden" />
                             <div className="flex flex-col gap-2">
-                                <p>Publicacion del usuario: {post.user.name}</p>
+                                <p>Usuario: <b>{post.user.name}</b></p>
                                 <p>Fecha de publicacion:
                                     <br />
-                                    {new Date(post.fecha_publicacion).toLocaleString('es-AR', {
+                                    {new Date(post.created_at).toLocaleString('es-AR', {
                                         timeZone: 'America/Argentina/Buenos_Aires',
                                         year: 'numeric', month: '2-digit', day: '2-digit',
                                         hour: '2-digit', minute: '2-digit'
@@ -176,7 +176,7 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                     user ? <div className="w-[50%] flex flex-col lg:flex-row gap-4 items-center justify-center">
                         {
                             user.id !== post.user.id && (
-                                <a href={`https://wa.me/54${post.user.contact.contacto}?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car.car_model.car_brand.marca} ${post.car.car_model.modelo} ${post.car.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-full lg:w-[40%] text-center font-[500]">Consultar</a>
+                                <a href={`https://wa.me/54${post.user.contact.contacto}?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car_model.car_brand.name} ${post.car_model.name} ${post.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-full lg:w-[40%] text-center font-[500]">Consultar</a>
                             )
                         }
                         {

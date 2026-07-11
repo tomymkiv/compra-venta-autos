@@ -1,9 +1,8 @@
-import { CarBrand, CarType, Currency, Municipio, Provincia } from '@/types/types'
-// Provincia y Municipio se usan en el tipo arr, aunque no aparezcan directamente en los checks
+import { Currency, Municipio, Provincia, VehicleBody, VehicleBrand } from '@/types/types'
 import { SelectHTMLAttributes } from 'react'
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
-    arr: Currency[] | Provincia[] | Municipio[] | CarBrand[] | CarType[] | number[] // enrealidad seria currency, provincias, municipios, carBrands, etc, pero si cambio algo en los tipos, tengo que cambiarlo en todos lados, por ahora lo dejo asi, para luego refactorizar
+    arr: Currency[] | Provincia[] | Municipio[] | VehicleBrand[] | VehicleBody[] | number[] // enrealidad seria currency, provincias, municipios, carBrands, etc, pero si cambio algo en los tipos, tengo que cambiarlo en todos lados, por ahora lo dejo asi, para luego refactorizar
     onChangeHandler: (e: React.ChangeEvent<HTMLSelectElement>) => void
     name: string
     placeholder: string
@@ -24,8 +23,7 @@ export default function FilterSelect({ value, placeholder, arr, onChangeHandler,
                     typeof item !== 'number' ?
                         <option key={item.id} value={item.id}>
                             {'nombre' in item && item.nombre}
-                            {'marca' in item && item.marca}
-                            {'tipo' in item && item.tipo}
+                            {'name' in item && item.name}
                         </option>
                         :
                         <option key={item} value={item}>{item}</option>

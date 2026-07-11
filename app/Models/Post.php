@@ -6,18 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
-    protected $fillable = ['id_user', 'id_car', 'id_currency', 'id_municipio', 'precio', 'descripcion', 'ubicacion', 'fecha_publicacion', 'estado', 'url'];
+    protected $fillable = ['id_user', 'id_currency', 'id_model', 'id_body', 'kilometraje', 'anio', 'id_municipio', 'precio', 'descripcion'];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
     }
-
-    public function car()
-    {
-        return $this->belongsTo(Car::class, 'id_car');
-    }
-
     public function postImage()
     {
         return $this->hasMany(PostImage::class, 'id_post');
@@ -30,10 +24,18 @@ class Post extends Model
 
     public function currency()
     {
-        return $this->hasOne(Currency::class, 'id_currency');
+        return $this->hasOne(Currency::class, 'id');
     }
     public function municipio()
     {
         return $this->belongsTo(Municipio::class, 'id_municipio');
+    }
+    public function carModel()
+    {
+        return $this->belongsTo(VehicleModel::class, 'id_model');
+    }
+    public function vehicleBody()
+    {
+        return $this->belongsTo(VehicleBody::class, 'id_body');
     }
 }

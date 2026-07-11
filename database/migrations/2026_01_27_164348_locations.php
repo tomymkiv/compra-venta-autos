@@ -28,7 +28,9 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists("municipios");
         Schema::dropIfExists("provincias");
+        Schema::enableForeignKeyConstraints();
     }
 };
