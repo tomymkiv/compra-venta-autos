@@ -17,9 +17,11 @@ return new class extends Migration {
             $table->foreignId('id_body')->constrained('vehicle_bodies')->cascadeOnDelete();
             $table->foreignId('id_currency')->constrained('currencies')->cascadeOnDelete();
             $table->foreignId('id_municipio')->constrained('municipios')->cascadeOnDelete();
+            $table->text('version')->default('version');
+            $table->integer('anio');
+            $table->bigInteger('kilometraje')->default(0);
             $table->bigInteger('precio')->default(0);
             $table->text('descripcion')->nullable();
-            $table->timestamp('fecha_publicacion')->isNotEmpty();
             $table->timestamps();
         });
         Schema::create('post_images', function (Blueprint $table) {

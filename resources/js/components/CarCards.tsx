@@ -13,7 +13,7 @@ export default function CarCards({ post }: CarCardsProps) {
                 <img src={`/${post.main_image.url}`} alt="Imagen del vehiculo" className="rounded-xl object-contain w-full max-h-[300px] min-h-[300px]" />
             </div>
             <div className="mb-6 mt-2 space-y-1.5">
-                <h4 className="font-medium text-lg text-wrap">{`${post.car_model.car_brand.name} ${post.car_model.name} ${post.anio}`}</h4>
+                <h4 className="font-medium text-lg text-wrap">{`${post.car_model.car_brand.name} ${post.car_model.name} ${post.version} ${post.anio}`}</h4>
                 <h6 className="font-semibold">📍{post.municipio.nombre}, {post.municipio.provincia.nombre}</h6>
             </div>
             <hr className="text-gray-500/30" />

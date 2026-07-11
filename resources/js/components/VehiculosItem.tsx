@@ -115,6 +115,7 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                         <div className='xl:w-[33%] space-y-2 md:mt-3 mx-3 lg:mx-6 md:flex flex-col gap-5'>
                             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8">{post.car_model.car_brand.name} {post.car_model.name}</h2>
                             <div>
+                                <CarPostData title="Versión" data={`${post.version}`} />
                                 <CarPostData title="Año" data={`${post.anio}`} />
                                 <CarPostData title="Kilometraje" data={`${handleDots(post.kilometraje.toString())} km`} />
                                 <CarPostData title="Precio" data={`${post.id_currency == 1 ? (priceBtnActive ? `$ ${handleDots(ARSPrice.toFixed(0))}` : `U$S ${handleDots(USDPrice.toFixed(0))}`) : (priceBtnActive ? `U$S ${handleDots(USDPrice.toFixed(0))}` : `$ ${handleDots(ARSPrice.toFixed(0))}`)}`} />

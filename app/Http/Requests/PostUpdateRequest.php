@@ -36,6 +36,7 @@ class PostUpdateRequest extends FormRequest
             'images.*' => ['image'],
             'deleted_images' => ['nullable', 'array'],
             'deleted_images.*' => ['nullable', 'integer', 'exists:post_images,id'],
+            'version' => ['required', 'string', 'max:64'],
         ];
     }
 
@@ -60,6 +61,8 @@ class PostUpdateRequest extends FormRequest
             'main_image.required' => 'Debes subir una imagen principal.',
             'main_image.image' => 'La imagen debe ser una imagen.',
             'main_image.max' => 'La imagen debe pesar menos de 2MB.',
+            'version.required' => 'Debes ingresar la versión.',
+            'version.max' => 'La versión debe tener menos de 64 caracteres.',
         ];
     }
 }

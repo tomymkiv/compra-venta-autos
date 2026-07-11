@@ -25,6 +25,12 @@ class DatabaseSeeder extends Seeder
         $marcas_json = json_decode(file_get_contents($marcas), true);
         $models = "http://api-autos-arg.test/api/models";
         $models_json = json_decode(file_get_contents($models), true);
+        // $drivetrains = "http://api-autos-arg.test/api/drivetrains";
+        // $drivetrains_json = json_decode(file_get_contents($drivetrains), true);
+        // $transmissions = "http://api-autos-arg.test/api/transmissions";
+        // $transmissions_json = json_decode(file_get_contents($transmissions), true);
+        // $fuels = "http://api-autos-arg.test/api/fuels";
+        // $fuels_json = json_decode(file_get_contents($fuels), true);
         $divisas = ['Dolar', 'Pesos'];
         $provincias_json = json_decode(file_get_contents("https://infra.datos.gob.ar/georef/provincias.json"));
         $provincias = $provincias_json->provincias;

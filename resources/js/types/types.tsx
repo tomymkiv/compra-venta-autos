@@ -108,6 +108,7 @@ export interface Post {
     id_model: number,
     kilometraje: number,
     anio: number,
+    version: string, // MODIFICAR SI SE AGREGA UN TABLA APARTE LLAMADA "VEHICLE_VERSIONS" O ALGO POR EL ESTILO
     currency: Currency,
     user: User,
     post_image: Images[], // todas las imagenes, menos la principal
@@ -140,6 +141,7 @@ export interface CreatePostForm {
     moneda: string
     main_image: File | ''
     deleted_images?: number[] // 👈 lo necesito para eliminar las imagenes existentes a la hora de editar
+    version: string;
 }
 export interface EditForm {
     marca: number;
@@ -154,6 +156,7 @@ export interface EditForm {
     moneda: number;
     images: File[];
     deleted_images: number[];
+    version: string;
     main_image: File | Images | null;
 };
 

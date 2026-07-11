@@ -26,7 +26,8 @@ class SearchController extends Controller
                             ->orWhereHas('carBrand', function ($q) use ($query) {
                                 $q->where('name', 'like', "%{$query}%");
                             })
-                            ->orWhere('anio', 'like', "%{$query}%");
+                            ->orWhere('anio', 'like', "%{$query}%")
+                            ->orWhere('version', 'like', "%{$query}%");
                     });
                 })
                 ->with([

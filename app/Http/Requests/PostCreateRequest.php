@@ -35,6 +35,7 @@ class PostCreateRequest extends FormRequest
             'images' => ['required', 'array', 'min:1'],
             'images.*' => ['image'],
             'main_image' => ['required', 'image', 'max:2048'],
+            'version' => ['required', 'string', 'max:64'],
         ];
     }
     public function messages(): array
@@ -57,6 +58,8 @@ class PostCreateRequest extends FormRequest
             'main_image.required' => 'Debes subir una imagen principal.',
             'main_image.image' => 'La imagen debe ser una imagen.',
             'main_image.max' => 'La imagen debe pesar menos de 2MB.',
+            'version.required' => 'Debes ingresar la versión.',
+            'version.max' => 'La versión debe tener menos de 64 caracteres.',
         ];
     }
 }

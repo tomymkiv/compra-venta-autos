@@ -26,6 +26,7 @@ export default function edit({ carBrands, postData, vehicleBodies, currencies, p
         brandSelected,
         modelsState,
         municipioId,
+        handleVersion,
         provinciaId,
         municipiosState,
         data,
@@ -63,6 +64,8 @@ export default function edit({ carBrands, postData, vehicleBodies, currencies, p
                                 !!brandSelected &&
                                 <FormFieldSelect options={modelsState.map(model => ({ id: model.id, nombre: model.name }))} titulo="Modelo" errorsText={errors.modelo} value={data.modelo} onChangeEventSelect={e => setData('modelo', e.target.value)} />
                             }
+                            {/* version */}
+                            <FormFieldInput type="text" titulo="Version" errorsText={errors.version} value={data.version} onChangeEventInput={handleVersion} />
                             {/* años */}
                             <FormFieldSelect options={Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => ({ id: 1900 + i, nombre: 1900 + i }))} titulo="Año" errorsText={errors.anio} value={data.anio} onChangeEventSelect={e => setData('anio', Number(e.target.value))} />
                             {/* kilometraje */}

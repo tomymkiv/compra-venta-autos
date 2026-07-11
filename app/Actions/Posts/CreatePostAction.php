@@ -2,9 +2,6 @@
 
 namespace App\Actions\Posts;
 
-use App\Models\Car;
-use App\Models\CarsModel;
-use App\Models\CarType;
 use App\Models\Post;
 use App\Models\VehicleModel;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +16,7 @@ class CreatePostAction
             'id_currency' => $validated['moneda'],
             'id_municipio' => $validated['municipio'],
             'id_body' => $validated['tipo'],
+            'version' => $validated['version'],
             'kilometraje' => $validated['kilometraje'],
             'anio' => $validated['anio'],
             'descripcion' => $validated['descripcion'],

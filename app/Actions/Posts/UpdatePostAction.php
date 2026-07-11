@@ -23,6 +23,7 @@ class UpdatePostAction
             'id_municipio' => $validated['municipio'],
             'id_model' => $validated['modelo'],
             'id_body' => $validated['tipo'],
+            'version' => $validated['version'],
             'kilometraje' => $validated['kilometraje'],
             'anio' => $validated['anio'],
             'precio' => $validated['precio'],

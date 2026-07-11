@@ -18,7 +18,10 @@ export default function create({ carBrands, vehicleBodies, currencies, provincia
         handleMunicipio,
         handlePrecio,
         handleMainImage,
+        handleModel,
+        handleVersion,
         brandSelected,
+        modelSelected,
         municipioId,
         provinciaId,
         municipiosState,
@@ -44,13 +47,23 @@ export default function create({ carBrands, vehicleBodies, currencies, provincia
             <div>
                 <h2 className="text-2xl text-center">Crear publicación</h2>
             </div>
+            <div className="flex gap-3">
+                {/* vista en tiempo real de la marca y modelo */}
+                {
+                    !!brandSelected &&
+                    <input type="text" className="border border-slate-400 p-3 rounded-md w-full" readOnly value={`${carBrands.find(brand => brand.id === brandSelected)?.name} ${modelSelected && modelsState.find(model => model.id === modelSelected)?.name}`} />
+                }
+            </div>
             <form action="" onSubmit={handleSubmit} className="flex flex-col sm:grid grid-cols-2 sm:items-center sm:justify-center gap-4 my-5 mx-3 w-full">
                 {/* marcas */}
                 <FormFieldSelect options={carBrands.map(brand => ({ id: brand.id, nombre: brand.name }))} titulo="Marca" errorsText={errors.marca} value={data.marca} onChangeEventSelect={handleBrand} />
                 {/* modelos */}
                 {
                     !!brandSelected &&
-                    <FormFieldSelect options={modelsState.map(model => ({ id: model.id, nombre: model.name }))} titulo="Modelo" errorsText={errors.modelo} value={data.modelo} onChangeEventSelect={e => setData('modelo', e.target.value)} />
+                    <>
+                        <FormFieldSelect options={modelsState.map(model => ({ id: model.id, nombre: model.name }))} titulo="Modelo" errorsText={errors.modelo} value={data.modelo} onChangeEventSelect={handleModel} />
+                        <FormFieldInput type="text" titulo="Versión" placeholder="Ej: SS, LTZ, Kinetic..." errorsText={errors.version} value={data.version} onChangeEventInput={handleVersion} />
+                    </>
                 }
                 {/* años */}
                 <FormFieldSelect options={Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => ({ id: 1900 + i, nombre: 1900 + i }))} titulo="Año" errorsText={errors.anio} value={data.anio} onChangeEventSelect={e => setData('anio', Number(e.target.value))} />
