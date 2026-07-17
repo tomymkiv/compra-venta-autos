@@ -1,9 +1,9 @@
-import { Input } from "@/components/ui/input";
 import AuthLayout from "@/layouts/auth-layout";
 import { Link, useForm } from "@inertiajs/react"
 import React, { useEffect, useRef, useState } from "react";
 import { route } from "ziggy-js";
 import RegisterFormData from "@/components/RegisterFormData";
+import InputComp from "@/components/ui/InputComp";
 
 export default function Register({ rol: initialRol = '' }: { rol: string }) {
     const [inputBg, setInputBg] = useState('');
@@ -71,7 +71,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
                 <p className="text-red-600">{errors.avatar}</p>
                 <label htmlFor="avatar">Avatar <small>(opcional)</small></label>
 
-                <Input ref={inputRef} type="file" name="avatar" id="avatar" onChange={handleImageInput} accept="image/*" placeholder="Avatar" className={`${inputBg} cursor-pointer w-full`} />
+                <InputComp ref={inputRef} type="file" name="avatar" id="avatar" onChange={handleImageInput} accept="image/*" placeholder="Avatar" className={`${inputBg} cursor-pointer w-full`} />
                 {data.avatar &&
                     <button onClick={handleRemoveImage} className={`text-red-500 w-full text-center cursor-pointer bg-red-500/30 hover:bg-red-500/60 transition-colors duration-300 p-2 rounded-md ${imgBtn} w-fit`}>
                         Eliminar imagen

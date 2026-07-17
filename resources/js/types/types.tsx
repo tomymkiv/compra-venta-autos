@@ -10,9 +10,10 @@ export interface Rol {
 // sirve para input (text, number), select y textarea
 export interface FormFieldsInterface {
     max?: number | undefined,
-    type?: 'text' | 'number' | 'password' | 'email',
+    type?: 'text' | 'number' | 'password' | 'email' | 'checkbox',
     errorsText: string | undefined,
     value: string | number,
+    checked?: boolean | undefined,
     placeholder?: string,
     titulo: string,
     className?: string,
@@ -21,12 +22,8 @@ export interface FormFieldsInterface {
     onChangeEventTextarea?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void,
 }
 
-export interface FormFieldsSelectInterface {
+export interface FormFieldsSelectInterface extends FormFieldsInterface {
     options: Array<SelectOptions>,
-    errorsText: string | undefined,
-    value: string | number,
-    titulo: string,
-    className?: string,
     onChangeEventSelect?: (e: React.ChangeEvent<HTMLSelectElement>) => void,
 }
 

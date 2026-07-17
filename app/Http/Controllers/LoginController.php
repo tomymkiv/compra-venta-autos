@@ -17,12 +17,13 @@ class LoginController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
-        if (!Auth::attempt($validated)) {
+        // pregunto si se validaron correctamente los datos
+        if (!Auth::attempt($validated, $request->boolean('remember'))) {
             return back()->withErrors([
                 'email' => 'Email o contraseña incorrectos',
             ]);
         }
+
         return redirect()->route('welcome');
     }
     public function logout(Request $request)
