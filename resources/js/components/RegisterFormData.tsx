@@ -1,4 +1,4 @@
-import InputComp from './InputComp'
+import InputComp from './ui/InputComp'
 
 type FormDataTypes = {
     errorMsg: string | undefined,

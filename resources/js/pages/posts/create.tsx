@@ -9,6 +9,7 @@ import FormFieldFiles from "@/components/FormFieldFiles";
 import HandlePostInfo from "@/components/HandlePostInfo";
 
 export default function create({ carBrands, vehicleBodies, currencies, provincias }: CreateProps) {
+
     const {
         removeMainImage,
         removeNewImage,
@@ -17,9 +18,11 @@ export default function create({ carBrands, vehicleBodies, currencies, provincia
         handleProvincia,
         handleMunicipio,
         handlePrecio,
+        handleKilometraje,
         handleMainImage,
         handleModel,
         handleVersion,
+        versionSelected,
         brandSelected,
         modelSelected,
         municipioId,
@@ -29,13 +32,13 @@ export default function create({ carBrands, vehicleBodies, currencies, provincia
         data,
         setData,
         precio,
+        kilometraje,
         mainImage,
         newImg,
         post,
         processing,
         errors,
     } = HandlePostInfo();
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(route('posts.store'), {
@@ -43,18 +46,18 @@ export default function create({ carBrands, vehicleBodies, currencies, provincia
         });
     }
     return <AppFront>
-        <section className="flex flex-col min-w-0">
+        <section className="flex flex-col items-center min-w-0">
             <div>
                 <h2 className="text-2xl text-center">Crear publicación</h2>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 w-[75%]">
                 {/* vista en tiempo real de la marca y modelo */}
                 {
                     !!brandSelected &&
-                    <input type="text" className="border border-slate-400 p-3 rounded-md w-full" readOnly value={`${carBrands.find(brand => brand.id === brandSelected)?.name} ${modelSelected && modelsState.find(model => model.id === modelSelected)?.name}`} />
+                    <input type="text" className="border border-slate-400 p-3 rounded-md w-full" readOnly value={`${carBrands.find(brand => brand.id === brandSelected)?.name} ${brandSelected && modelSelected && modelsState.find(model => model.id === modelSelected)?.name} ${versionSelected && versionSelected}`} />
                 }
             </div>
-            <form action="" onSubmit={handleSubmit} className="flex flex-col sm:grid grid-cols-2 sm:items-center sm:justify-center gap-4 my-5 mx-3 w-full">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:grid grid-cols-2 sm:items-center sm:justify-center gap-4 my-5 mx-3 w-full">
                 {/* marcas */}
                 <FormFieldSelect options={carBrands.map(brand => ({ id: brand.id, nombre: brand.name }))} titulo="Marca" errorsText={errors.marca} value={data.marca} onChangeEventSelect={handleBrand} />
                 {/* modelos */}
@@ -68,13 +71,13 @@ export default function create({ carBrands, vehicleBodies, currencies, provincia
                 {/* años */}
                 <FormFieldSelect options={Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => ({ id: 1900 + i, nombre: 1900 + i }))} titulo="Año" errorsText={errors.anio} value={data.anio} onChangeEventSelect={e => setData('anio', Number(e.target.value))} />
                 {/* kilometraje */}
-                <FormFieldInput type="number" titulo="Kilometraje" placeholder="Ej: 100000" errorsText={errors.kilometraje} value={data.kilometraje} onChangeEventInput={e => setData('kilometraje', Number(e.target.value))} />
+                <FormFieldInput type="text" titulo="Kilometraje" placeholder="Ej: 100.000" errorsText={errors.kilometraje} value={kilometraje} onChangeEventInput={handleKilometraje} />
                 {/* precio */}
                 <FormFieldInput type="text" max={15} titulo="Precio" errorsText={errors.precio} value={precio} onChangeEventInput={handlePrecio} />
                 {/* moneda */}
                 <FormFieldSelect options={currencies.map(currency => ({ id: currency.id, nombre: currency.nombre }))} titulo="Moneda" errorsText={errors.moneda} value={data.moneda} onChangeEventSelect={e => setData('moneda', e.target.value)} />
                 {/* descripción */}
-                <FormFieldTextarea titulo="Descripción" errorsText={errors.descripcion} value={data.descripcion} onChangeEventTextarea={e => setData('descripcion', e.target.value)} />
+                <FormFieldTextarea type="text" titulo="Descripción" errorsText={errors.descripcion} value={data.descripcion} onChangeEventTextarea={e => setData('descripcion', e.target.value)} />
                 {/* provincia */}
                 <FormFieldSelect options={provincias.map(provincia => ({ id: provincia.id, nombre: provincia.nombre }))} titulo="Provincia" errorsText={errors.provincia} value={data.provincia} onChangeEventSelect={handleProvincia} />
                 {/* municipio */}
@@ -86,7 +89,7 @@ export default function create({ carBrands, vehicleBodies, currencies, provincia
                 {/* tipos de vehiculos */}
                 <FormFieldSelect options={vehicleBodies.map(vehicleBody => ({ id: vehicleBody.id, nombre: vehicleBody.name }))} titulo="Tipo de vehiculo" errorsText={errors.tipo} value={data.tipo} onChangeEventSelect={e => setData('tipo', e.target.value)} />
                 {/* imagen principal */}
-                <FormFieldFile image={mainImage} errors={errors.main_image} removeImage={removeMainImage} handleImage={handleMainImage} />
+                <FormFieldFile forPosts={true} image={mainImage} errors={errors.main_image} removeImage={removeMainImage} handleImage={handleMainImage} />
                 {/* resto de las imagenes */}
                 <FormFieldFiles editSection={false} errors={errors.images} removeNewImage={removeNewImage} handleImages={handleImages} newImg={newImg} />
                 <div className="flex items-center justify-center">

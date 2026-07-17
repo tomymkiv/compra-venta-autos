@@ -9,6 +9,7 @@ export default function ProfileSection({ children, profileUser }: ProfileProps) 
     const { user_role: UserRoleProp } = usePage().props;
     const user_role = UserRoleProp as string;
     const [isImageOpen, setIsImageOpen] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
     const toggleImg = () => setIsImageOpen(!isImageOpen);
 
     useEffect(() => {
@@ -41,8 +42,19 @@ export default function ProfileSection({ children, profileUser }: ProfileProps) 
                                     />
                                 )}
                             </div>
-                            <div className="flex gap-3 text-3xl">
+                            <div className="flex flex-col gap-3 text-3xl w-full">
                                 <p>{profileUser.name} <small>({user_role.toLowerCase()})</small></p>
+                                <div
+                                    className={`w-fit text-sm font-medium cursor-help ${profileUser.email_verified_at ? "text-green-500" : "text-red-500"}`}
+                                    onMouseEnter={() => setIsHovered(true)}
+                                    onMouseLeave={() => setIsHovered(false)}
+                                >
+                                    {`${profileUser.email_verified_at ? "Usuario verificado" : "Usuario no verificado"}`}
+                                    {/* Tooltip de bootstrap */}
+                                    {isHovered && (
+                                        <p className="absolute bg-[#333] p-2 rounded-md shadow-lg text-gray-200">{profileUser.email_verified_at ? `Este usuario ha completado la verificación por correo electrónico.` : `Este usuario no ha completado la verificación por correo electrónico. Sé precavido a quién contactas.`}</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
                         <hr className="animate-box-pulse" />

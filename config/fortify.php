@@ -73,7 +73,7 @@ return [
     |
     */
 
-    'home' => '/dashboard',
+    'home' => '/', // el correo redirije a la homepage (welcome.tsx)
 
     /*
     |--------------------------------------------------------------------------

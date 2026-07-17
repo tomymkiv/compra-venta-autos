@@ -11,10 +11,12 @@ export default function HandlePostInfo(initialExistingImages: Images[] = []) {
     const [newImg, setNewImg] = useState<File[]>([]);
     const [mainImage, setMainImage] = useState<File | Images | undefined>(post_info?.main_image ?? undefined);
     const [precio, setPrecio] = useState(post_info?.precio ? Number(post_info.precio).toLocaleString("es-AR") : '');
+    const [kilometraje, setKilometraje] = useState(post_info?.kilometraje ? Number(post_info.kilometraje).toLocaleString("es-AR") : '');
     const [existingImg, setExistingImg] = useState<Images[]>(initialExistingImages);
     const [deletedImg, setDeletedImg] = useState<number[]>([]);
     const [brandSelected, setBrandSelected] = useState<number | "">(post_info?.car_model.car_brand.id ?? '');
     const [modelSelected, setModelSelected] = useState<number | "">(post_info?.id_model ?? '');
+    const [versionSelected, setVersionSelected] = useState<string | "">(post_info?.version ?? '');
     const { provinciaId, setProvinciaId, municipioId, setMunicipioId, municipiosState } = useProvinciaMunicipio();
     const { modelsState } = useBrandModels(brandSelected); // envio el id de la marca seleccionada para que este hook haga un fetch con todos los modelos de esa marca
     // ??: condicional. si recibe null (llega desde laravel), dejo los campos vacios. sino (estoy en edit.tsx), les añado la informacion de "post_info"
@@ -37,16 +39,23 @@ export default function HandlePostInfo(initialExistingImages: Images[] = []) {
 
     const handleVersion = (e: React.ChangeEvent<HTMLInputElement>) => {
         setData('version', e.target.value);
+        setVersionSelected(e.target.value);
     }
 
     const handleBrand = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setData('marca', Number(e.target.value));
         setBrandSelected(Number(e.target.value)); // con esto envio el ID al fetch del hook "useBrandModels"
+        setData('version', '');
+        setVersionSelected('');
+        setModelSelected('');
+        setData('modelo', '');
     }
 
     const handleModel = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setData('modelo', e.target.value);
         setModelSelected(Number(e.target.value));// es para mostrar en tiempo real el modelo seleccionado (es un añadido, nada de la consigna)
+        setData('version', '');
+        setVersionSelected('');
     }
     const handleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
@@ -79,9 +88,16 @@ export default function HandlePostInfo(initialExistingImages: Images[] = []) {
 
     const handlePrecio = (e: React.ChangeEvent<HTMLInputElement>) => {
         const raw = e.target.value.replace(/\D/g, "");
-        // console.log(raw);
+        if (raw.length > 15) return; // limitar a 15 dígitos reales
         setPrecio(raw ? Number(raw).toLocaleString("es-AR") : "");
-        setData('precio', Number(raw))
+        setData('precio', Number(raw));
+    }
+
+    const handleKilometraje = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const raw = e.target.value.replace(/\D/g, "");
+        if (raw.length > 10) return; // limitar a 10 dígitos (máx ~9.999.999.999 km)
+        setKilometraje(raw ? Number(raw).toLocaleString("es-AR") : "");
+        setData('kilometraje', Number(raw));
     }
     const handleMainImage = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
@@ -138,7 +154,10 @@ export default function HandlePostInfo(initialExistingImages: Images[] = []) {
         handleProvincia,
         handleMunicipio,
         handlePrecio,
+        handleKilometraje,
         handleMainImage,
+        setVersionSelected,
+        versionSelected,
         handleDelete,
         municipioId,
         modelSelected,
@@ -148,6 +167,7 @@ export default function HandlePostInfo(initialExistingImages: Images[] = []) {
         data,
         setData,
         precio,
+        kilometraje,
         mainImage,
         newImg,
         existingImg,

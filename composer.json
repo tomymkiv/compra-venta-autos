@@ -14,9 +14,13 @@
         "kayedspace/laravel-n8n": "^1.1",
         "laravel/fortify": "^1.30",
         "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
+        "nyholm/psr7": "^1.8",
+        "railsware/mailtrap-php": "^3.12",
         "spatie/laravel-permission": "^7.2",
+        "symfony/http-client": "^8.1",
         "tightenco/ziggy": "^2.6"
     },
     "require-dev": {

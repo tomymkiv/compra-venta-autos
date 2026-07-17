@@ -20,10 +20,14 @@ export default function edit({ carBrands, postData, vehicleBodies, currencies, p
         handleProvincia,
         handleMunicipio,
         handlePrecio,
+        handleKilometraje,
         handleMainImage,
         handleDelete,
         handleBrand,
         brandSelected,
+        versionSelected,
+        modelSelected,
+        handleModel,
         modelsState,
         municipioId,
         handleVersion,
@@ -32,6 +36,7 @@ export default function edit({ carBrands, postData, vehicleBodies, currencies, p
         data,
         setData,
         precio,
+        kilometraje,
         mainImage,
         newImg,
         patch,
@@ -56,20 +61,27 @@ export default function edit({ carBrands, postData, vehicleBodies, currencies, p
                         <div>
                             <h2 className="text-2xl text-center">Editar publicación</h2>
                         </div>
+                        <div className="flex gap-3 w-[75%]">
+                            {/* vista en tiempo real de la marca y modelo */}
+                            {
+                                !!brandSelected &&
+                                <input type="text" className="border border-slate-400 p-3 rounded-md w-full" readOnly value={`${carBrands.find(brand => brand.id === brandSelected)?.name} ${modelSelected && modelsState.find(model => model.id === modelSelected)?.name} ${versionSelected && versionSelected}`} />
+                            }
+                        </div>
                         <form onSubmit={handleSubmit} className="flex flex-col sm:grid grid-cols-2 sm:items-start sm:justify-center gap-4 my-5 mx-3 w-full">
                             {/* marcas */}
                             <FormFieldSelect options={carBrands.map(brand => ({ id: brand.id, nombre: brand.name }))} titulo="Marca" errorsText={errors.marca} value={data.marca} onChangeEventSelect={handleBrand} />
                             {/* modelos */}
                             {
                                 !!brandSelected &&
-                                <FormFieldSelect options={modelsState.map(model => ({ id: model.id, nombre: model.name }))} titulo="Modelo" errorsText={errors.modelo} value={data.modelo} onChangeEventSelect={e => setData('modelo', e.target.value)} />
+                                <FormFieldSelect options={modelsState.map(model => ({ id: model.id, nombre: model.name }))} titulo="Modelo" errorsText={errors.modelo} value={data.modelo} onChangeEventSelect={handleModel} />
                             }
                             {/* version */}
                             <FormFieldInput type="text" titulo="Version" errorsText={errors.version} value={data.version} onChangeEventInput={handleVersion} />
                             {/* años */}
                             <FormFieldSelect options={Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => ({ id: 1900 + i, nombre: 1900 + i }))} titulo="Año" errorsText={errors.anio} value={data.anio} onChangeEventSelect={e => setData('anio', Number(e.target.value))} />
                             {/* kilometraje */}
-                            <FormFieldInput type="number" titulo="Kilometraje" placeholder="Ej: 100000" errorsText={errors.kilometraje} value={data.kilometraje} onChangeEventInput={e => setData('kilometraje', Number(e.target.value))} />
+                            <FormFieldInput type="text" titulo="Kilometraje" placeholder="Ej: 100.000" errorsText={errors.kilometraje} value={kilometraje} onChangeEventInput={handleKilometraje} />
                             {/* precio */}
                             <FormFieldInput type="text" max={15} titulo="Precio" errorsText={errors.precio} value={precio} onChangeEventInput={handlePrecio} />
                             {/* moneda */}
@@ -88,7 +100,7 @@ export default function edit({ carBrands, postData, vehicleBodies, currencies, p
                             {/* tipos de vehiculos */}
                             <FormFieldSelect options={vehicleBodies.map(vehicleBody => ({ id: vehicleBody.id, nombre: vehicleBody.name }))} titulo="Tipo de vehiculo" errorsText={errors.tipo} value={data.tipo} onChangeEventSelect={e => setData('tipo', Number(e.target.value))} />
                             {/* imagen principal */}
-                            <FormFieldFile image={mainImage} errors={errors.main_image} removeImage={removeMainImage} handleImage={handleMainImage} />
+                            <FormFieldFile forPosts={true} image={mainImage} errors={errors.main_image} removeImage={removeMainImage} handleImage={handleMainImage} />
                             {/* resto de las imagenes */}
                             <FormFieldFiles editSection={true} errors={errors.images} removeNewImage={removeNewImage} handleImages={handleImages} newImg={newImg} existingImages={existingImg} removeExistingImages={removeExistingImage} />
                             <div className="flex flex-col gap-2">
@@ -96,12 +108,6 @@ export default function edit({ carBrands, postData, vehicleBodies, currencies, p
                                 <Button disabled={processing} type="submit" className="w-full cursor-pointer transition-colors duration-300">Enviar</Button>
 
                                 <Button disabled={processing} onClick={() => handleDelete(postData.id)} type="submit" className="w-full bg-red-500 text-gray-200 hover:text-gray-800 hover:bg-red-800 transition-colors duration-300 cursor-pointer">Eliminar publicación</Button>
-                                {/* {
-                                    permissions.map((permiso => (
-                                        permiso.name === 'DELETE_POST' &&
-                                        <Button key={permiso.id} disabled={processing} onClick={() => handleDelete(postData.id)} type="submit" className="w-full bg-red-500 text-gray-200 hover:text-gray-800 hover:bg-red-800 transition-colors duration-300 cursor-pointer">Eliminar publicación</Button>
-                                    )))
-                                } */}
                             </div>
                         </form>
                     </div>

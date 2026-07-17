@@ -6,6 +6,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Models\Contact;
 use App\Models\User;
 use Http;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Request;
 use Spatie\Permission\Models\Role;
@@ -64,7 +65,7 @@ class RegisterController extends Controller
                 'rol' => 'El rol es obligatorio',
             ]);
         }
-
+        event(new Registered($user));
         Auth::login($user);
         /**
          * aviso de bienvenida enviado a n8n para que genere un correo
@@ -74,6 +75,6 @@ class RegisterController extends Controller
         //     'email' => $user->email,
         // ]);
 
-        return redirect()->route('welcome');
+        return redirect()->route('auth.verification');
     }
 }

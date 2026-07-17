@@ -1,4 +1,4 @@
-// encargado de contener la base para el formulario de creacion de posts
+// encargado de contener la base para el formulario de creacion y edicion de posts, asi como para edicion de usuarios
 // contiene:
 // - label
 // - input
@@ -10,12 +10,12 @@ import { Label } from './ui/label'
 
 interface FormFieldContainerProps {
     children: React.ReactNode
-    titulo: string
+    titulo?: string
     errorsText?: string
-
+    className?: string
 }
-export default function FormFieldContainer({ children, titulo, errorsText }: FormFieldContainerProps) {
-    return <div className="mt-5 flex flex-col gap-2">
+export default function FormFieldContainer({ children, titulo, errorsText, className }: FormFieldContainerProps) {
+    return <div className={`${className} mt-5 flex flex-col gap-2`}>
         {
             errorsText && (
                 <p className='text-red-500 font-[500] text-sm'>{errorsText}</p>

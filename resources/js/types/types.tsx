@@ -10,23 +10,34 @@ export interface Rol {
 // sirve para input (text, number), select y textarea
 export interface FormFieldsInterface {
     max?: number | undefined,
-    type?: string,
-    options?: Array<SelectOptions>,
+    type?: 'text' | 'number',
     errorsText: string | undefined,
     value: string | number,
     placeholder?: string,
     titulo: string,
+    className?: string,
     onChangeEventInput?: (e: React.ChangeEvent<HTMLInputElement>) => void,
     onChangeEventSelect?: (e: React.ChangeEvent<HTMLSelectElement>) => void,
     onChangeEventTextarea?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void,
 }
 
+export interface FormFieldsSelectInterface {
+    options: Array<SelectOptions>,
+    errorsText: string | undefined,
+    value: string | number,
+    titulo: string,
+    className?: string,
+    onChangeEventSelect?: (e: React.ChangeEvent<HTMLSelectElement>) => void,
+}
+
+
 // para un solo archivo
 export interface FormFieldFileProps {
-    image: File | Images | undefined,
+    image: File | Images | undefined | string | null,
     errors: string | undefined,
     removeImage: (index: number) => void,
     handleImage: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    forPosts: boolean, // indico con true o false si estoy en un form de posts o usuarios
 }
 
 // para multiples archivos

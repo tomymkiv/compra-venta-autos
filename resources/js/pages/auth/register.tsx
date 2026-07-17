@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import AuthLayout from "@/layouts/auth-layout";
 import { Link, useForm } from "@inertiajs/react"
-import React, { useEffect, useEffectEvent, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { route } from "ziggy-js";
 import RegisterFormData from "@/components/RegisterFormData";
 
@@ -78,7 +78,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
                     </button>}
             </div>
             <div className="flex flex-col lg:flex-row justify-between gap-3 items-center w-full">
-                <Link href={route('auth.login')} className="text-blue-500 hover:underline w-full text-center">¿Ya tienes una cuenta?</Link>
+                <Link href={route('welcome')} className="text-blue-500 hover:underline w-full text-center">¿Ya tienes una cuenta?</Link>
                 <button type="submit" disabled={processing} className="bg-slate-800 hover:bg-blue-500 rounded-md transition-colors duration-300 text-white p-2 cursor-pointer w-full">Registrarse</button>
             </div>
         </form>
