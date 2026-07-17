@@ -3,7 +3,7 @@ interface LoginProps {
     password: string,
 }
 
-import InputComp from "@/components/ui/InputComp"
+import FormFieldInput from "@/components/FormFieldInput"
 import AuthLayout from "@/layouts/auth-layout"
 import { Link, useForm } from "@inertiajs/react"
 import { route } from "ziggy-js"
@@ -19,14 +19,8 @@ export default function Login() {
     }
     return <AuthLayout title="Inicio de sesión">
         <form onSubmit={handleLogin} className="flex flex-col gap-6 w-full">
-            <div className="flex flex-col gap-2">
-                <p className="text-red-500">{errors.email}</p>
-                <InputComp type="email" name="email" id="email" value={data.email} onChange={(e) => setData('email', e.target.value)} placeholder="Correo" />
-            </div>
-            <div className="flex flex-col gap-2">
-                <p className="text-red-500">{errors.password}</p>
-                <InputComp type="password" id="password" name="password" value={data.password} onChange={(e) => setData('password', e.target.value)} placeholder="Contraseña" />
-            </div>
+            <FormFieldInput type="email" titulo="Correo Electronico" errorsText={errors.email} value={data.email} onChangeEventInput={(e) => setData('email', e.target.value)} />
+            <FormFieldInput type="password" titulo="Contraseña" errorsText={errors.password} value={data.password} onChangeEventInput={(e) => setData('password', e.target.value)} />
             <div className="flex flex-col lg:flex-row justify-between gap-3 items-center w-full">
                 <Link href={route('auth.register')} className="text-blue-500 hover:underline w-full text-center">¿No tienes una cuenta?</Link>
                 <Link href={route('auth.forgot-password')} className="text-blue-500 hover:underline w-full text-center">¿Olvidaste tu contraseña?</Link>

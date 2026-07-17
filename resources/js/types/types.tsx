@@ -10,7 +10,7 @@ export interface Rol {
 // sirve para input (text, number), select y textarea
 export interface FormFieldsInterface {
     max?: number | undefined,
-    type?: 'text' | 'number',
+    type?: 'text' | 'number' | 'password' | 'email',
     errorsText: string | undefined,
     value: string | number,
     placeholder?: string,
