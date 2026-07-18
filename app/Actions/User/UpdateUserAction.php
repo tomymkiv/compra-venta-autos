@@ -16,6 +16,11 @@ class UpdateUserAction
 
         unset($validated['password_confirmation']);
 
+        if ($user->email !== $validated['email']) {
+            $user->email_verified_at = null;
+            // si el usuario desea verificarlo, deberá hacerlo tocando el botón correspondiente en la edicion de usuarios
+        }
+
         if ($request->hasFile('avatar')) {
             if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
@@ -28,7 +33,6 @@ class UpdateUserAction
         } elseif (is_string($validated['avatar']) && str_contains($validated['avatar'], 'api')) {
             $validated['avatar'] = $request['avatar'];
         }
-
         $user->update($validated);
     }
 }

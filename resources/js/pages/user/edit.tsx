@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { router, useForm, usePage } from '@inertiajs/react'
 import { route } from 'ziggy-js'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { User } from '@/types'
 import FormFieldFile from '@/components/FormFieldFile'
 import FormFieldInput from '@/components/FormFieldInput'
@@ -13,6 +13,7 @@ export default function edit() {
     const { user } = usePage().props;
     const loguedUser = user as User;
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const [mailChanged, setMailChanged] = useState(false);
     const { data, setData, patch, processing, errors, delete: destroy } = useForm<{
         avatar: File | string | null,
         name: string,
@@ -42,6 +43,10 @@ export default function edit() {
         patch(route('user.update', loguedUser.id), {
             forceFormData: true,
         })
+    }
+    const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setData('email', e.target.value);
+        setMailChanged(e.target.value !== loguedUser.email);
     }
     const handleDeleteAccount = (e: React.FormEvent) => {
         e.preventDefault();
@@ -75,8 +80,8 @@ export default function edit() {
                         </>
                     }
                 </div>
-                <FormFieldInput titulo='Nombre de usuario' className='w-full p-3' value={data.name} onChangeEventInput={(e) => setData('name', e.target.value)} type='text' placeholder='Nombre de usuario' errorsText={errors.name} />
-                <FormFieldInput titulo='Email' className='w-full p-3' value={data.email} onChangeEventInput={(e) => setData('email', e.target.value)} type='email' placeholder='Email' errorsText={errors.email} />
+                <FormFieldInput max={32} titulo='Nombre de usuario' className='w-full p-3' value={data.name} onChangeEventInput={(e) => setData('name', e.target.value.slice(0, 32))} type='text' placeholder='Nombre de usuario' errorsText={errors.name} />
+                <FormFieldInput titulo="Correo" className='w-full p-3' value={data.email} onChangeEventInput={handleEmail} type='email' placeholder='Email' errorsText={errors.email} />
                 <FormFieldInput titulo='Contraseña' className='w-full p-3' value={data.password} onChangeEventInput={(e) => setData('password', e.target.value)} type='password' errorsText={errors.password} />
                 <FormFieldInput titulo='Confirmar contraseña' className='w-full p-3' value={data.password_confirmation} onChangeEventInput={(e) => setData('password_confirmation', e.target.value)} type='password' errorsText={errors.password_confirmation} />
                 <FormFieldContainer titulo={loguedUser.email_verified_at ? 'Email verificado' : 'Verificar email'} className='w-full p-3'>
@@ -99,11 +104,12 @@ export default function edit() {
                             </div>
                         )
                     }
+                    {
+                        mailChanged && <p className='text-sm text-red-500'>(deberás volver a verificar el correo manualmente)</p>
+                    }
                 </FormFieldContainer>
-                <div className='flex flex-col gap-2 w-full px-3 py-1'>
+                <div className='flex flex-col md:flex-row items-center justify-center gap-2 w-full px-3 py-1'>
                     <Button type="button" className='w-full cursor-pointer bg-red-500 hover:bg-red-400 transition-background duration-300 ease-in-out' disabled={processing} onClick={handleDeleteAccount}>Eliminar cuenta</Button>
-                </div>
-                <div className='flex flex-col gap-2 w-full px-3 py-1'>
                     <Button type="submit" className='w-full cursor-pointer' disabled={processing}>Actualizar</Button>
                 </div>
             </form>

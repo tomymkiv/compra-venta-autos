@@ -61,7 +61,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
     return <AuthLayout title={`Registro (${initialRol === 'V' ? 'vendedor' : 'comprador'})`}>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
             <Link href={route('auth.roles')} className="p-3 bg-blue-500 hover:bg-blue-600 rounded-md transition-colors duration-300 text-white w-full text-center cursor-pointer">Elegir otro rol</Link>
-            <RegisterFormData errorMsg={errors.name} name="Nombre" type="text" setData={(e) => setData('name', e.target.value)} value={data.name} />
+            <RegisterFormData errorMsg={errors.name} name="Nombre" type="text" setData={(e) => setData('name', e.target.value.slice(0, 32))} value={data.name} />
             <RegisterFormData errorMsg={errors.email} name="Correo" type="email" setData={(e) => setData('email', e.target.value)} value={data.email} />
             {/* si elegí "vendedor", muestro el campo del contacto */}
             {showContacto && <RegisterFormData errorMsg={errors.contacto} name="Número de contacto (sin codigo de area)" type="number" setData={handleContacto} value={String(data.contacto)} />}
