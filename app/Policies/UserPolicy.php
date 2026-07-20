@@ -56,6 +56,26 @@ class UserPolicy
             : Response::denyAsNotFound();
     }
 
+    public function deleteExternalUser(User $user): Response
+    {
+        return $user->can('DELETE_EXTERNAL_USER') ? Response::allow() : Response::denyAsNotFound();
+    }
+
+    public function editExternalUser(User $user): Response
+    {
+        return $user->can('EDIT_EXTERNAL_USER') ? Response::allow() : Response::denyAsNotFound();
+    }
+
+    public function editExternalPost(User $user): Response
+    {
+        return $user->can('EDIT_EXTERNAL_POST') ? Response::allow() : Response::denyAsNotFound();
+    }
+
+    public function deleteExternalPost(User $user): Response
+    {
+        return $user->can('DELETE_EXTERNAL_POST') ? Response::allow() : Response::denyAsNotFound();
+    }
+
     /**
      * Determine whether the user can restore the model.
      */

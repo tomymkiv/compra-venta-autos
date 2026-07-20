@@ -11,7 +11,7 @@ class AdminController extends Controller
     public function index()
     {
         // si el usuario logueado tiene el rol de admin, puede ingresar
-        if (Auth::user()->hasRole('ADMIN')) {
+        if (Auth::user()->hasRole('SUPER_USER')) {
             return inertia('admin/index', [
                 'users' => User::whereHas('roles', function ($query) {
                     $query->where('name', 'USER');

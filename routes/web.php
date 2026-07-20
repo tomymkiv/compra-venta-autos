@@ -64,15 +64,6 @@ Route::get('/buscar', [SearchController::class, 'index'])->name('search.index');
 // usuarios
 Route::get('user/{user}', [UserController::class, 'show'])->name('user.show');
 
-// apis
-Route::get('/api/municipios/{provincia}', [LocationController::class, 'municipios']);
-Route::get('/api/brands/{brand}/models', function ($brandId) {
-    return \App\Models\VehicleModel::where('brand_id', $brandId)
-        ->select('id', 'name')
-        ->orderBy('name')
-        ->get();
-});
-
 // roles/admin
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::get('/admin/roles', [AdminController::class, 'roles'])->name('admin.roles');
