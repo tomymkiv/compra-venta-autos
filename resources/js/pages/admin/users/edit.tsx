@@ -1,23 +1,18 @@
-import ProfileSection from '@/components/ProfileSection'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import { router, useForm, usePage } from '@inertiajs/react'
-import { route } from 'ziggy-js'
-import { useEffect, useRef, useState } from 'react'
-import { User } from '@/types'
-import FormFieldFile from '@/components/FormFieldFile'
-import FormFieldInput from '@/components/FormFieldInput'
-import FormFieldContainer from '@/components/FormFieldContainer'
-import PopUp from '@/components/PopUp'
-import usePopUp from '@/hooks/use-popup'
+import FormFieldContainer from "@/components/FormFieldContainer";
+import FormFieldFile from "@/components/FormFieldFile";
+import FormFieldInput from "@/components/FormFieldInput";
+import ProfileSection from "@/components/ProfileSection";
+import { Button } from "@/components/ui/button";
+import { User } from "@/types";
+import { router, useForm } from "@inertiajs/react";
+import { Label } from "@radix-ui/react-label";
+import { useRef, useState } from "react";
+import { route } from "ziggy-js";
 
-export default function edit() {
-    const { show, setShow, confirmDelete, setConfirmDelete } = usePopUp();
-    const { user } = usePage().props;
-    const loguedUser = user as User;
+export default function edit({ profile_user }: { profile_user: User }) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [mailChanged, setMailChanged] = useState(false);
-    const { data, setData, patch, processing, errors, delete: destroy } = useForm<{
+    const { data, setData, patch, processing, errors } = useForm<{
         avatar: File | string | null,
         name: string,
         email: string,
@@ -25,8 +20,8 @@ export default function edit() {
         password_confirmation: string,
     }>({
         avatar: null,
-        name: loguedUser.name,
-        email: loguedUser.email,
+        name: profile_user.name,
+        email: profile_user.email,
         password: '',
         password_confirmation: '',
     })
@@ -39,32 +34,20 @@ export default function edit() {
     }
     const handleDeleteActualImg = () => {
         // le pongo una imagen con las iniciales de su username
-        setData('avatar', `https://ui-avatars.com/api/?name=${loguedUser.name}&background=random`);
+        setData('avatar', `https://ui-avatars.com/api/?name=${profile_user.name}&background=random`);
     }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        patch(route('user.update', loguedUser.id), {
+        patch(route('admin.users.update', profile_user.id), {
             forceFormData: true,
         })
     }
     const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         setData('email', e.target.value);
-        setMailChanged(e.target.value !== loguedUser.email);
+        setMailChanged(e.target.value !== profile_user.email);
     }
-    const handleDeleteAccount = (e: React.FormEvent) => {
-        e.preventDefault();
-        setShow(true);
-    }
-    const handleEmailNotification = (e: React.FormEvent) => {
-        e.preventDefault();
-        router.post(route('verification.send'));
-    }
-    useEffect(() => {
-        if (confirmDelete) {
-            destroy(route('user.destroy', loguedUser.id));
-        }
-    }, [confirmDelete]);
-    return <ProfileSection profileUser={loguedUser}>
+
+    return <ProfileSection profileUser={profile_user}>
         <section>
             <form onSubmit={handleSubmit} className='flex flex-col gap-2 items-center justify-center'>
                 <div className='flex flex-col gap-2 w-full p-3'>
@@ -72,12 +55,12 @@ export default function edit() {
                     {/* Mostrar imagen actual */}
                     <p>Imagen actual</p>
                     <img
-                        src={loguedUser.avatar?.includes('api') ? loguedUser.avatar : `/storage/${loguedUser.avatar}`}
+                        src={profile_user.avatar?.includes('api') ? profile_user.avatar : `/storage/${profile_user.avatar}`}
                         alt="Avatar"
                         className="w-24 h-24 rounded-full object-cover"
                     />
                     {
-                        !loguedUser.avatar?.includes('api') && (
+                        !profile_user.avatar?.includes('api') && (
                             <button className='bg-red-500/30 hover:bg-red-500/50 transition-colors duration-300 ease cursor-pointer p-2 rounded-md' type='button' onClick={handleDeleteActualImg}>Eliminar imagen actual</button>
                         )
                     }
@@ -96,13 +79,12 @@ export default function edit() {
                 <FormFieldInput titulo="Correo" className='w-full p-3' value={data.email} onChangeEventInput={handleEmail} type='email' placeholder='Email' errorsText={errors.email} />
                 <FormFieldInput titulo='Contraseña' className='w-full p-3' value={data.password} onChangeEventInput={(e) => setData('password', e.target.value)} type='password' errorsText={errors.password} />
                 <FormFieldInput titulo='Confirmar contraseña' className='w-full p-3' value={data.password_confirmation} onChangeEventInput={(e) => setData('password_confirmation', e.target.value)} type='password' errorsText={errors.password_confirmation} />
-                <FormFieldContainer titulo={loguedUser.email_verified_at ? 'Email verificado' : 'Verificar email'} className='w-full p-3'>
+                <FormFieldContainer titulo={profile_user.email_verified_at ? 'Email verificado' : 'Verificar email'} className='w-full p-3'>
                     {
-                        loguedUser.email_verified_at === null ? (
+                        profile_user.email_verified_at === null ? (
                             // Mostrar mensaje si el email no esta verificado 
                             <div className='bg-red-500/30 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300 text-sm p-3 rounded-lg border border-red-200 text-red-700 flex flex-col gap-2 w-fit'>
-                                <p>Tu email no está verificado. Por favor, verificá tu email para continuar.</p>
-                                <button className='bg-red-500 hover:bg-red-400 transition-colors duration-300 ease-in-out text-white cursor-pointer p-2 rounded-md w-fit' onClick={handleEmailNotification}>Reenviar email de verificación</button>
+                                <p>El email del usuario no está verificado. Por favor, haz que verifique el email para continuar.</p>
                             </div>
                         ) : (
                             <div className='bg-green-500/30 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300 text-sm p-3 rounded-lg border border-green-200 text-green-700 flex items-center gap-2 w-fit'>
@@ -114,15 +96,12 @@ export default function edit() {
                         )
                     }
                     {
-                        mailChanged && <p className='text-sm text-red-500'>(deberás volver a verificar el correo manualmente)</p>
+                        mailChanged && <p className='text-sm text-red-500'>(el usuario deberá volver a verificar el correo manualmente)</p>
                     }
                 </FormFieldContainer>
                 <div className='flex flex-col md:flex-row items-center justify-center gap-2 w-full px-3 py-1'>
-                    <Button type="button" className='w-full cursor-pointer bg-red-500 hover:bg-red-400 transition-background duration-300 ease-in-out' disabled={processing} onClick={handleDeleteAccount}>Eliminar cuenta</Button>
-                    {show && (
-                        <PopUp deleteButton={true} setShow={setShow} confirmDelete={setConfirmDelete} title={`Eliminar usuario`} mensaje={`¿Estás seguro de que quieres eliminar tu cuenta?`} />
-                    )}
-                    <Button type="submit" className='w-full cursor-pointer' disabled={processing}>Actualizar</Button>
+                    <Button type="button" className='w-full cursor-pointer bg-gray-500 hover:bg-gray-600 text-gray-300 transition-colors duration-300 ease-in-out' disabled={processing} onClick={() => router.get(route('admin.users.index'))}>Volver</Button>
+                    <Button type="submit" className='w-full cursor-pointer bg-green-700 hover:bg-green-800 text-gray-300 transition-colors duration-300 ease-in-out' disabled={processing}>Actualizar</Button>
                 </div>
             </form>
         </section>

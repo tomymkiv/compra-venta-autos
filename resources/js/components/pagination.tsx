@@ -7,7 +7,7 @@ export default function Pagination({ links }: { links: PaginationLink[] }) {
         url ? router.visit(url) : '';
     }
 
-    return <div className="flex flex-wrap items-center space-x-1 mt-4">
+    return <div className="flex flex-wrap items-center space-x-1 mt-4 w-full px-6">
         {
             links.map((link, i) => (
                 <button onClick={() => handlePages(link.url)} key={i} dangerouslySetInnerHTML={{ __html: link.label }} className={`px-3.5 py-1 mx-0.5 bg-transparent hover:border-blue-500 active:bg-slate-600 cursor-pointer rounded-md border border-[1px] 

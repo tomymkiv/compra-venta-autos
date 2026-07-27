@@ -18,9 +18,7 @@ class VerifyEmailController extends Controller
     public function index()
     {
         // pagina que se encarga de redirigir al usuario a la verificación en caso de no tenerla
-        return inertia('auth/email-verification', [
-            "user" => auth()->user(),
-        ]);
+        return inertia('auth/email-verification');
     }
 
     public function resend(Request $request)
@@ -28,16 +26,12 @@ class VerifyEmailController extends Controller
         // encargado de reenviar un correo de verificacion.
         // funciona tanto para el registro como para usuarios ya logueados que no hayan verificado su correo.
         if ($request->user()->hasVerifiedEmail()) {
-            return inertia('auth/email-verified', [
-                "user" => $request->user(),
-            ]);
+            return inertia('auth/email-verified');
         }
 
         $request->user()->sendEmailVerificationNotification();
 
-        return inertia('auth/email-verification', [
-            "user" => $request->user(),
-        ]);
+        return inertia('auth/email-verification');
     }
 
     public function verified()

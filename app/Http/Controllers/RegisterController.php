@@ -22,7 +22,7 @@ class RegisterController extends Controller
     public function roles()
     {
         return inertia('auth/roles', [
-            'roles' => Role::get(),
+            'roles' => Role::where('is_public', true)->get(),
         ]);
     }
     public function storeRole()
@@ -33,7 +33,7 @@ class RegisterController extends Controller
     public function register(RegisterRequest $request)
     {
         $validated = $request->validated();
-
+        // dd($validated->rol);
         if ($validated['password'] !== $request->password_confirmation) {
             return back()->withErrors([
                 'password' => 'Las contraseñas no coinciden',
@@ -55,10 +55,12 @@ class RegisterController extends Controller
             } else if ($validated['rol'] == 'V') {
                 $user->assignRole('VENDEDOR');
 
-                Contact::create([
+                Contact::create([ // creo el contacto, ya que si o si debe ingresar su numero
                     'user_id' => $user->id,
                     'contacto' => $validated['contacto'],
                 ]);
+            } else if ($validated['rol'] == 'S') {
+                $user->assignRole('SUPER_USER');
             }
         } else {
             return back()->withErrors([

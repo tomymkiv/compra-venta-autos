@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PageLinks from './components/PageLinks'
-import { Link, router } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { route } from 'ziggy-js'
 import { AppComponentProps } from './types/types';
 import CategoriasSlots from './components/CategoriasSlots';
@@ -18,24 +18,29 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
   } = usePage().props;
   const user = UserProps as User;
   const my_user_role = UserRoleProp as string;
-  const categoriasRefDesk = useRef<HTMLUListElement>(null!)
   const categoriasRefMob = useRef<HTMLUListElement>(null!)
   const menuRef = useRef<HTMLUListElement>(null!) // esto sirve para referenciar el ul del menu explicitamente. 
   // el ! al final es para que no tire error de q puede ser nulo
   const year = new Date().getFullYear();
+  const [menuWidthClass, setMenuWidthClass] = useState('w-0');
+
+  useEffect(() => {
+    setMenuWidthClass(window.innerWidth > 920 ? 'w-0' : 'w-full');
+  }, []);
 
   const toggleMenu = () => {
-    innerWidth < 500 ? menuRef.current.classList.toggle('w-[85%]') : menuRef.current.classList.toggle('w-screen');
+    if (window.innerWidth < 1024) {
+      setMenuWidthClass(prev => prev === 'w-0' ? 'w-full' : 'w-0');
+    }
+    else if (innerWidth > 1024 && innerWidth <= 1200) {
+      setMenuWidthClass(prev => prev === 'w-0' ? 'w-[30%]' : 'w-0');
+    }
+    else if (innerWidth > 1200) {
+      setMenuWidthClass(prev => prev === 'w-0' ? 'w-[20%]' : 'w-0');
+    }
   }
   const toggleCategoriasMobile = () => {
     categoriasRefMob.current.classList.toggle('hidden');
-  }
-  // Desktop categorias toggle
-  const toggleCategoriasDesktopOn = () => {
-    categoriasRefDesk.current.classList.remove('hidden');
-  }
-  const toggleCategoriasDesktopOff = () => {
-    categoriasRefDesk.current.classList.add('hidden');
   }
 
   const handleLogout = () => {
@@ -50,7 +55,9 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    innerWidth < 1024 && menuRef.current.classList.toggle('w-screen')
+    if (window.innerWidth < 1024) {
+      setMenuWidthClass(prev => prev !== 'w-0' ? 'w-0' : 'w-[20%]');
+    }
 
     router.get(route('search.index'), {
       q: query,
@@ -61,77 +68,44 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
   };
   return (
     <>
-      <header className={`relative z-30 flex items-center justify-center bg-[#111b] sticky top-0 w-full`}>
-        <div id='mobile-nav' className='lg:hidden'>
+      <header className={`relative z-50 flex items-center justify-center bg-[#111b] sticky top-0 w-full`}>
+        <div id='mobile-nav' className=''>
           <nav className='bg-[#111]'>
-            <ul ref={menuRef} id='menu' className='flex flex-col gap-10 justify-center overflow-hidden fixed left-0 bg-[#1117] backdrop-blur-sm transition-[width] duration-350 ease-in-out w-0 h-screen z-50'>
+            <ul ref={menuRef} id='menu' className={`flex flex-col gap-10 justify-center overflow-hidden fixed left-0 bg-[#2227] backdrop-blur-sm transition-[width] duration-350 ease-in-out ${menuWidthClass} h-screen z-50`}>
               {
                 user &&
                 <>
                   <UserAvatar center={true} name={user.name} avatar={user.avatar && user.avatar || ""} userId={user.id} role={my_user_role.toLowerCase()} />
                 </>
               }
-              <PageLinks title="Inicio" link='/' clases='!text-xl' />
-              <DropdownButton title="Publicaciones" onclick={toggleCategoriasMobile} clases='!text-xl text-[#ccc] pl-7 flex items-center gap-2 p-2' />
+              <PageLinks title="Inicio" link='/' />
+              {
+                my_user_role === 'SUPER_USER' &&
+                <PageLinks title="Administración" link='/admin' />
+              }
+              <DropdownButton title="Publicaciones" onclick={toggleCategoriasMobile} />
               <ul className='text-[#ccc] flex flex-col ml-5 hidden' ref={categoriasRefMob}>
                 <CategoriasSlots text="Ver publicaciones" link="/posts" clases='w-[85%]' />
-                {user && my_user_role === 'VENDEDOR' &&
+                {user && (my_user_role === 'VENDEDOR' || my_user_role === 'SUPER_USER') &&
                   <>
                     <CategoriasSlots text="Crear publicación" link="/posts/create" clases='w-[85%]' />
-                    <CategoriasSlots text="Editar publicación" link={`/posts/user/${user?.id}`} clases='w-[85%]' />
+                    <CategoriasSlots text="Editar publicación" link={`/posts/user/${user.id}`} clases='w-[85%]' />
                   </>
                 }
               </ul>
               {
                 user ?
-                  <li className='text-[#ccc] pl-5 text-xl'>
-                    <button title="Cerrar sesión" className='flex items-center gap-2 p-2 cursor-pointer' onClick={handleLogout} >Cerrar sesión</button>
-                  </li>
-                  : <PageLinks title="Iniciar sesión" link='/login' clases='!text-xl' />
+                  <PageLinks title="Cerrar sesión" link={'/logout'} metodo={'delete'} onclick={handleLogout} />
+                  : <PageLinks title="Iniciar sesión" link='/login' />
               }
               <SearchInput enviarData={(e: React.FormEvent) => submit(e)} setQuery={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)} initialQuery={query} />
             </ul>
           </nav>
-          <button className='fixed top-0 left-0 z-50 flex flex-col gap-1 p-5 bg-[#2228] outline outline-gray-200/40' onClick={toggleMenu}>
-            <NavButtonLines width="30px" />
-            <NavButtonLines width="20px" />
-            <NavButtonLines width="10px" />
+          <button className='fixed top-0 left-0 z-50 flex flex-col gap-1 p-5 bg-[#2228] outline outline-gray-200/40 cursor-pointer' onMouseEnter={toggleMenu}>
+            <NavButtonLines />
+            <NavButtonLines />
+            <NavButtonLines />
           </button>
-        </div>
-        <div id='desktop-nav' className='w-full'>
-          <nav>
-            <ul className='hidden lg:flex items-center justify-evenly w-full gap-10 py-2 px-3'>
-              <div className='flex gap-5'>
-                {
-                  user &&
-                  <UserAvatar center={true} name={user.name} avatar={user.avatar && user.avatar || ""} userId={user.id} role={my_user_role.toLowerCase()} />
-                }
-              </div>
-              <div className='flex gap-5'>
-                <PageLinks title="Inicio" link='/' clases='flex items-center gap-2 p-2 cursor-pointer text-xl text-shadow-gray-300 hover:text-shadow-md transition-all duration-300' />
-                <DropdownButton clases='text-xl text-[#ccc] ml-5 cursor-pointer p-4' onmouseenter={toggleCategoriasDesktopOn} onmouseleave={toggleCategoriasDesktopOff} title='Publicaciones' />
-                <div className='absolute'>
-                  <ul className='text-[#ccc] flex flex-col hidden absolute bg-[#111] top-1.5 left-40 mt-8.5 border border-gray-700' ref={categoriasRefDesk}>
-                    <CategoriasSlots text="Ver publicaciones" clases='w-fit' link="/posts" onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
-                    {user && my_user_role === 'VENDEDOR' &&
-                      <>
-                        <CategoriasSlots text="Crear publicación" clases='w-fit' link="/posts/create" onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
-                        <CategoriasSlots text="Editar publicación" clases='w-fit' link={`/posts/user/${user?.id}`} onMouseEnter={toggleCategoriasDesktopOn} onMouseLeave={toggleCategoriasDesktopOff} />
-                      </>
-                    }
-                  </ul>
-                </div>
-                <SearchInput enviarData={(e: React.FormEvent) => submit(e)} setQuery={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)} initialQuery={query} />
-              </div>
-              {
-                user ?
-                  <li className='text-[#ccc] pl-5'>
-                    <button className='flex items-center gap-2 p-2 cursor-pointer text-xl text-shadow-gray-300 hover:text-shadow-md transition-all duration-300' onClick={handleLogout}>Cerrar sesión</button>
-                  </li>
-                  : <PageLinks title="Iniciar sesión" link='/login' clases='flex items-center gap-2 p-2 cursor-pointer text-xl text-shadow-gray-300 hover:text-shadow-md transition-all duration-300' />
-              }
-            </ul>
-          </nav>
         </div>
       </header>
       {/* imagen principal, donde está la información principal */}
@@ -140,7 +114,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
           {hero}
         </div>
       )}
-      <main className={`${innerWidth < 768 && 'py-16'} pt-24 relative bg-[#111] z-20 text-[#ccc] min-h-screen flex items-center justify-center`}>
+      <main className={`${innerWidth < 768 ? 'py-16' : ''} pt-40 relative bg-[#111] z-20 text-[#ccc] min-h-screen flex items-center justify-center`}>
         {/* Transición suave desde el hero hacia abajo */}
         {/* <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-[#111] to-transparent z-30 pointer-events-none" /> */}
         <section className='max-w-7xl bg-[#111] px-5 flex items-center justify-center w-full'>

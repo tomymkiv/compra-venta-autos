@@ -19,17 +19,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $types = "http://api-autos-arg.test/api/types";
+        $types = "http://api-vehiculos-arg.test/api/types";
         $types_json = json_decode(file_get_contents($types), true);
-        $marcas = "http://api-autos-arg.test/api/brands";
+        $marcas = "http://api-vehiculos-arg.test/api/brands";
         $marcas_json = json_decode(file_get_contents($marcas), true);
-        $models = "http://api-autos-arg.test/api/models";
+        $models = "http://api-vehiculos-arg.test/api/models";
         $models_json = json_decode(file_get_contents($models), true);
-        // $drivetrains = "http://api-autos-arg.test/api/drivetrains";
+        // $drivetrains = "http://api-vehiculos-arg.test/api/drivetrains";
         // $drivetrains_json = json_decode(file_get_contents($drivetrains), true);
-        // $transmissions = "http://api-autos-arg.test/api/transmissions";
+        // $transmissions = "http://api-vehiculos-arg.test/api/transmissions";
         // $transmissions_json = json_decode(file_get_contents($transmissions), true);
-        // $fuels = "http://api-autos-arg.test/api/fuels";
+        // $fuels = "http://api-vehiculos-arg.test/api/fuels";
         // $fuels_json = json_decode(file_get_contents($fuels), true);
         $divisas = ['Dolar', 'Pesos'];
         $provincias_json = json_decode(file_get_contents("https://infra.datos.gob.ar/georef/provincias.json"));
@@ -42,41 +42,54 @@ class DatabaseSeeder extends Seeder
         ]);
 
         foreach ($provincias as $provincia) {
-            Provincia::create([
-                'id' => $provincia->id,
-                'nombre' => $provincia->nombre,
-            ]);
+            if (!Provincia::where('id', $provincia->id)->exists()) {
+                Provincia::create([
+                    'id' => $provincia->id,
+                    'nombre' => $provincia->nombre,
+                ]);
+            }
         }
         foreach ($localidades as $localidad) {
-            Municipio::create([
-                'id' => $localidad->id,
-                'nombre' => $localidad->nombre,
-                'id_provincia' => $localidad->provincia->id,
-            ]);
+            if (!Municipio::where('id', $localidad->id)->exists()) {
+                Municipio::create([
+                    'id' => $localidad->id,
+                    'nombre' => $localidad->nombre,
+                    'id_provincia' => $localidad->provincia->id,
+                ]);
+            }
         }
         foreach ($marcas_json['data'] as $marca) {
-            VehicleBrand::create([
-                'name' => $marca['name'],
-                'logo' => 'logo',
-                'external_id' => $marca['id']
-            ]);
+            if (!VehicleBrand::where('external_id', $marca['id'])->exists()) {
+                VehicleBrand::create([
+                    'name' => $marca['name'],
+                    'logo' => 'logo',
+                    'external_id' => $marca['id']
+                ]);
+            }
         }
         foreach ($models_json['data'] as $modelo) {
-            VehicleModel::create([
-                'brand_id' => VehicleBrand::where('external_id', $modelo['brand_id'])->first()->id,
-                'name' => $modelo['name'],
-                'external_model_id' => $modelo['id'],
-            ]);
+
+            if (!VehicleModel::where('external_model_id', $modelo['id'])->exists()) {
+                VehicleModel::create([
+                    'brand_id' => VehicleBrand::where('external_id', $modelo['brand_id'])->first()->id,
+                    'name' => $modelo['name'],
+                    'external_model_id' => $modelo['id'],
+                ]);
+            }
         }
         foreach ($types_json['data'] as $type) {
-            VehicleBody::create([
-                'name' => $type['name'],
-            ]);
+            if (!VehicleBody::where('name', $type['name'])->exists()) {
+                VehicleBody::create([
+                    'name' => $type['name'],
+                ]);
+            }
         }
         foreach ($divisas as $divisa) {
-            Currency::create([
-                'nombre' => $divisa
-            ]);
+            if (!Currency::where('nombre', $divisa)->exists()) {
+                Currency::create([
+                    'nombre' => $divisa
+                ]);
+            }
         }
     }
 }

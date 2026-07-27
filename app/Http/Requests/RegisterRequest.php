@@ -25,7 +25,7 @@ class RegisterRequest extends FormRequest
             'name' => 'required|string|max:32',
             'email' => 'required|email|max:128',
             'contacto' => 'exclude_unless:rol,V|required|integer|min:10000000|max:99999999',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'password' => 'required|string|min:8|confirmed',
             'rol' => 'required',
         ];

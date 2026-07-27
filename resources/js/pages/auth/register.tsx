@@ -10,6 +10,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [imgBtn, setImgBtn] = useState('hidden');
     const [showContacto, setShowContacto] = useState(initialRol === 'V');
+    const [showRol, setShowRol] = useState("");
 
     const { data, setData, post, processing, errors } = useForm<{
         avatar: File | null,
@@ -32,6 +33,9 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
     const handleRole = () => {
         const rol = initialRol;
         setShowContacto(rol === 'V'); // si esto es verdadero, showContacto = true
+        if (rol === 'V') setShowRol("vendedor");
+        if (rol === 'S') setShowRol("staff");
+        if (rol === 'C') setShowRol("comprador");
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -58,7 +62,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
     useEffect(() => {
         handleRole();
     }, [initialRol]);
-    return <AuthLayout title={`Registro (${initialRol === 'V' ? 'vendedor' : 'comprador'})`}>
+    return <AuthLayout title={`Registro (${showRol})`}>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
             <Link href={route('auth.roles')} className="p-3 bg-blue-500 hover:bg-blue-600 rounded-md transition-colors duration-300 text-white w-full text-center cursor-pointer">Elegir otro rol</Link>
             <RegisterFormData errorMsg={errors.name} name="Nombre" type="text" setData={(e) => setData('name', e.target.value.slice(0, 32))} value={data.name} />
@@ -78,7 +82,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
                     </button>}
             </div>
             <div className="flex flex-col lg:flex-row justify-between gap-3 items-center w-full">
-                <Link href={route('welcome')} className="text-blue-500 hover:underline w-full text-center">¿Ya tienes una cuenta?</Link>
+                <Link href={route('login')} className="text-blue-500 hover:underline w-full text-center">¿Ya tienes una cuenta?</Link>
                 <button type="submit" disabled={processing} className="bg-slate-800 hover:bg-blue-500 rounded-md transition-colors duration-300 text-white p-2 cursor-pointer w-full">Registrarse</button>
             </div>
         </form>

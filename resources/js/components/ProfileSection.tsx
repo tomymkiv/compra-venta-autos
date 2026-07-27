@@ -43,7 +43,7 @@ export default function ProfileSection({ children, profileUser }: ProfileProps) 
                                 )}
                             </div>
                             <div className="flex flex-col gap-3 text-3xl w-full">
-                                <p>{profileUser.name} <small>({user_role.toLowerCase()})</small></p>
+                                <p>{profileUser.name} <small>({user_role == 'COMPRADOR' || user_role == 'VENDEDOR' ? user_role.toLowerCase() : "admin"})</small></p>
                                 <div
                                     className={`w-fit text-sm font-medium cursor-help ${profileUser.email_verified_at ? "text-green-500" : "text-red-500"}`}
                                     onMouseEnter={() => setIsHovered(true)}

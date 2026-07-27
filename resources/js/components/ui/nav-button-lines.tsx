@@ -1,7 +1,3 @@
-interface Props {
-    width: string,
-}
-
-export default function NavButtonLines({ width }: Props) {
-    return <div className={`h-[2px] w-[${width}] bg-[#ccc] shadow-lg`}></div>
+export default function NavButtonLines() {
+    return <div className={`h-[2px] w-[25px] bg-[#ccc] shadow-lg`} />
 }

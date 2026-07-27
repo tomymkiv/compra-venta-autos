@@ -14,7 +14,6 @@ return new class extends Migration {
         Schema::create("vehicle_brands", function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->longText('logo')->default('logo');
             $table->unsignedInteger('external_id');
             $table->string('logo')->nullable();
             $table->timestamps();

@@ -11,7 +11,11 @@ class UserEditRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user = $this->route('user');
+        $userId = $user instanceof \App\Models\User ? $user->id : ($user ?? $this->user()->id);
+
+        // Permitir si el usuario autenticado es el propio usuario a editar, o si es un administrador (SUPER_USER)
+        return $this->user()->id == $userId || $this->user()->hasRole('SUPER_USER');
     }
 
     /**
@@ -21,10 +25,13 @@ class UserEditRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = $this->route('user');
+        $userId = $user instanceof \App\Models\User ? $user->id : ($user ?? $this->user()->id);
+
         return [
-            'avatar' => 'nullable|max:2048',
-            'name' => 'unique:users,name,' . $this->user()->id . ',id|sometimes|string|max:32',
-            'email' => 'unique:users,email,' . $this->user()->id . ',id|sometimes|email|max:128',
+            'avatar' => 'nullable|image|max:2048',
+            'name' => 'unique:users,name,' . $userId . ',id|sometimes|string|max:32',
+            'email' => 'unique:users,email,' . $userId . ',id|sometimes|email|max:128',
             'password' => 'required_with:password_confirmation|nullable|string|min:8|confirmed',
             'password_confirmation' => 'nullable|string|min:8',
         ];

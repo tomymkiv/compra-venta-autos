@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->foreignId('id_body')->constrained('vehicle_bodies')->cascadeOnDelete();
             $table->foreignId('id_currency')->constrained('currencies')->cascadeOnDelete();
             $table->foreignId('id_municipio')->constrained('municipios')->cascadeOnDelete();
-            $table->text('version')->default('version');
+            $table->text('version');
             $table->integer('anio');
             $table->bigInteger('kilometraje')->default(0);
             $table->bigInteger('precio')->default(0);

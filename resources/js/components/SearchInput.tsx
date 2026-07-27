@@ -12,7 +12,7 @@ export default function SearchInput({ enviarData, setQuery, initialQuery }: Sear
                 value={initialQuery}
                 onChange={setQuery}
                 placeholder="Buscar vehículo..."
-                className={` ${innerWidth > 1024 ? 'w-full' : 'w-[95%]'} p-3 border rounded-md focus:border-blue-400 outline-none shadow-sm focus:shadow-blue-500 transition-all duration-300`}
+                className={`w-full p-3 border rounded-md focus:border-blue-400 outline-none shadow-sm focus:shadow-blue-500 transition-all duration-300`}
             />
         </form>
     );

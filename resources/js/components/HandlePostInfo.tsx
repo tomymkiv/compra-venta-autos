@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import { usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import useBrandModels from '@/hooks/useBrandModels';
+import usePopUp from '@/hooks/use-popup';
 
 export default function HandlePostInfo(initialExistingImages: Images[] = []) {
     const post_info = usePage().props.post_info as Post | null;
@@ -106,34 +107,29 @@ export default function HandlePostInfo(initialExistingImages: Images[] = []) {
         setData('main_image', file);
     }
     const removeMainImage = () => {
-        if (confirm('¿Estás seguro que quieres eliminar esta imagen?')) {
-            setData('main_image', '');
-            setMainImage(undefined);
-        }
+        setData('main_image', '');
+        setMainImage(undefined);
     }
     const removeNewImage = (index: number) => {
-        if (confirm('¿Estás seguro que quieres eliminar esta imagen?')) {
-            setNewImg(prev =>
-                prev.filter((_, i) => i !== index) // recorro las imagenes nuevas (si es que hay) y filtro:
-                // elimino la imagen cuya posición (índice) coincide con la que clickeé.
-                // el parámetro "_" es un parámetro que no se usa, por eso contiene ese caracter.
-            );
-            setData('images', data.images.filter((_, i) => i !== index));
-        }
+        setNewImg(prev =>
+            prev.filter((_, i) => i !== index) // recorro las imagenes nuevas (si es que hay) y filtro:
+            // elimino la imagen cuya posición (índice) coincide con la que clickeé.
+            // el parámetro "_" es un parámetro que no se usa, por eso contiene ese caracter.
+        );
+        setData('images', data.images.filter((_, i) => i !== index));
+
     }
     const removeExistingImage = (id: number) => {
+
         if (existingImg.length > 1) {
-            confirm('¿Estás seguro que quieres eliminar esta imagen?') &&
-                setExistingImg(prev =>
-                    prev.filter(img => img.id !== id)
-                );
+            setExistingImg(prev =>
+                prev.filter(img => img.id !== id)
+            );
             setDeletedImg(prev => [...prev, id]);
             setData('deleted_images', [...deletedImg, id]);
-        } else {
-            alert('Debes dejar al menos una imagen');
         }
     }
-    // solo para edit.tsx
+    // solo para posts/edit.tsx
     const handleDelete = (id: number) => {
         confirm('¿Seguro que quieres eliminar este post? La acción será irreversible.') ?
             destroy(route('posts.destroy', id)) : '';

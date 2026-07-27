@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,7 +12,7 @@ class LoginController extends Controller
     {
         return inertia('auth/login');
     }
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         $validated = $request->validate([
             'email' => 'required|email',

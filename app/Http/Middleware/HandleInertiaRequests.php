@@ -8,8 +8,6 @@ use Auth;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use Mockery\Undefined;
-use Spatie\Permission\Models\Role;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -46,22 +44,24 @@ class HandleInertiaRequests extends Middleware
         $post_info = null;
 
         if (Auth::user()) {
+            // si estoy logueado, tomo el rol de mi usuario
             $my_user_role = $request->user()->roles->first()->name;
         }
 
-        if ($request->routeIs('user.show')) { // si voy a ver el perfil de un usuario, busco su rol
+        // si voy a ver el perfil de un usuario, busco su rol
+        if ($request->routeIs('user.show')) {
             $user_role = User::where('id', $request->route('user'))
                 ->first()
                 ->roles
                 ->first()
                 ->name;
-            // dd($user_role);// buscar rol del usuario con id de $user_role
         }
         // obtengo el posts (con sus relaciones) para poder editarlo
-        if ($request->routeIs('posts.edit')) {
+        if ($request->routeIs('posts.edit') || $request->routeis('admin.posts.edit')) {
             $post_info = Post::with('user', 'carModel.carBrand', 'postImage', 'mainImage', 'municipio.provincia')
                 ->find($request->route('post'));
         }
+
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
         return [
             ...parent::share($request),

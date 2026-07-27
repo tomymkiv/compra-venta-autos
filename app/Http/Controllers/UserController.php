@@ -42,7 +42,7 @@ class UserController extends Controller
     {
         $user = $this->loguedUser;
 
-        if (!Gate::allows('update-user', $user)) {
+        if (!Gate::allows('update-own-user', $user)) {
             abort(403);
         }
 
@@ -52,7 +52,7 @@ class UserController extends Controller
     }
     public function destroy(User $user)
     {
-        if (!Gate::allows('delete-user', $user)) {
+        if (!Gate::allows('delete-own-user', $user)) {
             abort(403);
         }
 

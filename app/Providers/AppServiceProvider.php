@@ -20,9 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // el rol "ADMIN" podrá tener acceso a todos los permisos.
-        Gate::before(function ($user, $ability) {
-            return $user->hasRole('ADMIN') ? true : null;
+        // el rol "SUPER_USER" podrá tener acceso a todos los permisos.
+        Gate::before(function ($user) {
+            return $user->hasRole('SUPER_USER') ? true : null;
         });
     }
 }

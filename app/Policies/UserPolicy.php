@@ -8,40 +8,11 @@ use App\Models\User;
 class UserPolicy
 {
     /**
-     * Determine whether the user can view any models.
-     */
-    public function viewUsers(User $user): bool
-    {
-        return $user->can('VIEW_USER');
-    }
-
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function viewPosts(User $user, User $model): bool
-    {
-        return $user->can('VIEW_POST');
-    }
-
-    /**
-     * Determine whether the user can create models.
-     */
-    public function createUser(User $user): Response
-    {
-        return $user->can('CREATE_USER') ? Response::allow() : Response::denyAsNotFound();
-    }
-
-    public function createPost(User $user, User $model): Response
-    {
-        return ($user->can('CREATE_POST') && $user->id === $model->id) ? Response::allow() : Response::denyAsNotFound();
-    }
-
-    /**
      * Determine whether the user can update the model.
      */
     public function updateUser(User $user, User $model): Response
     {
-        return ($user->can('EDIT_USER') && $user->id === $model->id)
+        return ($user->can('EDIT_OWN_USER') && $user->id === $model->id)
             ? Response::allow()
             : Response::denyAsNotFound();
     }
@@ -51,9 +22,23 @@ class UserPolicy
      */
     public function deleteUser(User $user, User $model): Response
     {
-        return ($user->can('DELETE_USER') && $user->id === $model->id)
+        return ($user->can('DELETE_OWN_USER') && $user->id === $model->id)
             ? Response::allow()
             : Response::denyAsNotFound();
+    }
+    /**
+     * Permiso para el admin: puede eliminar cualquier usuario
+     */
+    public function deleteAnyUser(User $user): Response
+    {
+        return $user->can('DELETE_ANY_USER') ? Response::allow() : Response::denyAsNotFound();
+    }
+    /**
+     * Permiso para el admin: puede editar cualquier usuario
+     */
+    public function editAnyUser(User $user): Response
+    {
+        return $user->can('EDIT_ANY_USER') ? Response::allow() : Response::denyAsNotFound();
     }
 
     /**

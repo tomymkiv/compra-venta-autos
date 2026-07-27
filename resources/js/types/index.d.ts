@@ -1,5 +1,6 @@
 import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
+import { Rol } from './types';
 
 export interface Auth {
     user: User;
@@ -40,6 +41,7 @@ export interface User {
         user_id: number,
         contacto: number,
     },
+    rol: Rol[];
     email_verified_at: string | null;
     two_factor_enabled?: boolean;
     created_at: string;

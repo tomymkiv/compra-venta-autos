@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -53,6 +54,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Contact::class, 'user_id');
     }
 
+    public function rol()
+    {
+        return $this->roles();
+    }
     protected function casts(): array
     {
         return [
