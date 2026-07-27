@@ -53,13 +53,13 @@ class UserSeeder extends Seeder
         }
 
         if (!Role::where('name', 'COMPRADOR')->exists()) {
-            $comprador = Role::create(['name' => 'COMPRADOR', 'is_public' => true]);
+            $comprador = Role::create(['name' => 'COMPRADOR']);
         } else {
             $comprador = Role::where('name', 'COMPRADOR')->first();
         }
 
         if (!Role::where('name', 'VENDEDOR')->exists()) {
-            $vendedor = Role::create(['name' => 'VENDEDOR', 'is_public' => true]);
+            $vendedor = Role::create(['name' => 'VENDEDOR']);
         } else {
             $vendedor = Role::where('name', 'VENDEDOR')->first();
         }
