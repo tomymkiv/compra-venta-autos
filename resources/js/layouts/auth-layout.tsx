@@ -10,7 +10,7 @@ export default function AuthLayout({ children, title }: AuthLayoutProps) {
     return <section className='flex flex-col lg:flex-row gap-10 justify-center h-screen items-center w-full lg:mx-0'>
         <div>
             <Link href={route('welcome')}>
-                <img className="max-w-2xs lg:max-w-lg" src="/img/logos/logo-fondo-transparent.png" alt="Imagen del logo" />
+                <img className="max-w-[250px] lg:max-w-lg" src="/img/logos/logo-fondo-transparent.png" alt="Imagen del logo" />
             </Link>
         </div>
         <div className="max-w-lg w-[90%] lg:w-full">

@@ -69,7 +69,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
   return (
     <>
       <header className={`relative z-50 flex items-center justify-center bg-[#111b] sticky top-0 w-full`}>
-        <div id='mobile-nav' className=''>
+        <div id='mobile-nav'>
           <nav className='bg-[#111]'>
             <ul ref={menuRef} id='menu' className={`flex flex-col gap-10 justify-center overflow-hidden fixed left-0 bg-[#2227] backdrop-blur-sm transition-[width] duration-350 ease-in-out ${menuWidthClass} h-screen z-50`}>
               {

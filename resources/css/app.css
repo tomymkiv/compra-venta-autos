@@ -1,5 +1,25 @@
 @import 'tailwindcss';
 
+.w-20p {
+    width: 20%;
+}
+
+.w-40p {
+    width: 40%;
+}
+
+.w-60p {
+    width: 60%;
+}
+
+.w-80p {
+    width: 80%;
+}
+
+.w-100p {
+    width: 100%;
+}
+
 .animate-text-pulse {
     animation: 5s shadow-text-pulse infinite alternate linear;
 }
