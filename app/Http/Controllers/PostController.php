@@ -134,9 +134,9 @@ class PostController extends Controller
 
     public function store(PostCreateRequest $request, CreatePostAction $action)
     {
-        if (!Gate::allows('create-post', $this->loguedUser)) {
-            abort(403);
-        }
+        // if (!Gate::allows('create-post', $this->loguedUser)) {
+        //     abort(403);
+        // }
 
         $images = $request->file('images');
         $mainImage = $request->file('main_image');
@@ -153,9 +153,9 @@ class PostController extends Controller
     public function create()
     {
         // si el gate no te autoriza, devuelve un error.
-        if (!Gate::allows('create-post', $this->loguedUser)) {
-            abort(403);
-        }
+        // if (!Gate::allows('create-post', $this->loguedUser)) {
+        //     abort(403);
+        // }
 
         return inertia('posts/create', [
             'car' => new Post,
@@ -171,7 +171,7 @@ class PostController extends Controller
         $post = Post::with('user', 'carModel.carBrand', 'postImage', 'mainImage', 'municipio.provincia')
             ->findOrFail($id);
         // si el gate no te autoriza, devuelve un error.
-        if (!Gate::allows('update-post', $post)) {
+        if (!Gate::allows('update-own-post', $post)) {
             abort(403);
         }
         return inertia('posts/edit', [
@@ -185,7 +185,7 @@ class PostController extends Controller
 
     public function update(PostUpdateRequest $request, Post $post, UpdatePostAction $action)
     {
-        if (!Gate::allows('update-post', $post)) {
+        if (!Gate::allows('update-own-post', $post)) {
             abort(403);
         }
 
@@ -200,7 +200,7 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
-        if (!Gate::allows('delete-post', $post)) {
+        if (!Gate::allows('delete-own-post', $post)) {
             abort(403);
         }
 

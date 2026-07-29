@@ -8,7 +8,6 @@ use App\Http\Requests\PostUpdateRequest;
 use App\Http\Requests\UserEditRequest;
 use App\Models\Currency;
 use App\Models\Post;
-use App\Models\PostImage;
 use App\Models\Provincia;
 use App\Models\User;
 use App\Models\VehicleBody;
@@ -16,7 +15,6 @@ use App\Models\VehicleBrand;
 use Auth;
 use Cache;
 use Gate;
-use Spatie\Permission\Models\Role;
 
 class AdminController extends Controller
 {
@@ -31,7 +29,14 @@ class AdminController extends Controller
     }
     public function index()
     {
-        return inertia('admin/index');
+        $user = Auth::user();
+
+        if ($user && $user->hasRole('SUPER_USER') && $user->email_verified_at != null) {
+            return inertia('admin/index');
+        } else if ($user && $user->hasRole('SUPER_USER') && $user->email_verified_at == null) {
+            return abort(403);
+        }
+        return abort(404);
     }
 
     public function users()
@@ -48,9 +53,11 @@ class AdminController extends Controller
                 // que no muestre el usuario que está logueado
                 // faltan los roles de estos usuarios
             ]);
+        } else if ($user && $user->hasRole('SUPER_USER') && $user->email_verified_at == null) {
+            return abort(403);
         }
-        // caso contrario, lo llevo a la pagina de bienvenida
-        return redirect()->route('welcome');
+        // caso contrario, muestro un error, dando a entender que la página no existe
+        return abort(404);
     }
 
     public function posts()
@@ -66,9 +73,11 @@ class AdminController extends Controller
                     ->paginate(2),
                 // 'posts' => Post::with('user', 'mainImage', 'carModel.carBrand')->where('id', '>', 0)->paginate(1)
             ]);
+        } else if ($user && $user->hasRole('SUPER_USER') && $user->email_verified_at == null) {
+            return abort(403);
         }
-        // caso contrario, lo llevo a la pagina de bienvenida
-        return redirect()->route('welcome');
+        // caso contrario, muestro un error, dando a entender que la página no existe
+        return abort(404);
     }
     public function edit_post($id)
     {
@@ -101,9 +110,12 @@ class AdminController extends Controller
     }
     public function edit_user(User $user)
     {
-        return inertia('admin/users/edit', [
-            'profile_user' => $user,
-        ]);
+        if (Gate::allows('update-any-user', $user)) {
+            return inertia('admin/users/edit', [
+                'profile_user' => $user,
+            ]);
+        }
+        return abort(404);
     }
     public function update_user(UserEditRequest $request, UpdateUserAction $action, $id)
     {

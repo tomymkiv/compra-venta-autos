@@ -5,11 +5,6 @@ import { Label } from '@radix-ui/react-label'
 
 export default function FormFieldFiles({ errors, removeNewImage, handleImages, removeExistingImages, editSection, newImg, existingImages }: FormFieldFilesProps) {
     return <FormFieldContainer titulo="Elegí las imagenes del vehiculo" errorsText={errors}>
-        {
-            errors && (
-                <p className='text-red-500 font-[500] text-sm'>{errors}</p>
-            )
-        }
         <div className="flex items-center justify-between w-full">
             <Label htmlFor="tipo">Imagen/es del vehiculo</Label>
         </div>

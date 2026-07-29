@@ -1,19 +1,63 @@
 @import 'tailwindcss';
 
+.w-10p {
+    width: 10%;
+}
+
+.w-12-5p {
+    width: 12.5%;
+}
+
 .w-20p {
     width: 20%;
+}
+
+.w-25p {
+    width: 25%;
+}
+
+.w-30p {
+    width: 30%;
+}
+
+.w-37-5p {
+    width: 37.5%;
 }
 
 .w-40p {
     width: 40%;
 }
 
+.w-50p {
+    width: 50%;
+}
+
 .w-60p {
     width: 60%;
 }
 
+.w-62-5p {
+    width: 62.5%;
+}
+
+.w-70p {
+    width: 70%;
+}
+
+.w-75p {
+    width: 75%;
+}
+
 .w-80p {
     width: 80%;
+}
+
+.w-87-5p {
+    width: 87.5%;
+}
+
+.w-90p {
+    width: 90%;
 }
 
 .w-100p {

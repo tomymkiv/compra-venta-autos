@@ -5,10 +5,10 @@ import React, { useState } from 'react'
 import { usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import useBrandModels from '@/hooks/useBrandModels';
-import usePopUp from '@/hooks/use-popup';
 
 export default function HandlePostInfo(initialExistingImages: Images[] = []) {
     const post_info = usePage().props.post_info as Post | null;
+    const [step, setStep] = useState(1);
     const [newImg, setNewImg] = useState<File[]>([]);
     const [mainImage, setMainImage] = useState<File | Images | undefined>(post_info?.main_image ?? undefined);
     const [precio, setPrecio] = useState(post_info?.precio ? Number(post_info.precio).toLocaleString("es-AR") : '');
@@ -21,7 +21,7 @@ export default function HandlePostInfo(initialExistingImages: Images[] = []) {
     const { provinciaId, setProvinciaId, municipioId, setMunicipioId, municipiosState } = useProvinciaMunicipio();
     const { modelsState } = useBrandModels(brandSelected); // envio el id de la marca seleccionada para que este hook haga un fetch con todos los modelos de esa marca
     // ??: condicional. si recibe null (llega desde laravel), dejo los campos vacios. sino (estoy en edit.tsx), les añado la informacion de "post_info"
-    const { data, setData, delete: destroy, post, processing, errors, patch } = useForm<CreatePostForm | EditForm>({
+    const { data, setData, delete: destroy, post, processing, errors, clearErrors, patch, setError } = useForm<CreatePostForm | EditForm>({
         marca: post_info?.car_model.car_brand.id ?? '',
         modelo: post_info?.id_model ?? '',
         anio: post_info?.anio ?? '',
@@ -135,6 +135,9 @@ export default function HandlePostInfo(initialExistingImages: Images[] = []) {
             destroy(route('posts.destroy', id)) : '';
     }
     return {
+        step,
+        setStep,
+        clearErrors,
         post,
         patch,
         destroy,
@@ -168,5 +171,6 @@ export default function HandlePostInfo(initialExistingImages: Images[] = []) {
         newImg,
         existingImg,
         brandSelected,
+        setError,
     }
 }

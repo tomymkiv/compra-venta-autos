@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { route } from "ziggy-js";
 import RegisterFormData from "@/components/RegisterFormData";
 import InputComp from "@/components/ui/InputComp";
-import FormStep from "@/components/FormStep";
+import FormStepRegister from "@/components/FormStepRegister";
 
 export default function Register({ rol: initialRol = '' }: { rol: string }) {
     const [inputBg, setInputBg] = useState('');
@@ -169,7 +169,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
 
     return <AuthLayout title={`Registro (rol: ${showRol})`}>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
-            <FormStep errorsActive={Object.keys(errors).length > 0} setStep={setStep} step={step} onNext={handleNextStep}>
+            <FormStepRegister errorsActive={Object.keys(errors).length > 0} setStep={setStep} step={step} onNext={handleNextStep}>
                 {
                     step == 1 && <Link href={route('auth.roles')} className="p-3 bg-blue-500 hover:bg-blue-600 rounded-md transition-colors duration-300 text-white w-full text-center cursor-pointer">Elegir otro rol</Link>
                 }
@@ -204,7 +204,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
                         </div>
                     </>
                 }
-            </FormStep>
+            </FormStepRegister>
         </form>
     </AuthLayout>
 }
