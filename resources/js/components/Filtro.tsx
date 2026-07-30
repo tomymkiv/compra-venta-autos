@@ -53,8 +53,9 @@ export default function Filtro({ posts, showPages, carBrands, vehicleBodies, cur
     const filterDetected = (e: string) => {
         setSelectedFilter(e);
         setFilters({}); // reinicio los filtros en caso de seleccionar otro filtro
-        setFilters(prev => ({ ...prev, priceFrom: 0 }))
-        setFilters(prev => ({ ...prev, priceTo: 0 }))
+        setPriceFromState('');
+        setSelectedCurrency('')
+        setPriceToState('');
     }
     const handleProvincia = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFilters(prev => ({ ...prev, provinciaId: Number(e.target.value) }))
@@ -75,6 +76,8 @@ export default function Filtro({ posts, showPages, carBrands, vehicleBodies, cur
         setFilters({}); // quito los filtros para que el backend no envíe ninguno
         setSelectedFilter(''); // limpio la vista de los filtros elegidos
         setFilterOn(false);
+        setPriceFromState('');
+        setPriceToState('');
     }
     const handlePriceFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFilters(prev => ({ ...prev, currencyId: Number(e.target.value) }))
@@ -88,14 +91,14 @@ export default function Filtro({ posts, showPages, carBrands, vehicleBodies, cur
     const handlePriceFrom = (e: React.ChangeEvent<HTMLInputElement>) => {
         const raw = e.target.value.replace(/\D/g, "");
         if (raw.length > 15) return;
-        setFilters(prev => ({ ...prev, [e.target.name]: Number(e.target.value) }))
-        // setPriceFromState(Number(raw).toLocaleString('es-AR'))
+        setFilters(prev => ({ ...prev, [e.target.name]: raw ? Number(raw) : undefined }))
+        setPriceFromState(raw ? Number(raw).toLocaleString('es-AR') : '')
     }
     const handlePriceTo = (e: React.ChangeEvent<HTMLInputElement>) => {
         const raw = e.target.value.replace(/\D/g, "");
         if (raw.length > 15) return;
-        setFilters(prev => ({ ...prev, [e.target.name]: Number(e.target.value) }))
-        // setPriceToState(Number(raw).toLocaleString('es-AR'))
+        setFilters(prev => ({ ...prev, [e.target.name]: raw ? Number(raw) : undefined }))
+        setPriceToState(raw ? Number(raw).toLocaleString('es-AR') : '')
     }
     const handleYearFrom = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
@@ -151,9 +154,9 @@ export default function Filtro({ posts, showPages, carBrands, vehicleBodies, cur
                                 <div className="flex flex-col gap-2">
                                     <FilterSelect placeholder="Elegí la divisa" name="price" titulo="Filtro de monedas" onChangeHandler={handlePriceFilter} arr={currencies} />
                                     <label htmlFor="priceFrom">Desde:</label>
-                                    <input id="priceFrom" disabled={!selectedCurrency} min={0} type="text" name="priceFrom" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" onChange={handlePriceFrom} value={filters.priceFrom} />
+                                    <input id="priceFrom" disabled={!selectedCurrency} min={0} type="text" name="priceFrom" className={`p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500 ${!selectedCurrency ? 'bg-gray-400 cursor-not-allowed' : ''}`} onChange={handlePriceFrom} value={priceFromState} />
                                     <label htmlFor="priceTo">Hasta:</label>
-                                    <input id="priceTo" disabled={!selectedCurrency} min={0} type="text" name="priceTo" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" onChange={handlePriceTo} value={filters.priceTo} />
+                                    <input id="priceTo" disabled={!selectedCurrency} min={0} type="text" name="priceTo" className={`p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500 ${!selectedCurrency ? 'bg-gray-400 cursor-not-allowed' : ''}`} onChange={handlePriceTo} value={priceToState} />
                                 </div>
                             }
                             {
