@@ -72,82 +72,94 @@ class SearchController extends Controller
                 ),
             ]);
         } else { // si se trata de un filtro...
-
-            $posts = Post::query()
-                ->when($request->priceFrom, function ($qBuilder) use ($request) {
-                    $qBuilder->where('precio', '>=', $request->priceFrom)
-                        ->where('id_currency', $request->currencyId); // filtro segun la divisa
-                    // dd($request->toArray());
-                    // precio desde...
-                })
-                ->when($request->priceTo, function ($qBuilder) use ($request) {
-                    $qBuilder->where('precio', '<=', $request->priceTo)
-                        ->where('id_currency', $request->currencyId); // filtro segun la divisa
-                    // dd($request->toArray());
-                    // precio hasta...
-                })
-                ->when($request->currencyId, function ($qBuilder) use ($request) {
-                    $qBuilder->where('id_currency', $request->currencyId);
-                    // filtro segun la divisa (sin tener en cuenta "desde" ni "hasta")
-                })
-                ->when($request->brandId, function ($qBuilder) use ($request) {
-                    $qBuilder->whereHas('carModel.carBrand', function ($q) use ($request) {
-                        $q->where('id', $request->brandId);
-                    });
-                    // busco por marca...
-                })
-                ->when($request->yearFrom, function ($qBuilder) use ($request) {
-                    $qBuilder->whereHas('carModel', function ($q) use ($request) {
-                        $q->where('anio', '>=', $request->yearFrom);
-                    });
-                    // busco por año (desde)
-                })
-                ->when($request->yearTo, function ($qBuilder) use ($request) {
-                    $qBuilder->whereHas('carModel', function ($q) use ($request) {
-                        $q->where('anio', '<=', $request->yearTo);
-                    });
-                    // busco por año (hasta)
-                })
-                ->when($request->typeId, function ($qBuilder) use ($request) {
-                    // $qBuilder es un parámetro, el cual tiene la funcionalidad de $request. 
-                    // por eso está "use ($request)"
-                    $qBuilder->whereHas('vehicleBody', function ($q) use ($request) {
-                        $q->where('id', $request->typeId);
-                    });
-                    // busco por tipo de auto
-                })
-                ->when($request->provinciaId, function ($qBuilder) use ($request) {
-                    $qBuilder->whereHas('municipio', function ($q) use ($request) {
-                        $q->where('id_provincia', $request->provinciaId);
-                    });
-                    // busco por provincia...
-                })
-                ->when($request->municipioId, function ($qBuilder) use ($request) {
-                    $qBuilder->whereHas('municipio', function ($q) use ($request) {
-                        $q->where('id', $request->municipioId);
-                    });
-                    // busco por municipio (primero tuve que elegir la provincia)
-                })
-                ->with([
-                    'carModel.carBrand',
-                    'vehicleBody',
-                    'municipio.provincia',
-                    'mainImage',
+            if (
+                $request->validate([
+                    'priceFrom' => 'integer|nullable',
+                    'priceTo' => 'integer|nullable',
+                    'currencyId' => 'integer|nullable',
+                    'brandId' => 'integer|nullable',
+                    'yearFrom' => 'integer|nullable',
+                    'yearTo' => 'integer|nullable',
+                    'typeId' => 'integer|nullable',
+                    'provinciaId' => 'integer|nullable',
+                    'municipioId' => 'integer|nullable',
                 ])
-                ->paginate($this->paginateLimit)
-                ->withQueryString();
+            ) {
+                $posts = Post::query()
+                    ->when($request->priceFrom, function ($qBuilder) use ($request) {
+                        $qBuilder->where('precio', '>=', $request->priceFrom)
+                            ->where('id_currency', $request->currencyId); // filtro segun la divisa
+                        // precio desde...
+                    })
+                    ->when($request->priceTo, function ($qBuilder) use ($request) {
+                        $qBuilder->where('precio', '<=', $request->priceTo)
+                            ->where('id_currency', $request->currencyId); // filtro segun la divisa
+                        // precio hasta...
+                    })
+                    ->when($request->currencyId, function ($qBuilder) use ($request) {
+                        $qBuilder->where('id_currency', $request->currencyId);
+                        // filtro segun la divisa (sin tener en cuenta "desde" ni "hasta")
+                    })
+                    ->when($request->brandId, function ($qBuilder) use ($request) {
+                        $qBuilder->whereHas('carModel.carBrand', function ($q) use ($request) {
+                            $q->where('id', $request->brandId);
+                        });
+                        // busco por marca...
+                    })
+                    ->when($request->yearFrom, function ($qBuilder) use ($request) {
+                        $qBuilder->whereHas('carModel', function ($q) use ($request) {
+                            $q->where('anio', '>=', $request->yearFrom);
+                        });
+                        // busco por año (desde)
+                    })
+                    ->when($request->yearTo, function ($qBuilder) use ($request) {
+                        $qBuilder->whereHas('carModel', function ($q) use ($request) {
+                            $q->where('anio', '<=', $request->yearTo);
+                        });
+                        // busco por año (hasta)
+                    })
+                    ->when($request->typeId, function ($qBuilder) use ($request) {
+                        // $qBuilder es un parámetro, el cual tiene la funcionalidad de $request. 
+                        // por eso está "use ($request)"
+                        $qBuilder->whereHas('vehicleBody', function ($q) use ($request) {
+                            $q->where('id', $request->typeId);
+                        });
+                        // busco por tipo de auto
+                    })
+                    ->when($request->provinciaId, function ($qBuilder) use ($request) {
+                        $qBuilder->whereHas('municipio', function ($q) use ($request) {
+                            $q->where('id_provincia', $request->provinciaId);
+                        });
+                        // busco por provincia...
+                    })
+                    ->when($request->municipioId, function ($qBuilder) use ($request) {
+                        $qBuilder->whereHas('municipio', function ($q) use ($request) {
+                            $q->where('id', $request->municipioId);
+                        });
+                        // busco por municipio (primero tuve que elegir la provincia)
+                    })
+                    ->with([
+                        'carModel.carBrand',
+                        'vehicleBody',
+                        'municipio.provincia',
+                        'mainImage',
+                    ])
+                    ->paginate($this->paginateLimit)
+                    ->withQueryString();
 
-            return inertia('search/index', [
-                'loguedUser' => $this->loguedUser,
-                'posts' => $posts,
-                // realiza un cache, pensado por si muchos usuarios realizan consultas al mismo tiempo.
-                // si los datos no están en caché, los busca en la BDD y los guarda en la caché. durante 3600 segundos (1 hora).
-                'carBrands' => Cache::remember('sidebar_brands', 3600, fn() => VehicleBrand::whereHas('carModels.posts')->select('id', 'name')->get()),
-                'vehicleBodies' => Cache::remember('sidebar_vehicle_bodies', 3600, fn() => VehicleBody::whereHas('posts')->select('id', 'name')->get()),
-                'provincias' => Cache::remember('sidebar_provincias', 3600, fn() => Provincia::whereHas('municipios.posts')->select('id', 'nombre')->get()),
-                'municipios' => Cache::remember('sidebar_municipios', 3600, fn() => Municipio::whereHas('posts')->select('id', 'nombre')->get()),
-                'currencies' => Cache::remember('sidebar_currencies', 3600, fn() => Currency::whereHas('posts')->select('id', 'nombre')->get()),
-            ]);
+                return inertia('search/index', [
+                    'loguedUser' => $this->loguedUser,
+                    'posts' => $posts,
+                    // realiza un cache, pensado por si muchos usuarios realizan consultas al mismo tiempo.
+                    // si los datos no están en caché, los busca en la BDD y los guarda en la caché. durante 3600 segundos (1 hora).
+                    'carBrands' => Cache::remember('sidebar_brands', 3600, fn() => VehicleBrand::whereHas('carModels.posts')->select('id', 'name')->get()),
+                    'vehicleBodies' => Cache::remember('sidebar_vehicle_bodies', 3600, fn() => VehicleBody::whereHas('posts')->select('id', 'name')->get()),
+                    'provincias' => Cache::remember('sidebar_provincias', 3600, fn() => Provincia::whereHas('municipios.posts')->select('id', 'nombre')->get()),
+                    'municipios' => Cache::remember('sidebar_municipios', 3600, fn() => Municipio::whereHas('posts')->select('id', 'nombre')->get()),
+                    'currencies' => Cache::remember('sidebar_currencies', 3600, fn() => Currency::whereHas('posts')->select('id', 'nombre')->get()),
+                ]);
+            }
+            abort(500); // aborto con error 500 en el caso de que, de alguna forma, se ingresen datos no válidos.
         }
     }
 }
