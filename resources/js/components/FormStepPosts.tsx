@@ -53,15 +53,24 @@ export default function FormStepPosts({ images, mainImage, errorsActive, step, c
                     la propiedad de css es w-valor-5p o w-valorp 
                      */}
                     <div className={`h-full ${step === 8
-                            ? errorsActive
-                                ? 'bg-red-500'
-                                : (mainImage && images && images.length > 0)
-                                    ? 'bg-green-400'
-                                    : 'bg-blue-500'
-                            : errorsActive
-                                ? 'bg-red-500'
+                        ? errorsActive
+                            ? 'bg-red-500'
+                            : (mainImage && images && images.length > 0)
+                                ? 'bg-green-400'
                                 : 'bg-blue-500'
-                        } w-${step * 12.5}p transition-all duration-600`}></div>
+                        : errorsActive
+                            ? 'bg-red-500'
+                            : 'bg-blue-500'
+                        } ${
+                            step === 1 ? 'w-12-5p' :
+                            step === 2 ? 'w-25p' :
+                            step === 3 ? 'w-37-5p' :
+                            step === 4 ? 'w-50p' :
+                            step === 5 ? 'w-62-5p' :
+                            step === 6 ? 'w-75p' :
+                            step === 7 ? 'w-87-5p' :
+                            step === 8 ? 'w-100p' : 'w-0'
+                        } transition-all duration-600`}></div>
                 </div>
             </div>
             <div className="flex flex-col">

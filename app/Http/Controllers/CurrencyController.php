@@ -8,6 +8,6 @@ class CurrencyController extends Controller
 {
     public function currencies()
     {
-        return Currency::get();
+        return Currency::select('id', 'nombre')->get();
     }
 }

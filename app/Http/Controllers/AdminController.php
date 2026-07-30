@@ -48,8 +48,9 @@ class AdminController extends Controller
         if ($user && $user->hasRole('SUPER_USER') && $user->email_verified_at != null) {
             return inertia('admin/users/index', [
                 'users' => User::with('rol')->orderBy('name', 'asc')
+                    ->select('id', 'name', 'email', 'email_verified_at', 'avatar')
                     ->where('id', '!=', $user->id)
-                    ->paginate(4),
+                    ->paginate($this->paginateLimit),
                 // que no muestre el usuario que está logueado
                 // faltan los roles de estos usuarios
             ]);
@@ -70,8 +71,8 @@ class AdminController extends Controller
             return inertia('admin/posts/index', [
                 'posts' => Post::with('user', 'mainImage', 'carModel.carBrand')
                     ->orderBy('created_at', 'asc')
-                    ->paginate(2),
-                // 'posts' => Post::with('user', 'mainImage', 'carModel.carBrand')->where('id', '>', 0)->paginate(1)
+                    ->select('id', 'id_user', 'id_model', 'anio')
+                    ->paginate($this->paginateLimit),
             ]);
         } else if ($user && $user->hasRole('SUPER_USER') && $user->email_verified_at == null) {
             return abort(403);
@@ -88,10 +89,10 @@ class AdminController extends Controller
         }
         return inertia('admin/posts/edit', [
             'postData' => $post,
-            'carBrands' => VehicleBrand::orderBy('name', 'asc')->get(),
-            'vehicleBodies' => VehicleBody::orderBy('name', 'asc')->get(),
-            'currencies' => Currency::get(),
-            'provincias' => Provincia::orderBy('nombre', 'asc')->get(),
+            'carBrands' => VehicleBrand::orderBy('name', 'asc')->select('id', 'name')->get(),
+            'vehicleBodies' => VehicleBody::orderBy('name', 'asc')->select('id', 'name')->get(),
+            'currencies' => Currency::select('id', 'nombre')->get(),
+            'provincias' => Provincia::orderBy('nombre', 'asc')->select('id', 'nombre')->get(),
         ]);
     }
     public function update_post(PostUpdateRequest $request, Post $post, UpdatePostAction $updatePostAction)
@@ -143,22 +144,4 @@ class AdminController extends Controller
         }
         $user->delete();
     }
-    // public function roles()
-    // {
-    //     $roles = Role::get();
-    //     return inertia('admin/roles', [
-    //         'roles' => $roles,
-    //     ]);
-    // }
-
-    // public function create()
-    // {
-    //     return view('roles.create');
-    // }
-
-    // public function store(Request $request)
-    // {
-    //     $role = Role::create($request->all());
-    //     return redirect()->route('roles.index');
-    // }
 }

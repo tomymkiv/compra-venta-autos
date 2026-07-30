@@ -12,11 +12,10 @@ class UserController extends Controller
 {
     public function welcome()
     {
-        // dd($this->paginatedCarPosts);
         return inertia('welcome', [
             'posts' => Post::with('mainImage', 'carModel.carBrand', 'user', 'municipio.provincia', 'vehicleBody')
-                ->whereHas('mainImage') // mainImage = imagen con orden = 1
                 ->latest()
+                ->select('id', 'id_model', 'version', 'anio', 'id_municipio', 'id_currency', 'precio')
                 ->paginate($this->paginateLimit),
         ]);
     }
@@ -25,9 +24,10 @@ class UserController extends Controller
         // declaro $post como si ese usuario tuviera un posteo relacionado
         $post = Post::where('id_user', $id)
             ->with('user')
+            ->select('id')
             ->get();
         // en caso de no tener ningun post, envío solo el usuario.
-        $user = User::findOrFail($id);
+        $user = User::where('id', $id)->select('id', 'name', 'email_verified_at', 'avatar')->firstOrFail();
 
         return inertia('user/show', [
             'post' => $post,
@@ -41,7 +41,7 @@ class UserController extends Controller
     public function update(UserEditRequest $request, UpdateUserAction $action)
     {
         $user = $this->loguedUser;
-
+        // dd($user);
         if (!Gate::allows('update-own-user', $user)) {
             abort(403);
         }

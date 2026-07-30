@@ -12,11 +12,9 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 
 export default function FilterSelect({ value, placeholder, arr, onChangeHandler, name, titulo }: SelectProps) {
     return (
-        <>
-            <div className="w-full my-2.5">
-                <label htmlFor={name}>{titulo}: </label>
-            </div>
-            <select value={value} className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name={name} onChange={onChangeHandler}>
+        <div className="w-full flex flex-col gap-2.5 my-2.5">
+            <label htmlFor={name}>{titulo}: </label>
+            <select id={name} value={value} className="p-3.5 outline-none rounded-lg w-full max-w-[400px] bg-[#222] transition-colors duration-300" name={name} onChange={onChangeHandler}>
                 <option value="">{placeholder}</option>
                 {arr.map(item => (
                     // pregunto si es numerico, porque tambien puedo filtrar años
@@ -29,6 +27,6 @@ export default function FilterSelect({ value, placeholder, arr, onChangeHandler,
                         <option key={item} value={item}>{item}</option>
                 ))}
             </select>
-        </>
+        </div>
     )
 }

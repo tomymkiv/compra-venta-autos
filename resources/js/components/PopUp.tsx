@@ -16,7 +16,7 @@ export default function PopUp({ deleteButton, title, mensaje, setShow, confirmDe
         confirmDelete && confirmDelete(true);
     }
     return <div>
-        <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center">
+        <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-[100]">
             <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
                 <h2 className="text-lg font-semibold text-white mb-4">{title}</h2>
                 <p className="text-gray-400 mb-4">{mensaje}</p>

@@ -1,4 +1,3 @@
-
 type Filters = {
     currencyId?: number,
     priceFrom?: number;
@@ -13,7 +12,7 @@ type Filters = {
 
 import { createPortal } from "react-dom";
 import { FilterProps } from "@/types/types";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CarCards from "./CarCards";
 import Pagination from "./pagination";
 import { Link, router, usePage } from "@inertiajs/react";
@@ -29,16 +28,15 @@ export default function Filtro({ posts, showPages, carBrands, vehicleBodies, cur
     const years = Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i);
     const [yearsFrom, setYearsFrom] = useState<number[]>(Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i));
     const [yearsTo, setYearsTo] = useState<number[]>(Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => 1900 + i));
-    const [filterMsg, setFilterMsg] = useState("");
     const [selectedCurrency, setSelectedCurrency] = useState(""); // signo de peso o dolar, segun la divisa que eliga
-    const [currencySelected, setCurrencySelected] = useState(false);
     const filtros = ['Precio', 'Marca', 'Año', 'Tipo', 'Ubicación'];
     const { provinciaId, setProvinciaId, municipioId, setMunicipioId, municipiosState } = useProvinciaMunicipio();
     const [disabledMunicipios, setDisabledMunicipios] = useState(true);
     const [filters, setFilters] = useState<Filters>({}); // filtro elegido, para enviar al backend
     const [filterOn, setFilterOn] = useState(false); // abrir y cerrar el filtro
     const [selectedFilter, setSelectedFilter] = useState(''); // detecto el filtro seleccionado
-
+    const [priceToState, setPriceToState] = useState('');
+    const [priceFromState, setPriceFromState] = useState('');
     // abro el filtro
     const handleOpenFilter = () => {
         if (!filterOn) {
@@ -55,7 +53,8 @@ export default function Filtro({ posts, showPages, carBrands, vehicleBodies, cur
     const filterDetected = (e: string) => {
         setSelectedFilter(e);
         setFilters({}); // reinicio los filtros en caso de seleccionar otro filtro
-        setCurrencySelected(false);
+        setFilters(prev => ({ ...prev, priceFrom: 0 }))
+        setFilters(prev => ({ ...prev, priceTo: 0 }))
     }
     const handleProvincia = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFilters(prev => ({ ...prev, provinciaId: Number(e.target.value) }))
@@ -78,7 +77,6 @@ export default function Filtro({ posts, showPages, carBrands, vehicleBodies, cur
         setFilterOn(false);
     }
     const handlePriceFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setCurrencySelected(true);
         setFilters(prev => ({ ...prev, currencyId: Number(e.target.value) }))
 
         if (e.target.value == "1") {
@@ -88,20 +86,16 @@ export default function Filtro({ posts, showPages, carBrands, vehicleBodies, cur
         }
     }
     const handlePriceFrom = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const raw = e.target.value.replace(/\D/g, "");
+        if (raw.length > 15) return;
         setFilters(prev => ({ ...prev, [e.target.name]: Number(e.target.value) }))
-
-        if (!filters.priceTo) {
-            setFilterMsg(`Desde ${selectedCurrency}${e.target.value} hasta ♾️`);
-        }
+        // setPriceFromState(Number(raw).toLocaleString('es-AR'))
     }
     const handlePriceTo = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const raw = e.target.value.replace(/\D/g, "");
+        if (raw.length > 15) return;
         setFilters(prev => ({ ...prev, [e.target.name]: Number(e.target.value) }))
-
-        if (!e.target.value) {
-            setFilterMsg(`Desde ${selectedCurrency}${filters.priceFrom} hasta ♾️`);
-        } else {
-            setFilterMsg(`Desde ${selectedCurrency}${filters.priceFrom} hasta ${selectedCurrency}${e.target.value}`);
-        }
+        // setPriceToState(Number(raw).toLocaleString('es-AR'))
     }
     const handleYearFrom = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
@@ -134,17 +128,6 @@ export default function Filtro({ posts, showPages, carBrands, vehicleBodies, cur
             }
         );
     }
-    useEffect(() => {
-        if (filters.priceFrom && !filters.priceTo) {
-            setFilterMsg(`Desde ${selectedCurrency}${filters.priceFrom} hasta ♾️`);
-        } else if (!filters.priceFrom && filters.priceTo) {
-            setFilterMsg(`Desde ${selectedCurrency}0 hasta ${selectedCurrency}${filters.priceTo}`);
-        } else if (filters.priceFrom && filters.priceTo) {
-            setFilterMsg(`Desde ${selectedCurrency}${filters.priceFrom} hasta ${selectedCurrency}${filters.priceTo}`);
-        } else {
-            setFilterMsg("Sin limite");
-        }
-    }, [filters.priceFrom, filters.priceTo]);
     return <>
 
         {createPortal(<div className={`${filterOn ? `fixed ${innerWidth > 1024 ? 'w-[25%]' : 'w-full'}` : 'hidden w-0'} flex flex-col justify-center items-center overflow-hidden left-0 z-50 top-0 h-screen bg-black/85 space-y-12 text-gray-200 transition-all duration-300`}>
@@ -167,10 +150,10 @@ export default function Filtro({ posts, showPages, carBrands, vehicleBodies, cur
                                 selectedFilter === 'Precio' &&
                                 <div className="flex flex-col gap-2">
                                     <FilterSelect placeholder="Elegí la divisa" name="price" titulo="Filtro de monedas" onChangeHandler={handlePriceFilter} arr={currencies} />
-                                    <label htmlFor="">Desde:</label>
-                                    <input disabled={!currencySelected} min={0} type="number" name="priceFrom" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder={`${!filterMsg ? "Precio inicial" : filterMsg}`} onChange={handlePriceFrom} />
-                                    <label htmlFor="">Hasta:</label>
-                                    <input disabled={!currencySelected} min={0} type="number" name="priceTo" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" placeholder={`${!filterMsg ? "Precio final" : filterMsg}`} onChange={handlePriceTo} />
+                                    <label htmlFor="priceFrom">Desde:</label>
+                                    <input id="priceFrom" disabled={!selectedCurrency} min={0} type="text" name="priceFrom" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" onChange={handlePriceFrom} value={filters.priceFrom} />
+                                    <label htmlFor="priceTo">Hasta:</label>
+                                    <input id="priceTo" disabled={!selectedCurrency} min={0} type="text" name="priceTo" className="p-2 border rounded-md outline-none transition-colors duration-300 focus:border-blue-500" onChange={handlePriceTo} value={filters.priceTo} />
                                 </div>
                             }
                             {
@@ -220,7 +203,7 @@ export default function Filtro({ posts, showPages, carBrands, vehicleBodies, cur
                     </div>
                     <div className="flex items-center justify-between md:gap-5">
                         {
-                            (location.href.includes('buscar') || location.href.includes('posts')) && posts.data.length > 0 ? <div className="flex justify-between gap-4 mb-4" title="Filtrar">
+                            (location.href.includes('buscar') || location.href.includes('posts')) ? <div className="flex justify-between gap-4 mb-4" title="Filtrar">
                                 <svg onClick={handleOpenFilter} className="fill-gray-200 w-10 cursor-pointer z-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" tabIndex={1}>
                                     <path d="M96 128C83.1 128 71.4 135.8 66.4 147.8C61.4 159.8 64.2 173.5 73.4 182.6L256 365.3L256 480C256 488.5 259.4 496.6 265.4 502.6L329.4 566.6C338.6 575.8 352.3 578.5 364.3 573.5C376.3 568.5 384 556.9 384 544L384 365.3L566.6 182.7C575.8 173.5 578.5 159.8 573.5 147.8C568.5 135.8 556.9 128 544 128L96 128z" />
                                 </svg>

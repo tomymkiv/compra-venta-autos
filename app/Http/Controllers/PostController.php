@@ -31,11 +31,10 @@ class PostController extends Controller
     }
     public function index()
     {
-        // dd(VehicleBody::whereHas('posts')->orderBy('name', 'asc')->select('id', 'name')->get()->toArray());
         return inertia('posts/index', [
-            'posts' => Post::with('mainImage', 'user', 'municipio.provincia', 'carModel.carBrand', 'vehicleBody', 'currency')
-                ->whereHas('mainImage') // mainImage = imagen con orden = 1
+            'posts' => Post::with('mainImage', 'municipio.provincia', 'carModel.carBrand', 'currency')
                 ->latest()
+                ->select('id', 'id_model', 'version', 'anio', 'id_municipio', 'id_currency', 'precio')
                 ->paginate($this->paginateLimit),
             // whereHas encadenado: la DB filtra solo los registros que tienen posts asociados.
             // Funciona gracias a las relaciones hasMany correctamente definidas en cada modelo.
@@ -57,14 +56,14 @@ class PostController extends Controller
             'provincias' => Cache::remember(
                 'sidebar_provincias',
                 1800,
-                fn() => Provincia::whereHas('municipios.posts')->orderBy('nombre', 'asc')->get()
+                fn() => Provincia::whereHas('municipios.posts')->orderBy('nombre', 'asc')->select('id', 'nombre')->get()
             ),
 
             // Municipios que tienen al menos un post
             'municipios' => Cache::remember(
                 'sidebar_municipios',
                 1800,
-                fn() => Municipio::whereHas('posts')->orderBy('nombre', 'asc')->get()
+                fn() => Municipio::whereHas('posts')->orderBy('nombre', 'asc')->select('id', 'nombre')->get()
             ),
 
             // Divisas que tienen al menos un post
@@ -76,7 +75,7 @@ class PostController extends Controller
             'roles' => Cache::remember(
                 'sidebar_roles',
                 1800,
-                fn() => Role::get()
+                fn() => Role::select('id', 'name')->get(),
             ),
         ]);
     }
@@ -98,9 +97,9 @@ class PostController extends Controller
     public function userPosts(User $user)
     {
         return inertia('user/posts', [
-            'posts' => Post::with('mainImage', 'carModel.carBrand', 'user', 'municipio.provincia')
-                ->whereHas('mainImage')
+            'posts' => Post::with('mainImage', 'carModel.carBrand', 'municipio.provincia')
                 ->latest()
+                ->select('id', 'id_model', 'id_municipio', 'version', 'anio', 'id_currency', 'precio')
                 ->where('id_user', $user->id)
                 ->paginate($this->paginateLimit),
             // whereHas encadenado: misma lógica que index(), la DB filtra solo lo necesario.
@@ -117,12 +116,12 @@ class PostController extends Controller
             'provincias' => Cache::remember(
                 'sidebar_provincias',
                 1800,
-                fn() => Provincia::whereHas('municipios.posts')->orderBy('nombre', 'asc')->get()
+                fn() => Provincia::whereHas('municipios.posts')->orderBy('nombre', 'asc')->select('id', 'nombre')->get()
             ),
             'municipios' => Cache::remember(
                 'sidebar_municipios',
                 1800,
-                fn() => Municipio::whereHas('posts')->orderBy('nombre', 'asc')->get()
+                fn() => Municipio::whereHas('posts')->orderBy('nombre', 'asc')->select('id', 'nombre')->get()
             ),
             'currencies' => Cache::remember(
                 'sidebar_currencies',
@@ -159,16 +158,17 @@ class PostController extends Controller
 
         return inertia('posts/create', [
             'car' => new Post,
-            'carBrands' => VehicleBrand::orderBy('name', 'asc')->get(),
-            'vehicleBodies' => VehicleBody::orderBy('name', 'asc')->get(),
-            'currencies' => Currency::get(),
-            'provincias' => Provincia::orderBy('nombre', 'asc')->get(),
+            'carBrands' => VehicleBrand::orderBy('name', 'asc')->select('id', 'name')->get(),
+            'vehicleBodies' => VehicleBody::orderBy('name', 'asc')->select('id', 'name')->get(),
+            'currencies' => Currency::select('id', 'nombre')->select('id', 'nombre')->get(),
+            'provincias' => Provincia::orderBy('nombre', 'asc')->select('id', 'nombre')->get(),
         ]);
     }
 
     public function edit($id)
     {
         $post = Post::with('user', 'carModel.carBrand', 'postImage', 'mainImage', 'municipio.provincia')
+            ->select('id', 'id_model', 'id_user', 'id_municipio', 'id_currency', 'precio')
             ->findOrFail($id);
         // si el gate no te autoriza, devuelve un error.
         if (!Gate::allows('update-own-post', $post)) {
@@ -176,10 +176,10 @@ class PostController extends Controller
         }
         return inertia('posts/edit', [
             'postData' => $post,
-            'carBrands' => VehicleBrand::orderBy('name', 'asc')->get(),
-            'vehicleBodies' => VehicleBody::orderBy('name', 'asc')->get(),
-            'currencies' => Currency::get(),
-            'provincias' => Provincia::orderBy('nombre', 'asc')->get(),
+            'carBrands' => VehicleBrand::orderBy('name', 'asc')->select('id', 'name')->get(),
+            'vehicleBodies' => VehicleBody::orderBy('name', 'asc')->select('id', 'name')->get(),
+            'currencies' => Currency::select('id', 'nombre')->get(),
+            'provincias' => Provincia::orderBy('nombre', 'asc')->select('id', 'nombre')->get(),
         ]);
     }
 

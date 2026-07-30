@@ -15,4 +15,7 @@ Route::middleware('auth')->group(function () {
 Route::get('posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('posts/{post}', [PostController::class, 'show'])->name('posts.show');
 Route::get('posts/user/{user}', [PostController::class, 'userPosts'])->name('user.posts');
-Route::get('/buscar', [SearchController::class, 'index'])->name('search.index');
+// rate limiting a la busqueda, para evitar saturacion 
+Route::middleware('throttle:100,1')->group(function () {
+    Route::get('/buscar', [SearchController::class, 'index'])->name('search.index');
+});
