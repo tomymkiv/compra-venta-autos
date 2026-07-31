@@ -1,6 +1,6 @@
 import { EditProps } from "@/types/types";
 import { Button } from "@/components/ui/button";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import AppFront from "@/AppFront";
 import { User } from "@/types";
@@ -10,8 +10,15 @@ import FormFieldSelect from "@/components/FormFieldSelect";
 import FormFieldTextarea from "@/components/FormFieldTextarea";
 import FormFieldInput from "@/components/FormFieldInput";
 import HandlePostInfo from "@/components/HandlePostInfo";
+import PopUp from "@/components/PopUp";
+import usePopUp from "@/hooks/use-popup";
+import { destroy } from "@/routes/posts";
+import { useEffect, useState } from "react";
 
 export default function edit({ carBrands, postData, vehicleBodies, currencies, provincias }: EditProps) {
+    const { show, setShow, setConfirmDelete, confirmDelete } = usePopUp();
+    const [selectedId, setSelectedId] = useState<number | null>(null);
+
     const {
         removeMainImage,
         removeNewImage,
@@ -22,7 +29,6 @@ export default function edit({ carBrands, postData, vehicleBodies, currencies, p
         handlePrecio,
         handleKilometraje,
         handleMainImage,
-        handleDelete,
         handleBrand,
         brandSelected,
         versionSelected,
@@ -47,12 +53,25 @@ export default function edit({ carBrands, postData, vehicleBodies, currencies, p
     const { user: UserProps } = usePage().props;
     const user = UserProps as User;
 
+    const handleDelete = (id: number) => {
+        setShow(true);
+        setSelectedId(id);
+    }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         patch(route('posts.update', postData.id), {
             forceFormData: true,
         });
     }
+    useEffect(() => {
+        if (confirmDelete && selectedId) {
+            router.delete(route('posts.destroy', selectedId));
+        }
+        setSelectedId(null);
+        setShow(false);
+        setConfirmDelete(false);
+    },
+        [confirmDelete])
     return <AppFront>
         <section className="flex flex-col min-w-0">
             {
@@ -106,9 +125,12 @@ export default function edit({ carBrands, postData, vehicleBodies, currencies, p
                             <div className="flex flex-col gap-2">
                                 <Link href={route('posts.index')} className="w-full cursor-pointer transition-colors duration-300 p-2 text-center bg-slate-700 rounded-lg hover:bg-slate-800">Salir sin guardar</Link>
                                 <Button disabled={processing} type="submit" className="w-full cursor-pointer transition-colors duration-300">Enviar</Button>
-
-                                <Button disabled={processing} onClick={() => handleDelete(postData.id)} type="submit" className="w-full bg-red-500 text-gray-200 hover:text-gray-800 hover:bg-red-800 transition-colors duration-300 cursor-pointer">Eliminar publicación</Button>
+                                <Button disabled={processing} type="button" onClick={() => handleDelete(postData.id)} className="w-full bg-red-500 text-gray-200 hover:text-gray-800 hover:bg-red-800 transition-colors duration-300 cursor-pointer">Eliminar publicación</Button>
                             </div>
+                            {
+                                show && <PopUp deleteButton={true} title="Eliminar publicación" mensaje="¿Estás seguro de que quieres eliminar esta publicación?" setShow={setShow} confirmDelete={setConfirmDelete} />
+                            }
+
                         </form>
                     </div>
                     :

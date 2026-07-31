@@ -207,5 +207,6 @@ class PostController extends Controller
 
         $post->delete();
         $this->clearCache(); // para reiniciar los filtros y no tener que esperar 1 hora a que el cache se reinicie. esto provocaba que los filtros en la busqueda tengan un retraso importante
+        return redirect()->route('posts.index');
     }
 }

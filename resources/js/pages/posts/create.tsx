@@ -207,7 +207,7 @@ export default function create({ carBrands, vehicleBodies, currencies, provincia
                     <input type="text" className="border border-slate-400 p-3 rounded-md w-full" readOnly value={`${carBrands.find(brand => brand.id === brandSelected)?.name} ${brandSelected && modelSelected && modelsState.find(model => model.id === modelSelected)?.name} ${versionSelected && versionSelected}`} />
                 }
             </div>
-            <form onSubmit={handleSubmit} className="flex flex-col sm:items-center sm:justify-center gap-4 my-5 mx-3 w-full">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:items-center sm:justify-center gap-4 my-5 mx-3 w-full max-w-6xl">
                 <FormStepPosts images={data.images} mainImage={data.main_image} errorsActive={Object.keys(errors).length > 0} step={step} setStep={setStep} onNext={handleNextStep}>
                     {/* marcas */}
                     {

@@ -46,7 +46,7 @@ export default function FormStepPosts({ images, mainImage, errorsActive, step, c
     }
     return (
         <>
-            <div className="flex gap-2 items-center mb-4">
+            <div className="flex gap-2 items-center mb-4 w-full">
                 <h4 className="text-sm text-gray-200">Paso {step}/8</h4>
                 <div className="w-full h-0.5 bg-gray-600 rounded-full">
                     {/* 12.5-25-37.5-50-62.5-75-87.5-100. este es el patron que debe seguir
@@ -61,19 +61,18 @@ export default function FormStepPosts({ images, mainImage, errorsActive, step, c
                         : errorsActive
                             ? 'bg-red-500'
                             : 'bg-blue-500'
-                        } ${
-                            step === 1 ? 'w-12-5p' :
+                        } ${step === 1 ? 'w-12-5p' :
                             step === 2 ? 'w-25p' :
-                            step === 3 ? 'w-37-5p' :
-                            step === 4 ? 'w-50p' :
-                            step === 5 ? 'w-62-5p' :
-                            step === 6 ? 'w-75p' :
-                            step === 7 ? 'w-87-5p' :
-                            step === 8 ? 'w-100p' : 'w-0'
+                                step === 3 ? 'w-37-5p' :
+                                    step === 4 ? 'w-50p' :
+                                        step === 5 ? 'w-62-5p' :
+                                            step === 6 ? 'w-75p' :
+                                                step === 7 ? 'w-87-5p' :
+                                                    step === 8 ? 'w-100p' : 'w-0'
                         } transition-all duration-600`}></div>
                 </div>
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full">
                 <div className={`flex flex-col gap-2 ${step == 1 ? 'mb-2' : 'mb-8'}`}>
                     {children}
                 </div>

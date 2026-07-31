@@ -129,11 +129,7 @@ export default function HandlePostInfo(initialExistingImages: Images[] = []) {
             setData('deleted_images', [...deletedImg, id]);
         }
     }
-    // solo para posts/edit.tsx
-    const handleDelete = (id: number) => {
-        confirm('¿Seguro que quieres eliminar este post? La acción será irreversible.') ?
-            destroy(route('posts.destroy', id)) : '';
-    }
+
     return {
         step,
         setStep,
@@ -157,7 +153,6 @@ export default function HandlePostInfo(initialExistingImages: Images[] = []) {
         handleMainImage,
         setVersionSelected,
         versionSelected,
-        handleDelete,
         municipioId,
         modelSelected,
         provinciaId,
