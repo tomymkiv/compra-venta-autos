@@ -122,7 +122,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
         </section>
       </main>
       <footer>
-        <div className='relative z-40 bg-[#111] text-center p-5 py-8 text-[#ccc]'>
+        <div className='relative z-10 bg-[#111] text-center p-5 py-8 text-[#ccc]'>
           &copy; {year} Silvetti Automotores. Todos los derechos reservados.
         </div>
       </footer>

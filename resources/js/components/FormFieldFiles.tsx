@@ -6,9 +6,9 @@ import { Label } from '@radix-ui/react-label'
 export default function FormFieldFiles({ errors, removeNewImage, handleImages, removeExistingImages, editSection, newImg, existingImages }: FormFieldFilesProps) {
     return <FormFieldContainer titulo="Elegí las imagenes del vehiculo" errorsText={errors}>
         <div className="flex items-center justify-between w-full">
-            <Label htmlFor="tipo">Imagen/es del vehiculo</Label>
+            <Label htmlFor="imagenes">Imagen/es del vehiculo</Label>
         </div>
-        <input className="p-3 bg-slate-700 cursor-pointer" type="file" accept="image/*" multiple onChange={handleImages} />
+        <input id='imagenes' className="p-3 bg-slate-700 cursor-pointer" type="file" accept="image/*" multiple onChange={handleImages} />
         {newImg.length == 0 && <p>No hay imagenes nuevas</p>}
         <div className={newImg.length !== 0 || existingImages && existingImages.length !== 0 ? `grid grid-cols-4 gap-4 max-w-[550px]` : ''}>
             {
