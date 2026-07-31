@@ -133,9 +133,9 @@ class PostController extends Controller
 
     public function store(PostCreateRequest $request, CreatePostAction $action)
     {
-        // if (!Gate::allows('create-post', $this->loguedUser)) {
-        //     abort(403);
-        // }
+        if (!Gate::allows('create-post', $this->loguedUser)) {
+            abort(403);
+        }
 
         $images = $request->file('images');
         $mainImage = $request->file('main_image');
@@ -152,9 +152,9 @@ class PostController extends Controller
     public function create()
     {
         // si el gate no te autoriza, devuelve un error.
-        // if (!Gate::allows('create-post', $this->loguedUser)) {
-        //     abort(403);
-        // }
+        if (!Gate::allows('create-post')) {
+            abort(403);
+        }
 
         return inertia('posts/create', [
             'car' => new Post,
@@ -171,6 +171,7 @@ class PostController extends Controller
             ->select('id', 'id_model', 'id_user', 'id_municipio', 'id_currency', 'precio')
             ->findOrFail($id);
         // si el gate no te autoriza, devuelve un error.
+
         if (!Gate::allows('update-own-post', $post)) {
             abort(403);
         }

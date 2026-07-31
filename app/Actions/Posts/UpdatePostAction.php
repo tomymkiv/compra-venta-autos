@@ -2,7 +2,6 @@
 
 namespace App\Actions\Posts;
 
-use App\Models\CarType;
 use App\Models\Post;
 use App\Models\PostImage;
 use Illuminate\Http\Request;

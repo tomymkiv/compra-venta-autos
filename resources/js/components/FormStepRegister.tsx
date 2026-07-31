@@ -39,9 +39,9 @@ export default function FormStepRegister({ errorsActive, step, children, setStep
     return (
         <>
             <div className="flex gap-2 items-center mb-4">
-                <h4 className="text-sm text-gray-200">Paso {step}/{location.href.includes('create') ? '10' : '5'}</h4>
+                <h4 className="text-sm text-gray-200">Paso {step}/5</h4>
                 <div className="w-full h-0.5 bg-gray-600 rounded-full">
-                    <div className={`h-full ${errorsActive ? 'bg-red-500' : (step === 5 ? 'bg-green-400' : 'bg-blue-500')} w-${step * (location.href.includes('create') ? 10 : 20)}p transition-all duration-600`}></div>
+                    <div className={`h-full ${errorsActive ? 'bg-red-500' : (step === 5 ? 'bg-green-400' : 'bg-blue-500')} w-${step * 20}p transition-all duration-600`}></div>
                 </div>
             </div>
             <div className="flex flex-col">

@@ -36,7 +36,6 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
         const rol = initialRol;
         setShowContacto(rol === 'V'); // si esto es verdadero, showContacto = true
         if (rol === 'V') setShowRol("vendedor");
-        if (rol === 'S') setShowRol("staff");
         if (rol === 'C') setShowRol("comprador");
     }
 

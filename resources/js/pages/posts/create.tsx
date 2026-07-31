@@ -176,6 +176,25 @@ export default function create({ carBrands, vehicleBodies, currencies, provincia
             forceFormData: true, // fuerzo un "formData", para que me tome todos los archivos (imagenes)
         });
     }
+    useEffect(() => {
+        if (errors.marca || errors.modelo || errors.version) {
+            setStep(1);
+        } else if (errors.anio) {
+            setStep(2);
+        } else if (errors.kilometraje) {
+            setStep(3);
+        } else if (errors.precio || errors.moneda) {
+            setStep(4);
+        } else if (errors.descripcion) {
+            setStep(5);
+        } else if (errors.provincia || errors.municipio) {
+            setStep(6);
+        } else if (errors.tipo) {
+            setStep(7);
+        } else if (errors.main_image || errors.images) {
+            setStep(8);
+        }
+    }, [errors]);
     return <AppFront>
         <section className="flex flex-col items-center min-w-0">
             <div>

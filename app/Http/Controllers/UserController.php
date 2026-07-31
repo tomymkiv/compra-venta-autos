@@ -41,7 +41,6 @@ class UserController extends Controller
     public function update(UserEditRequest $request, UpdateUserAction $action)
     {
         $user = $this->loguedUser;
-        // dd($user);
         if (!Gate::allows('update-own-user', $user)) {
             abort(403);
         }

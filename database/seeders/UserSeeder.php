@@ -53,19 +53,19 @@ class UserSeeder extends Seeder
         }
 
         if (!Role::where('name', 'COMPRADOR')->exists()) {
-            $comprador = Role::create(['name' => 'COMPRADOR']);
+            $comprador = Role::create(['name' => 'COMPRADOR', 'is_public' => true]);
         } else {
             $comprador = Role::where('name', 'COMPRADOR')->first();
         }
 
         if (!Role::where('name', 'VENDEDOR')->exists()) {
-            $vendedor = Role::create(['name' => 'VENDEDOR']);
+            $vendedor = Role::create(['name' => 'VENDEDOR', 'is_public' => true]);
         } else {
             $vendedor = Role::where('name', 'VENDEDOR')->first();
         }
 
         if (!Role::where('name', 'SUPER_USER')->exists()) {
-            $admin = Role::create(['name' => 'SUPER_USER']);
+            $admin = Role::create(['name' => 'SUPER_USER', 'is_public' => false]);
         } else {
             $admin = Role::where('name', 'SUPER_USER')->first();
         }
@@ -99,12 +99,14 @@ class UserSeeder extends Seeder
             'DELETE_ANY_POST',
         ]);
 
-        User::create([
-            'name' => 'Administrador',
-            'avatar' => 'https://ui-avatars.com/api/?name=Administrador&color=FF0000&size=128&rounded=true&bold=true&background=random&bold=true&size=256',
-            'email_verified_at' => now(),
-            'email' => 'correo@gmail.com',
-            'password' => bcrypt('password'),
-        ])->assignRole($admin);
+        if (!User::where('email', 'correo@gmail.com')->first()) {
+            User::create([
+                'name' => 'Administrador',
+                'avatar' => 'https://ui-avatars.com/api/?name=Administrador&color=FF0000&size=128&rounded=true&bold=true&background=random&bold=true&size=256',
+                'email_verified_at' => now(),
+                'email' => 'correo@gmail.com',
+                'password' => bcrypt('password'),
+            ])->assignRole($admin);
+        }
     }
 }
