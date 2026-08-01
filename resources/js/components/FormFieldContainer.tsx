@@ -21,7 +21,7 @@ export default function FormFieldContainer({ children, titulo, errorsText, class
         }
         {
             errorsText && (
-                <p className='text-red-500 font-[500] text-sm'>{errorsText}</p>
+                <p className='text-red-400 text-xs font-semibold'>{errorsText}</p>
             )
         }
         {children}

@@ -8,7 +8,11 @@ interface Props {
 
 export default function ButtonPrimary({ text, disabled, onClick, type, className }: Props) {
     return (
-        <button type={type} disabled={disabled} onClick={onClick} className={`${className} text-center bg-slate-800 hover:bg-blue-500 rounded-md transition-colors duration-300 text-white p-2 cursor-pointer w-full`}>
+        <button
+            type={type}
+            disabled={disabled}
+            onClick={onClick}
+            className={`py-2.5 px-4 bg-emerald-700/80 hover:bg-emerald-700 text-emerald-100 text-sm font-medium tracking-wide rounded-sm transition-all duration-200 w-full text-center cursor-pointer border border-emerald-600/50 hover:border-emerald-500 ${className}`}>
             {text}
         </button>
     )

@@ -196,62 +196,80 @@ export default function create({ carBrands, vehicleBodies, currencies, provincia
         }
     }, [errors]);
     return <AppFront>
-        <section className="flex flex-col items-center min-w-0">
-            <div>
-                <h2 className="text-2xl text-center">Crear publicación</h2>
+        <section className="flex flex-col items-center min-h-screen py-10 px-4 w-full">
+
+            {/* Header */}
+            <div className="mb-8 text-center">
+                <p className="text-xs tracking-[0.25em] uppercase text-gray-500 mb-2">Nueva publicación</p>
+                <h2 className="text-2xl font-light text-gray-100 tracking-tight">Crear anuncio</h2>
+                <div className="mt-3 mx-auto w-8 h-px bg-gray-600"></div>
             </div>
-            <div className="flex gap-3 w-[75%]">
+
+            {/* Card */}
+            <div className="w-full max-w-md bg-[#1c1c1c] border border-[#2e2e2e] rounded-sm shadow-2xl">
+
+                {/* Preview de marca/modelo */}
                 {
                     !!brandSelected &&
-                    // vista en tiempo real de la marca, modelo y version ingresada
-                    <input type="text" className="border border-slate-400 p-3 rounded-md w-full" readOnly value={`${carBrands.find(brand => brand.id === brandSelected)?.name} ${brandSelected && modelSelected && modelsState.find(model => model.id === modelSelected)?.name} ${versionSelected && versionSelected}`} />
-                }
-            </div>
-            <form onSubmit={handleSubmit} className="flex flex-col sm:items-center sm:justify-center gap-4 my-5 mx-3 w-full max-w-6xl">
-                <FormStepPosts images={data.images} mainImage={data.main_image} errorsActive={Object.keys(errors).length > 0} step={step} setStep={setStep} onNext={handleNextStep}>
-                    {/* marcas */}
-                    {
-                        step == 1 && <FormFieldSelect options={carBrands.map(brand => ({ id: brand.id, nombre: brand.name }))} titulo="Marca" errorsText={errors.marca} value={data.marca} onChangeEventSelect={handleBrand} />
-                    }
-                    {/* modelos */}
-                    {
-                        !!brandSelected && step == 1 && <FormFieldSelect options={modelsState.map(model => ({ id: model.id, nombre: model.name }))} titulo="Modelo" errorsText={errors.modelo} value={data.modelo} onChangeEventSelect={handleModel} />
-                    }
-                    {/* versiones */}
-                    {
-                        !!brandSelected && !!modelSelected && step == 1 && <FormFieldInput type="text" titulo="Versión" placeholder="Ej: SS, LTZ, Kinetic..." errorsText={errors.version} value={data.version} onChangeEventInput={handleVersion} />
-                    }
-                    {/* años */}
-                    {step == 2 && <FormFieldSelect options={Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => ({ id: 1900 + i, nombre: 1900 + i }))} titulo="Año" errorsText={errors.anio} value={data.anio} onChangeEventSelect={e => setData('anio', Number(e.target.value))} />}
-                    {/* kilometraje */}
-                    {step == 3 && <FormFieldInput type="text" titulo="Kilometraje" placeholder="Ej: 100.000" errorsText={errors.kilometraje} value={kilometraje} onChangeEventInput={handleKilometraje} />}
-                    {/* precio */}
-                    {step == 4 && <div className="grid grid-cols-2 gap-3">
-                        <FormFieldInput type="text" max={15} titulo="Precio" errorsText={errors.precio} value={precio} onChangeEventInput={handlePrecio} />
-                        <FormFieldSelect options={currencies.map(currency => ({ id: currency.id, nombre: currency.nombre }))} titulo="Moneda" errorsText={errors.moneda} value={data.moneda} onChangeEventSelect={e => setData('moneda', e.target.value)} />
+                    <div className="px-6 pt-5 pb-0">
+                        <p className="text-xs tracking-widest uppercase text-gray-600 mb-1.5">Seleccionado</p>
+                        <div className="flex items-center gap-2 bg-[#242424] border border-[#333] rounded-sm px-3 py-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                            <span className="text-sm text-gray-300 font-light truncate">
+                                {carBrands.find(brand => brand.id === brandSelected)?.name}
+                                {brandSelected && modelSelected && ` ${modelsState.find(model => model.id === modelSelected)?.name}`}
+                                {versionSelected && ` ${versionSelected}`}
+                            </span>
+                        </div>
                     </div>
-                    }
-                    {/* descripción */}
-                    {step == 5 && <FormFieldTextarea type="text" titulo="Descripción" errorsText={errors.descripcion} value={data.descripcion} onChangeEventTextarea={e => setData('descripcion', e.target.value)} />}
-                    {/* provincia */}
-                    {step == 6 && <FormFieldSelect options={provincias.map(provincia => ({ id: provincia.id, nombre: provincia.nombre }))} titulo="Provincia" errorsText={errors.provincia} value={data.provincia} onChangeEventSelect={handleProvincia} />}
-                    {/* municipio */}
-                    {/* al elegir una provincia, muestro los municipios de esa provincia */}
-                    {
-                        !!provinciaId && step == 6 &&
-                        <FormFieldSelect options={municipiosState.map(municipio => ({ id: municipio.id, nombre: municipio.nombre }))} titulo="Municipio" errorsText={errors.municipio} value={municipioId} onChangeEventSelect={handleMunicipio} />
-                    }
-                    {/* tipos de vehiculos */}
-                    {step == 7 && <FormFieldSelect options={vehicleBodies.map(vehicleBody => ({ id: vehicleBody.id, nombre: vehicleBody.name }))} titulo="Tipo de vehiculo" errorsText={errors.tipo} value={data.tipo} onChangeEventSelect={e => setData('tipo', e.target.value)} />}
-                    {/* imagen principal */}
-                    {step == 8 &&
-                        <>
-                            <FormFieldFile forPosts={true} image={mainImage} errors={errors.main_image} removeImage={removeMainImage} handleImage={handleMainImage} />
-                            <FormFieldFiles editSection={false} errors={errors.images} removeNewImage={removeNewImage} handleImages={handleImages} newImg={newImg} />
-                        </>
-                    }
-                </FormStepPosts>
-            </form>
+                }
+
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="p-6">
+                    <FormStepPosts images={data.images} mainImage={data.main_image} errorsActive={Object.keys(errors).length > 0} step={step} setStep={setStep} onNext={handleNextStep}>
+                        {/* marcas */}
+                        {
+                            step == 1 && <FormFieldSelect options={carBrands.map(brand => ({ id: brand.id, nombre: brand.name }))} titulo="Marca" errorsText={errors.marca} value={data.marca} onChangeEventSelect={handleBrand} />
+                        }
+                        {/* modelos */}
+                        {
+                            !!brandSelected && step == 1 && <FormFieldSelect options={modelsState.map(model => ({ id: model.id, nombre: model.name }))} titulo="Modelo" errorsText={errors.modelo} value={data.modelo} onChangeEventSelect={handleModel} />
+                        }
+                        {/* versiones */}
+                        {
+                            !!brandSelected && !!modelSelected && step == 1 && <FormFieldInput type="text" titulo="Versión" placeholder="Ej: SS, LTZ, Kinetic..." errorsText={errors.version} value={data.version} onChangeEventInput={handleVersion} />
+                        }
+                        {/* años */}
+                        {step == 2 && <FormFieldSelect options={Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => ({ id: 1900 + i, nombre: 1900 + i }))} titulo="Año" errorsText={errors.anio} value={data.anio} onChangeEventSelect={e => setData('anio', Number(e.target.value))} />}
+                        {/* kilometraje */}
+                        {step == 3 && <FormFieldInput type="text" titulo="Kilometraje" placeholder="Ej: 100.000" errorsText={errors.kilometraje} value={kilometraje} onChangeEventInput={handleKilometraje} />}
+                        {/* precio */}
+                        {step == 4 && <div className="grid grid-cols-2 gap-3">
+                            <FormFieldInput type="text" max={15} titulo="Precio" errorsText={errors.precio} value={precio} onChangeEventInput={handlePrecio} />
+                            <FormFieldSelect options={currencies.map(currency => ({ id: currency.id, nombre: currency.nombre }))} titulo="Moneda" errorsText={errors.moneda} value={data.moneda} onChangeEventSelect={e => setData('moneda', e.target.value)} />
+                        </div>
+                        }
+                        {/* descripción */}
+                        {step == 5 && <FormFieldTextarea type="text" titulo="Descripción" errorsText={errors.descripcion} value={data.descripcion} onChangeEventTextarea={e => setData('descripcion', e.target.value)} />}
+                        {/* provincia */}
+                        {step == 6 && <FormFieldSelect options={provincias.map(provincia => ({ id: provincia.id, nombre: provincia.nombre }))} titulo="Provincia" errorsText={errors.provincia} value={data.provincia} onChangeEventSelect={handleProvincia} />}
+                        {/* municipio */}
+                        {
+                            !!provinciaId && step == 6 &&
+                            <FormFieldSelect options={municipiosState.map(municipio => ({ id: municipio.id, nombre: municipio.nombre }))} titulo="Municipio" errorsText={errors.municipio} value={municipioId} onChangeEventSelect={handleMunicipio} />
+                        }
+                        {/* tipos de vehiculos */}
+                        {step == 7 && <FormFieldSelect options={vehicleBodies.map(vehicleBody => ({ id: vehicleBody.id, nombre: vehicleBody.name }))} titulo="Tipo de vehiculo" errorsText={errors.tipo} value={data.tipo} onChangeEventSelect={e => setData('tipo', e.target.value)} />}
+                        {/* imagen principal */}
+                        {step == 8 &&
+                            <>
+                                <FormFieldFile forPosts={true} image={mainImage} errors={errors.main_image} removeImage={removeMainImage} handleImage={handleMainImage} />
+                                <FormFieldFiles editSection={false} errors={errors.images} removeNewImage={removeNewImage} handleImages={handleImages} newImg={newImg} />
+                            </>
+                        }
+                    </FormStepPosts>
+                </form>
+            </div>
         </section>
     </AppFront>;
 }
