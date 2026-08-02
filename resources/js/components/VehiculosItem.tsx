@@ -119,10 +119,6 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                                 <CarPostData title="Año" data={`${post.anio}`} />
                                 <CarPostData title="Kilometraje" data={`${handleDots(post.kilometraje.toString())} km`} />
                                 <CarPostData title="Precio" data={`${post.id_currency == 1 ? (priceBtnActive ? `$ ${handleDots(ARSPrice.toFixed(0))}` : `U$S ${handleDots(USDPrice.toFixed(0))}`) : (priceBtnActive ? `U$S ${handleDots(USDPrice.toFixed(0))}` : `$ ${handleDots(ARSPrice.toFixed(0))}`)}`} />
-                                <CarPostData title="Ubicación" data={`${post.municipio.nombre}, ${post.municipio.provincia.nombre}`} />
-                            </div>
-                            <div>
-                                <CarPostData title="Descripción" data={`${post.descripcion}`} />
                             </div>
                             <div className="">
                                 <button className={`bg-cover bg-center bg-no-repeat rounded-lg text-black cursor-pointer transition-background shadow-md hover:shadow-gray-400 duration-300 text-center font-[700] ${post.id_currency == 1 ? (priceBtnActive ? 'bg-[url("/public/img/billete-100-dolares.webp")]' : 'bg-[url("/public/img/billete-1000-pesos.webp")]') : (priceBtnActive ? 'bg-[url("/public/img/billete-1000-pesos.webp")]' : 'bg-[url("/public/img/billete-100-dolares.webp")]')}`} onClick={convertPrice}> <p className="p-3 bg-white/40 rounded-md">{post.id_currency == 1 ? (priceBtnActive ? 'Convertir a dólares (USD)' : 'Convertir a pesos (ARS)') : (priceBtnActive ? 'Convertir a pesos (ARS)' : 'Convertir a dólares (USD)')}</p></button>
@@ -172,6 +168,46 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                         </div>,
                         document.body
                     )}
+                </div>
+                <div className="xl:flex flex-col justify-center gap-10 w-full mt-25 max-w-5xl space-y-4 px-6 md:px-0">
+                    <section id="info">
+                        <h2 className="text-2xl font-bold">Información general</h2>
+                    </section>
+                    <div className="w-full bg-[#1c1c1c] border border-[#2e2e2e] rounded-sm overflow-hidden">
+                        <p className="text-xs tracking-[0.25em] uppercase text-gray-600 px-4 pt-4 pb-2">Especificaciones</p>
+                        <table className="w-full border-collapse">
+                            <tbody>
+                                <tr className="border-b border-[#2e2e2e] hover:bg-[#242424] transition-colors duration-150">
+                                    <th className="text-left text-xs tracking-widest uppercase text-gray-500 font-normal px-4 py-3 w-2/5">Marca</th>
+                                    <td className="text-left text-sm text-gray-300 font-light px-4 py-3">{post.car_model.car_brand.name}</td>
+                                </tr>
+                                <tr className="border-b border-[#2e2e2e] hover:bg-[#242424] transition-colors duration-150">
+                                    <th className="text-left text-xs tracking-widest uppercase text-gray-500 font-normal px-4 py-3 w-2/5">Modelo</th>
+                                    <td className="text-left text-sm text-gray-300 font-light px-4 py-3">{post.car_model.name}</td>
+                                </tr>
+                                <tr className="border-b border-[#2e2e2e] hover:bg-[#242424] transition-colors duration-150">
+                                    <th className="text-left text-xs tracking-widest uppercase text-gray-500 font-normal px-4 py-3 w-2/5">Año</th>
+                                    <td className="text-left text-sm text-gray-300 font-light px-4 py-3">{post.anio}</td>
+                                </tr>
+                                <tr className="border-b border-[#2e2e2e] hover:bg-[#242424] transition-colors duration-150">
+                                    <th className="text-left text-xs tracking-widest uppercase text-gray-500 font-normal px-4 py-3 w-2/5">Versión</th>
+                                    <td className="text-left text-sm text-gray-300 font-light px-4 py-3">{post.version}</td>
+                                </tr>
+                                <tr className="border-b border-[#2e2e2e] hover:bg-[#242424] transition-colors duration-150">
+                                    <th className="text-left text-xs tracking-widest uppercase text-gray-500 font-normal px-4 py-3 w-2/5">Tipo de carrocería</th>
+                                    <td className="text-left text-sm text-gray-300 font-light px-4 py-3">{post.vehicle_body.name}</td>
+                                </tr>
+                                <tr className="border-b border-[#2e2e2e] hover:bg-[#242424] transition-colors duration-150">
+                                    <th className="text-left text-xs tracking-widest uppercase text-gray-500 font-normal px-4 py-3 w-2/5">Kilometraje</th>
+                                    <td className="text-left text-sm text-gray-300 font-light px-4 py-3">{handleDots(String(post.kilometraje))} km</td>
+                                </tr>
+                                <tr className="hover:bg-[#242424] transition-colors duration-150">
+                                    <th className="text-left text-xs tracking-widest uppercase text-gray-500 font-normal px-4 py-3 w-2/5">Ubicación</th>
+                                    <td className="text-left text-sm text-gray-300 font-light px-4 py-3">{post.municipio.nombre}, {post.municipio.provincia.nombre}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 {
                     user ? <div className="w-[50%] flex flex-col lg:flex-row gap-4 items-center justify-center">

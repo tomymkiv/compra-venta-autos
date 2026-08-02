@@ -87,6 +87,7 @@ class PostController extends Controller
             'carModel.carBrand',
             'user.contact',
             'municipio.provincia',
+            'vehicleBody'
         ]);
 
         return inertia('posts/show', [
