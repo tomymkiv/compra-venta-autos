@@ -51,6 +51,21 @@ class UserSeeder extends Seeder
         if (!Permission::where("name", "EDIT_ANY_USER")->exists()) {
             Permission::create(['name' => 'EDIT_ANY_USER']);
         }
+        if (!Permission::where("name", "CREATE_REVIEW")->exists()) {
+            Permission::create(['name' => 'CREATE_REVIEW']);
+        }
+        if (!Permission::where("name", "UPDATE_OWN_REVIEW")->exists()) {
+            Permission::create(['name' => 'UPDATE_OWN_REVIEW']);
+        }
+        if (!Permission::where("name", "DELETE_OWN_REVIEW")->exists()) {
+            Permission::create(['name' => 'DELETE_OWN_REVIEW']);
+        }
+        if (!Permission::where("name", "UPDATE_ANY_REVIEW")->exists()) {
+            Permission::create(['name' => 'UPDATE_ANY_REVIEW']);
+        }
+        if (!Permission::where("name", "DELETE_ANY_REVIEW")->exists()) {
+            Permission::create(['name' => 'DELETE_ANY_REVIEW']);
+        }
 
         if (!Role::where('name', 'COMPRADOR')->exists()) {
             $comprador = Role::create(['name' => 'COMPRADOR', 'is_public' => true]);
@@ -76,27 +91,35 @@ class UserSeeder extends Seeder
             'CREATE_POST',
             'EDIT_OWN_POST',
             'DELETE_OWN_POST',
-            'EDIT_ANY_POST', // ELIMINAR AL FINALIZAR LA CONFIGURACION DEL SUPER-USER
-            'DELETE_ANY_POST',// ELIMINAR AL FINALIZAR LA CONFIGURACION DEL SUPER-USER
-            'EDIT_ANY_USER',// ELIMINAR AL FINALIZAR LA CONFIGURACION DEL SUPER-USER
-            'DELETE_ANY_USER',// ELIMINAR AL FINALIZAR LA CONFIGURACION DEL SUPER-USER
+            'CREATE_REVIEW',
+            'UPDATE_OWN_REVIEW',
+            'DELETE_OWN_REVIEW',
         ]);
 
         $comprador->syncPermissions([
             'EDIT_OWN_USER',
             'DELETE_OWN_USER',
+            'CREATE_REVIEW',
+            'UPDATE_OWN_REVIEW',
+            'DELETE_OWN_REVIEW',
         ]);
 
         $admin->syncPermissions([
-            'DELETE_OWN_POST',
-            'DELETE_OWN_USER',
             'CREATE_POST',
             'EDIT_OWN_POST',
+            'DELETE_OWN_POST',
+            'EDIT_ANY_POST',
+            'DELETE_ANY_POST',
+
+
+            'DELETE_OWN_USER',
             'EDIT_OWN_USER',
             'EDIT_ANY_USER',
             'DELETE_ANY_USER',
-            'EDIT_ANY_POST',
-            'DELETE_ANY_POST',
+
+            'CREATE_REVIEW',
+            'DELETE_ANY_REVIEW',
+            'UPDATE_ANY_REVIEW',
         ]);
 
         if (!User::where('email', 'correo@gmail.com')->first()) {

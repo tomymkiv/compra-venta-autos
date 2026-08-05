@@ -49,6 +49,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Post::class, 'user_id');
     }
+    public function reviews() // reviews que dejó un usuario
+    {
+        return $this->hasOne(Review::class, 'reviewer_id');
+    }
+    public function received_reviews() // reviews recibidas de otros usuarios
+    {
+        return $this->hasMany(Review::class, 'reviewed_user_id');
+    }
     public function contact()
     {
         return $this->hasOne(Contact::class, 'user_id');

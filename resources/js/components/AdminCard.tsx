@@ -10,9 +10,10 @@ interface Props {
     posts?: Post[]
     users?: User[]
     title: string // indico si estoy en los usuarios o posts
+    hasReviews: boolean
 }
 
-export default function AdminCard({ posts, users, title }: Props) {
+export default function AdminCard({ posts, users, title, hasReviews }: Props) {
     const { user } = usePage().props;
     const adminUser = user as User;
     const { show, setShow, confirmDelete, setConfirmDelete } = usePopUp();
@@ -142,7 +143,15 @@ export default function AdminCard({ posts, users, title }: Props) {
                                                 >
                                                     Editar usuario
                                                 </Link>
-
+                                                {
+                                                    hasReviews &&
+                                                    <Link
+                                                        href={route('admin.users.reviews.show', user.id)}
+                                                        className="text-center cursor-pointer px-3 py-1.5 text-xs font-medium rounded-md bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition"
+                                                    >
+                                                        Ver reseñas escritas
+                                                    </Link>
+                                                }
                                                 <Link
                                                     onClick={handlePopUp(user.id)}
                                                     className="text-center cursor-pointer px-3 py-1.5 text-xs font-medium rounded-md bg-red-500/10 text-red-400 hover:bg-red-500/20 transition"

@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Actions\Posts\UpdatePostAction;
 use App\Actions\User\UpdateUserAction;
 use App\Http\Requests\PostUpdateRequest;
+use App\Http\Requests\ReviewsRequest;
 use App\Http\Requests\UserEditRequest;
 use App\Models\Currency;
 use App\Models\Post;
 use App\Models\Provincia;
+use App\Models\Review;
+use App\Models\ReviewStatus;
 use App\Models\User;
 use App\Models\VehicleBody;
 use App\Models\VehicleBrand;
@@ -143,5 +146,54 @@ class AdminController extends Controller
             abort(403);
         }
         $user->delete();
+    }
+    public function all_user_reviews()
+    {
+        return inertia('admin/users/reviews/index', [
+            'reviews' => Review::with('reviewer', 'reviewed_user')->get(),
+        ]);
+    }
+    public function show_user_reviews(User $user)
+    {
+        if (!Gate::allows('view-any-review', $user)) {
+            abort(403);
+        }
+        $reviews = Review::where('reviewer_id', $user->id)->with('reviewed_user')->get();
+        return inertia('admin/users/reviews/show', [
+            'user' => $user,
+            'reviews' => $reviews,
+        ]);
+    }
+    public function edit_user_review(Review $review)
+    {
+        if (!Gate::allows('update-any-review', $review)) {
+            abort(403);
+        }
+        $status = $review->status;
+        $allReviewStatus = ReviewStatus::select('id', 'name')->get();
+
+        return inertia('admin/users/reviews/edit', [
+            'review' => $review,
+            'status' => $status,
+            'allReviewStatus' => $allReviewStatus,
+        ]);
+    }
+    public function update_user_review(ReviewsRequest $request, Review $review)
+    {
+        if (!Gate::allows('update-any-review', $review)) {
+            abort(403);
+        }
+
+        $validated = $request->validated();
+        $review->update($validated);
+        return redirect()->route('admin.users.reviews.index');
+    }
+    public function delete_user_review(Review $review)
+    {
+        if (!Gate::allows('delete-any-review', $review)) {
+            abort(403);
+        }
+        $review->delete();
+        return redirect()->route('admin.users.reviews.index');
     }
 }

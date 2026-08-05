@@ -17,6 +17,7 @@ export interface FormFieldsInterface {
     placeholder?: string,
     titulo: string,
     className?: string,
+    readOnly?: boolean,
     onChangeEventInput?: (e: React.ChangeEvent<HTMLInputElement>) => void,
     onChangeEventSelect?: (e: React.ChangeEvent<HTMLSelectElement>) => void,
     onChangeEventTextarea?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void,
@@ -209,7 +210,33 @@ export interface CarCardsProps {
     post: Post,
 }
 export interface ProfileProps {
-    post?: Post[],
+    posts?: Post[],
     children: React.ReactNode,
     profileUser: User,
+    hasReviewed?: boolean,
+    userReviews?: Review,
+}
+
+// para reseñas
+export interface Review {
+    id: number,
+    rating: number,
+    comment: string,
+    reviewed_user_id: number,
+    reviewer_id: number,
+    status_id: number,
+    reviewer: User,
+    reviewed_user: User,
+    status: ReviewStatus,
+    allReviewStatus?: ReviewStatus[]
+}
+export interface ReviewsProps extends ProfileProps {
+    reviews: Review[],
+    userReviewCount: number,
+    reviewAverage: number,
+    user?: User,
+}
+export interface ReviewStatus {
+    id: number,
+    name: string,
 }

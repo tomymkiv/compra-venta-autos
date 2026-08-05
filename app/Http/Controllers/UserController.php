@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Actions\User\UpdateUserAction;
 use App\Http\Requests\UserEditRequest;
 use App\Models\Post;
+use App\Models\Review;
 use App\Models\User;
+use Auth;
+use Cache;
 use Gate;
 
 class UserController extends Controller
@@ -28,10 +31,22 @@ class UserController extends Controller
             ->get();
         // en caso de no tener ningun post, envío solo el usuario.
         $user = User::where('id', $id)->select('id', 'name', 'email_verified_at', 'avatar')->firstOrFail();
-
+        $hasReviewed = Review::where('reviewer_id', auth()->id())
+            ->where('reviewed_user_id', $user->id)
+            ->exists();
+        $reviews = Review::with('reviewer')->where('reviewed_user_id', $user->id)->get();
+        $reviews = $reviews->filter(fn($review) => $review->status_id == 2); // filtro solo las que están aprobadas
+        $userReviewAverage = $reviews->avg('rating');
+        $userReview = Review::where('reviewer_id', Auth::user()->id)
+            ->where('reviewed_user_id', $user->id)->first();
+        // dd($userReview);
         return inertia('user/show', [
-            'post' => $post,
+            'posts' => $post,
             'profileUser' => $user, // renombrado para no pisar el shared prop 'user' (usuario logueado)
+            'hasReviewed' => $hasReviewed,
+            'userReviews' => $userReview,
+            'reviewAverage' => $userReviewAverage,
+            'reviews' => $reviews,
         ]);
     }
     public function edit()

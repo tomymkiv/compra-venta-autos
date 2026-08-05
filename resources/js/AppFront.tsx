@@ -95,7 +95,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
               </ul>
               {
                 user ?
-                  <PageLinks title="Cerrar sesión" link={'/logout'} metodo={'delete'} onclick={handleLogout} />
+                  <PageLinks title="Cerrar sesión" link='/logout' metodo='delete' onclick={handleLogout} />
                   : <PageLinks title="Iniciar sesión" link='/login' />
               }
               <SearchInput enviarData={(e: React.FormEvent) => submit(e)} setQuery={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)} initialQuery={query} />

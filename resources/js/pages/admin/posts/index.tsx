@@ -10,11 +10,12 @@ export default function index({ posts }: { posts: Paginated<Post> }) {
     return (
         <AppFront>
             <div className="flex flex-col w-full">
-                <ButtonPrimary onClick={() => router.visit(route('admin.index'))} text="Volver atrás" className="hidden md:block mx-5 max-w-[15%] !text-gray-800 !bg-gray-300 hover:!bg-gray-500 hover:!text-gray-300" />
+                <ButtonPrimary onClick={() => router.visit(route('admin.index'))} text="Volver atrás" className="hidden md:block mx-5 max-w-[15%] !text-gray-800 !bg-gray-300 hover:!bg-gray-500 hover:!text-gray-300 !border-gray-300" />
                 {
                     posts.data.length > 0 ?
                         <div className="flex flex-col w-full">
                             <AdminCard
+                                hasReviews={false}
                                 posts={posts.data}
                                 title="Posts"
                             />

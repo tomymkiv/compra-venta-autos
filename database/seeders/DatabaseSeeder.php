@@ -7,6 +7,7 @@ use App\Models\CarType;
 use App\Models\Currency;
 use App\Models\Municipio;
 use App\Models\Provincia;
+use App\Models\ReviewStatus;
 use App\Models\VehicleBody;
 use App\Models\VehicleBrand;
 use App\Models\VehicleModel;
@@ -91,5 +92,14 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
+        ReviewStatus::create([
+            'name' => 'Ocultada',
+        ]);
+        ReviewStatus::create([
+            'name' => 'Aprobada',
+        ]);
+        ReviewStatus::create([
+            'name' => 'Rechazada',
+        ]);
     }
 }

@@ -52,5 +52,20 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('delete-any-post', function ($user) {
             return $user->hasRole('SUPER_USER');
         });
+        Gate::define('create-review', function ($user) {
+            return $user->hasRole('COMPRADOR') || $user->hasRole('VENDEDOR') || $user->hasRole('SUPER_USER');
+        });
+        Gate::define('update-own-review', function ($user, $review) {
+            return $user->hasRole('COMPRADOR') || $user->hasRole('VENDEDOR') || $user->hasRole('SUPER_USER') || $user->id === $review->reviewer_id;
+        });
+        Gate::define('delete-own-review', function ($user, $review) {
+            return $user->hasRole('COMPRADOR') || $user->hasRole('VENDEDOR') || $user->hasRole('SUPER_USER') || $user->id === $review->reviewer_id;
+        });
+        Gate::define('delete-any-review', function ($user) {
+            return $user->hasRole('SUPER_USER');
+        });
+        Gate::define('update-any-review', function ($user) {
+            return $user->hasRole('SUPER_USER');
+        });
     }
 }
