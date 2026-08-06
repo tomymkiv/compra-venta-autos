@@ -240,3 +240,10 @@ export interface ReviewStatus {
     id: number,
     name: string,
 }
+
+export interface PaginatedReviewsProps {
+    reviews: Paginated<Review>,
+    userReviewCount: number,
+    reviewAverage: number,
+    user_reviewer: ReviewsProps['user'],
+}

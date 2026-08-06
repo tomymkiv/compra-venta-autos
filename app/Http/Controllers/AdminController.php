@@ -52,7 +52,7 @@ class AdminController extends Controller
             return inertia('admin/users/index', [
                 'users' => User::with('rol')->orderBy('name', 'asc')
                     ->select('id', 'name', 'email', 'email_verified_at', 'avatar')
-                    ->where('id', '!=', $user->id)
+                    // ->where('id', '!=', $user->id)
                     ->paginate($this->paginateLimit),
                 // que no muestre el usuario que está logueado
                 // faltan los roles de estos usuarios
@@ -150,7 +150,7 @@ class AdminController extends Controller
     public function all_user_reviews()
     {
         return inertia('admin/users/reviews/index', [
-            'reviews' => Review::with('reviewer', 'reviewed_user')->get(),
+            'reviews' => Review::with('reviewer', 'reviewed_user')->paginate(10),
         ]);
     }
     public function show_user_reviews(User $user)
@@ -158,9 +158,9 @@ class AdminController extends Controller
         if (!Gate::allows('view-any-review', $user)) {
             abort(403);
         }
-        $reviews = Review::where('reviewer_id', $user->id)->with('reviewed_user')->get();
+        $reviews = Review::where('reviewer_id', $user->id)->with('reviewed_user')->paginate(10);
         return inertia('admin/users/reviews/show', [
-            'user' => $user,
+            'user_reviewer' => $user,
             'reviews' => $reviews,
         ]);
     }
@@ -170,7 +170,7 @@ class AdminController extends Controller
             abort(403);
         }
         $status = $review->status;
-        $allReviewStatus = ReviewStatus::select('id', 'name')->get();
+        $allReviewStatus = ReviewStatus::select('id', 'name')->first();
 
         return inertia('admin/users/reviews/edit', [
             'review' => $review,

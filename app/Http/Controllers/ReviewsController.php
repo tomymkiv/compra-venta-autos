@@ -30,12 +30,13 @@ class ReviewsController extends Controller
     }
     public function show(User $user)
     {
-        $reviews = Review::with('reviewer')->where('reviewed_user_id', $user->id)->get();
-        $reviews = $reviews->filter(function ($review) {
-            return $review->status_id == 2; // filtro solo las que están aprobadas
-        });
-        $reviewAverage = $reviews->avg('rating');
-        $userReviewCount = $reviews->count();
+        $approvedQuery = Review::with('reviewer')
+            ->where('reviewed_user_id', $user->id)
+            ->where('status_id', 2);
+
+        $reviewAverage = $approvedQuery->avg('rating') ?? 0;
+        $userReviewCount = $approvedQuery->count();
+        $reviews = $approvedQuery->paginate(10);
 
         return inertia('reviews/show', [
             'reviews' => $reviews,

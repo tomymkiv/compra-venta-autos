@@ -29,6 +29,7 @@ class UserController extends Controller
             ->with('user')
             ->select('id')
             ->get();
+        $userReview = null;
         // en caso de no tener ningun post, envío solo el usuario.
         $user = User::where('id', $id)->select('id', 'name', 'email_verified_at', 'avatar')->firstOrFail();
         $hasReviewed = Review::where('reviewer_id', auth()->id())
@@ -37,8 +38,13 @@ class UserController extends Controller
         $reviews = Review::with('reviewer')->where('reviewed_user_id', $user->id)->get();
         $reviews = $reviews->filter(fn($review) => $review->status_id == 2); // filtro solo las que están aprobadas
         $userReviewAverage = $reviews->avg('rating');
-        $userReview = Review::where('reviewer_id', Auth::user()->id)
-            ->where('reviewed_user_id', $user->id)->first();
+        $userReviewCount = $reviews->count();
+
+        if (Auth::user()) {
+            $userReview = Review::where('reviewer_id', Auth::user()->id)
+                ->where('reviewed_user_id', $user->id)->first();
+        }
+
         // dd($userReview);
         return inertia('user/show', [
             'posts' => $post,
@@ -47,6 +53,7 @@ class UserController extends Controller
             'userReviews' => $userReview,
             'reviewAverage' => $userReviewAverage,
             'reviews' => $reviews,
+            'userReviewCount' => $userReviewCount,
         ]);
     }
     public function edit()
