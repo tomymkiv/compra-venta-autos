@@ -3,15 +3,15 @@ import AppFront from '@/AppFront'
 import { PaginatedReviewsProps } from '@/types/types'
 import Pagination from '@/components/pagination'
 
-export default function show({ reviews, userReviewCount, reviewAverage, user }: PaginatedReviewsProps) {
+export default function show({ reviews, userReviewCount, reviewAverage, user_reviewer }: PaginatedReviewsProps) {
     return (
         <AppFront>
-            <Head title={`Reseñas de ${user?.name}`} />
+            <Head title={`Reseñas de ${user_reviewer?.name}`} />
             <section className='max-w-4xl mx-auto w-full flex flex-col gap-6 p-4'>
                 {/* Header informativo */}
                 <div className='bg-gray-800 rounded-lg p-6 shadow-xl border border-gray-700/50 flex flex-col md:flex-row md:items-center justify-between gap-4'>
                     <div>
-                        <h1 className='text-xl font-bold text-white'>Reseñas de {user?.name}</h1>
+                        <h1 className='text-xl font-bold text-white'>Reseñas de {user_reviewer?.name}</h1>
                         <p className='text-sm text-gray-400 mt-1'>
                             {userReviewCount} {userReviewCount === 1 ? 'reseña recibida' : 'reseñas recibidas'}
                         </p>

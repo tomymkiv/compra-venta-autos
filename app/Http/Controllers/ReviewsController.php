@@ -42,7 +42,7 @@ class ReviewsController extends Controller
             'reviews' => $reviews,
             'userReviewCount' => $userReviewCount,
             'reviewAverage' => $reviewAverage,
-            'user' => $user
+            'user_reviewer' => $user
         ]);
     }
     public function update(ReviewsRequest $request, Review $review)
