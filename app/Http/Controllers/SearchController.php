@@ -159,7 +159,6 @@ class SearchController extends Controller
                     'currencies' => Cache::remember('sidebar_currencies', 3600, fn() => Currency::whereHas('posts')->select('id', 'nombre')->get()),
                 ]);
             }
-            abort(500); // aborto con error 500 en el caso de que, de alguna forma, se ingresen datos no válidos.
         }
     }
 }

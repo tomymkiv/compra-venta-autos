@@ -67,5 +67,14 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('update-any-review', function ($user) {
             return $user->hasRole('SUPER_USER');
         });
+        Gate::define('create-deal', function ($user, $post) {
+            return $user->hasRole('VENDEDOR') || $user->hasRole('COMPRADOR') && $user->id !== $post->id_user;
+        });
+        Gate::define('update-deal', function ($user) {
+            return $user->hasRole('COMPRADOR') || $user->hasRole('VENDEDOR');
+        });
+        Gate::define('delete-deal', function ($user) {
+            return $user->hasRole('COMPRADOR') || $user->hasRole('VENDEDOR');
+        });
     }
 }

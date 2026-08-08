@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\CarsBrand;
 use App\Models\CarType;
 use App\Models\Currency;
+use App\Models\DealStatus;
 use App\Models\Municipio;
 use App\Models\Provincia;
 use App\Models\ReviewStatus;
@@ -100,6 +101,15 @@ class DatabaseSeeder extends Seeder
         ]);
         ReviewStatus::create([
             'name' => 'Rechazada',
+        ]);
+        DealStatus::create([
+            'name' => 'Aprobado',
+        ]);
+        DealStatus::create([
+            'name' => 'Rechazado',
+        ]);
+        DealStatus::create([
+            'name' => 'Pendiente',
         ]);
     }
 }

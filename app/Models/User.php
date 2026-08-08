@@ -66,6 +66,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->roles();
     }
+    public function deals()
+    {
+        return $this->hasMany(Deal::class, 'buyer_id');
+    }
     protected function casts(): array
     {
         return [

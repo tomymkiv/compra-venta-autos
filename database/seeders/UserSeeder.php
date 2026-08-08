@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Contact;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
@@ -130,6 +131,28 @@ class UserSeeder extends Seeder
                 'email' => 'correo@gmail.com',
                 'password' => bcrypt('password'),
             ])->assignRole($admin);
+            Contact::create([
+                'user_id' => User::where('email', 'correo@gmail.com')->first()->id,
+                'contacto' => 12345678,
+            ]);
         }
+        User::create([
+            'name' => 'Vendedor seeder',
+            'avatar' => 'https://ui-avatars.com/api/?name=Vendedor seeder&color=FF0000&size=128&rounded=true&bold=true&background=random&bold=true&size=256',
+            'email_verified_at' => now(),
+            'email' => "vendedor@gmail.com",
+            'password' => bcrypt('password'),
+        ])->assignRole($vendedor);
+        Contact::create([
+            'user_id' => User::where('email', 'vendedor@gmail.com')->first()->id,
+            'contacto' => 13391111,
+        ]);
+        User::create([
+            'name' => 'Comprador seeder',
+            'avatar' => 'https://ui-avatars.com/api/?name=Comprador seeder&color=FF0000&size=128&rounded=true&bold=true&background=random&bold=true&size=256',
+            'email_verified_at' => now(),
+            'email' => "comprador@gmail.com",
+            'password' => bcrypt('password'),
+        ])->assignRole($comprador);
     }
 }

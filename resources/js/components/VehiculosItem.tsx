@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CarCardsProps } from "@/types/types";
 import AppFront from "@/AppFront";
-import { Link } from "@inertiajs/react";
+import { Link, router, useForm } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import CloseButton from "./close-button";
 import { usePage } from '@inertiajs/react';
@@ -10,11 +10,44 @@ import { User } from "@/types";
 import CarPostData from "./ui/car-post-data";
 import usePriceConverter from "@/hooks/use-price-converter";
 import UserAvatar from "./UserAvatar";
+import ButtonPrimary from "./ui/ButtonPrimary";
+import usePopUp from "@/hooks/use-popup";
+import PopUp from "./PopUp";
 
-export default function VehiculosItem({ post }: CarCardsProps) {
+function useCountdown(rejectedAt: string | null | undefined) {
+    const getTimeLeft = () => {
+        if (!rejectedAt) return null;
+        const expiresAt = new Date(new Date(rejectedAt).getTime() + 24 * 60 * 60 * 1000);
+        const diff = expiresAt.getTime() - Date.now();
+        if (diff <= 0) return null;
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        return { hours, minutes, seconds, diff };
+    };
+    const [timeLeft, setTimeLeft] = useState(getTimeLeft);
+    useEffect(() => {
+        if (!rejectedAt) return;
+        const interval = setInterval(() => {
+            const t = getTimeLeft();
+            setTimeLeft(t);
+            if (!t) clearInterval(interval);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [rejectedAt]);
+    return timeLeft;
+}
+
+export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals, lastRejectedDeal, cultdown, myDealStatus }: CarCardsProps) {
     const { user: UserProps } = usePage().props;
     const user = UserProps as User;
     const { convertPrice, priceBtnActive, USDPrice, ARSPrice } = usePriceConverter({ post });
+    const { show, setShow, confirmation, setConfirmation } = usePopUp();
+    const [dealFinalized, setDealFinalized] = useState<boolean>(false);
+    const { post: submitPost, delete: destroy } = useForm();
+    const [showSuccess, setShowSuccess] = useState<boolean>(false);
+    const [postId, setPostId] = useState<number>(0);
+    const timeLeft = useCountdown(cultdown ? lastRejectedDeal?.rejected_at : null);
     const limit = 6;
     const minHeightWidthCards = 60;
     const imgContainerRef = useRef<HTMLDivElement>(null);
@@ -26,7 +59,16 @@ export default function VehiculosItem({ post }: CarCardsProps) {
         const raw = precio.replace(/\D/g, "");
         return raw ? Number(raw).toLocaleString("es-AR") : "";
     }
-
+    const readDealsStatuses = () => {
+        deals.map(d => {
+            if (d.deal_status_id === 1) {
+                setDealFinalized(true);
+            }
+        })
+    }
+    useEffect(() => {
+        readDealsStatuses();
+    }, [deals])
     const openSlide = () => {
         setSlide(true);
         document.body.classList.toggle('overflow-hidden')
@@ -81,6 +123,44 @@ export default function VehiculosItem({ post }: CarCardsProps) {
 
         setTranslateX(0);
     }
+    const handleDeal = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setShow(true);
+        setPostId(post.id);
+    }
+
+    useEffect(() => {
+        if (confirmation) {
+            // inicia el deal
+            if (!hasDeals && user.id !== post.user.id) {
+                submitPost(route('deals.store', postId), {
+                    onSuccess: () => {
+                        setShowSuccess(true);
+                        setConfirmation(false);
+                        setShow(false);
+                    },
+                    onError: () => {
+                        setConfirmation(false);
+                        setShow(false);
+                    }
+                });
+            }
+
+            if (hasDeals && user.id !== post.user.id) { // si ya tiene un deal activo, voy a la opcion para cancelarlo
+                destroy(route('deals.destroy_as_buyer', postId), {
+                    onSuccess: () => {
+                        setConfirmation(false);
+                        setShow(false);
+                    },
+                    onError: () => {
+                        setConfirmation(false);
+                        setShow(false);
+                    }
+                });
+            }
+        }
+    }, [confirmation])
+
     return <AppFront>
         {
             <div className="flex flex-col items-center justify-center gap-8">
@@ -124,6 +204,90 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                                 <button className={`bg-cover bg-center bg-no-repeat rounded-lg text-black cursor-pointer transition-background shadow-md hover:shadow-gray-400 duration-300 text-center font-[700] ${post.id_currency == 1 ? (priceBtnActive ? 'bg-[url("/public/img/billete-100-dolares.webp")]' : 'bg-[url("/public/img/billete-1000-pesos.webp")]') : (priceBtnActive ? 'bg-[url("/public/img/billete-1000-pesos.webp")]' : 'bg-[url("/public/img/billete-100-dolares.webp")]')}`} onClick={convertPrice}> <p className="p-3 bg-white/40 rounded-md">{post.id_currency == 1 ? (priceBtnActive ? 'Convertir a dólares (USD)' : 'Convertir a pesos (ARS)') : (priceBtnActive ? 'Convertir a pesos (ARS)' : 'Convertir a dólares (USD)')}</p></button>
                             </div>
                             <hr className="my-5 lg:hidden" />
+                            {
+                                user && post.user.id !== user.id && (
+                                    cultdown && timeLeft ? (
+                                        <div className="bg-gradient-to-br from-red-950/95 to-red-900/95 border border-red-500/35 rounded-xl p-4 sm:p-5 mt-1">
+                                            <div className="flex items-center gap-2 mb-2.5">
+                                                <svg className="w-4 h-4 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                                                </svg>
+                                                <p className="text-red-400 font-semibold text-xs sm:text-sm m-0">Deal rechazado</p>
+                                            </div>
+                                            <p className="text-gray-400 text-xs mb-3 leading-relaxed">
+                                                El vendedor rechazó tu solicitud. Podrás iniciar un nuevo Deal cuando expire el período de espera.
+                                            </p>
+                                            <div className="flex gap-2 justify-center">
+                                                {[{ label: 'Horas', value: timeLeft.hours }, { label: 'Min', value: timeLeft.minutes }, { label: 'Seg', value: timeLeft.seconds }].map(({ label, value }) => (
+                                                    <div key={label} className="bg-red-500/10 border border-red-500/25 rounded-lg py-2 px-3 text-center min-w-[56px]">
+                                                        <p className="text-red-500 text-xl font-bold tabular-nums m-0 leading-none">
+                                                            {String(value).padStart(2, '0')}
+                                                        </p>
+                                                        <p className="text-gray-500 text-[10px] uppercase tracking-wider mt-1 mb-0">{label}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ) : !cultdown && !timeLeft && (
+                                        <>
+                                            {
+                                                !dealFinalized ? (
+                                                    <form onSubmit={handleDeal}>
+                                                        {
+                                                            !hasDeals ?
+                                                                <ButtonPrimary type="submit" text="Comenzar Deal" className="!bg-teal-700 hover:!bg-teal-500" />
+                                                                : hasDeals && myDealStatus !== 1 &&
+                                                                <ButtonPrimary type="submit" text="Cancelar Deal" className="!bg-red-700 hover:!bg-red-500 !border-red-700" />
+                                                        }
+                                                    </form>
+                                                ) : myDealStatus !== 1 && (
+                                                    <div className="bg-gradient-to-br from-yellow-950/95 to-orange-900/95 border border-yellow-500/35 rounded-xl p-4 sm:p-5 mt-1">
+                                                        <div className="flex items-center gap-2 mb-2.5">
+                                                            <svg className="w-4 h-4 shrink-0 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                                                            </svg>
+                                                            <p className="text-yellow-400 font-semibold text-xs sm:text-sm m-0">Deals finalizados</p>
+                                                        </div>
+                                                        <p className="text-gray-400 text-xs mb-3 leading-relaxed">
+                                                            Un comprador completó un Deal con el vendedor.
+                                                        </p>
+                                                    </div>
+                                                )
+                                            }
+                                            {
+                                                dealFinalized && hasDeals && myDealStatus === 1 && (
+                                                    <div className="bg-gradient-to-br from-green-950/95 to-green-900/95 border border-green-500/35 rounded-xl p-4 sm:p-5 mt-1">
+                                                        <div className="flex items-center gap-2 mb-2.5">
+                                                            <svg className="w-4 h-4 shrink-0 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                            <p className="text-green-400 font-semibold text-xs sm:text-sm m-0">Deals finalizados</p>
+                                                        </div>
+                                                        <p className="text-gray-400 text-xs mb-3 leading-relaxed">
+                                                            Tu Deal se completó con éxito. Contactate con el vendedor para coordinar la entrega del vehiculo.
+                                                        </p>
+                                                    </div>
+                                                )
+                                            }
+                                        </>
+                                    )
+                                )
+                            }
+                            {
+                                hasDealsReceived && user && user.id === post.user.id &&
+                                <ButtonPrimary onClick={() => router.get(route('deals.index', post.id))} text="Ver deals de este posteo" />
+                            }
+                            {
+                                show && !hasDeals && !cultdown &&
+                                <PopUp setShow={setShow} title="Empezar negociación" mensaje="Al confirmar, se creará un nuevo Deal para este auto, y el vendedor recibirá una notificación. ¿Deseas continuar?" deleteButton={false} confirmButtonText="Confirmar" confirmation={setConfirmation} />
+                            }
+                            {
+                                show && hasDeals &&
+                                <PopUp setShow={setShow} title="Cancelar negociación" mensaje="Al confirmar, se cancelará el Deal. ¿Deseas continuar?" deleteButton={false} confirmButtonText="Confirmar" confirmation={setConfirmation} />
+                            }
+                            {
+                                showSuccess && <PopUp setShow={setShowSuccess} title="Deal iniciado" mensaje="¡Deal iniciado correctamente! Ahora espera que el vendedor lo confirme." deleteButton={false} />
+                            }
                             <div className="flex flex-col gap-2">
                                 <p>Usuario: <b>{post.user.name}</b></p>
                                 <p>Fecha de publicacion:
@@ -207,6 +371,10 @@ export default function VehiculosItem({ post }: CarCardsProps) {
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div className="mt-6 border rounded-md p-4">
+                        <p className="mb-2"><strong>Descripción:</strong></p>
+                        <p>{post.descripcion}</p>
                     </div>
                 </div>
                 {

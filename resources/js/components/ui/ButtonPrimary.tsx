@@ -1,7 +1,7 @@
 interface Props {
     text: string;
     disabled?: boolean;
-    onClick?: () => void;
+    onClick?: (e: React.FormEvent) => void | undefined;
     type?: "button" | "submit" | "reset";
     className?: string;
 }

@@ -49,6 +49,18 @@ export interface FormFieldFilesProps {
     existingImages?: Images[],
 }
 
+export interface Deal {
+    id: number,
+    post_id: number,
+    buyer_id: number,
+    seller_id: number,
+    post: Post,
+    seller: User,
+    buyer: User,
+    deal_status_id: number,
+    rejected_at: string,
+}
+
 export interface Permission {
     id: number,
     name: string,
@@ -208,6 +220,12 @@ export interface FilterProps {
 }
 export interface CarCardsProps {
     post: Post,
+    hasDeals: boolean,
+    hasDealsReceived: boolean,
+    deals: Deal[],
+    lastRejectedDeal: Deal,
+    cultdown: boolean,
+    myDealStatus: number,
 }
 export interface ProfileProps {
     posts?: Post[],
@@ -246,4 +264,9 @@ export interface PaginatedReviewsProps {
     userReviewCount: number,
     reviewAverage: number,
     user_reviewer: ReviewsProps['user'],
+}
+
+export interface PaginatedDealsProps {
+    deal: Paginated<Deal>,
+    post: Post,
 }

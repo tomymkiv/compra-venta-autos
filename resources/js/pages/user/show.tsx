@@ -9,7 +9,6 @@ import { useState } from "react";
 import ButtonPrimary from "@/components/ui/ButtonPrimary";
 
 export default function show({ posts, profileUser, hasReviewed, userReviews, reviewAverage, userReviewCount }: ReviewsProps) {
-    console.log(userReviewCount)
     const { user: UserProps } = usePage().props;
     const user = UserProps as User;
     const { data, setData, post, errors, setError, clearErrors } = useForm({
@@ -105,7 +104,7 @@ export default function show({ posts, profileUser, hasReviewed, userReviews, rev
                     }
                 </div>
                 {
-                    !hasReviewed ? (
+                    !hasReviewed && user.name !== profileUser.name ? (
                         <ButtonPrimary text="Dejar reseña" className="!w-fit !bg-amber-500 hover:!bg-amber-600 !border-amber-500 !text-white font-medium px-4 py-2 rounded-md transition-colors cursor-pointer shadow-md" onClick={() => setShowReviewContainer(true)} />
                     ) : (
                         user && user.name !== profileUser.name && userReviews && (

@@ -7,12 +7,14 @@ use App\Actions\Posts\UpdatePostAction;
 use App\Http\Requests\PostCreateRequest;
 use App\Http\Requests\PostUpdateRequest;
 use App\Models\Currency;
+use App\Models\Deal;
 use App\Models\Post;
 use App\Models\Municipio;
 use App\Models\Provincia;
 use App\Models\User;
 use App\Models\VehicleBody;
 use App\Models\VehicleBrand;
+use Auth;
 use Cache;
 use Gate;
 use Spatie\Permission\Models\Role;
@@ -82,6 +84,15 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
+        $cultdown = false;
+        $hasDeals = Deal::where("post_id", $post->id)
+            ->where("buyer_id", auth()->id())
+            ->exists();
+        $hasDealsReceived = Deal::where('seller_id', $post->id_user) // del lado del vendedor, busco si tiene un deal activo en esta publicación
+            ->where('post_id', $post->id)
+            ->exists();
+        // $dealer = Deal::where('post_id', $post->id)
+        // ->select('buyer_id')->first();
         $post->load([
             'postImage' => fn($q) => $q->orderBy('orden'),
             'carModel.carBrand',
@@ -90,8 +101,33 @@ class PostController extends Controller
             'vehicleBody'
         ]);
 
+        $deals = Deal::where('post_id', $post->id)
+            ->where('seller_id', $post->id_user)
+            ->get();
+
+
+        $lastRejectedDeal = Deal::with('post', 'buyer', 'seller')
+            ->where('post_id', $post->id)
+            ->where('buyer_id', auth()->id())
+            ->where('deal_status_id', 2)
+            ->latest('rejected_at')
+            ->first();
+        $myDealStatus = Deal::with('seller', 'buyer')
+            ->where('buyer_id', auth()->id())
+            ->where('post_id', $post->id)
+            ->pluck('deal_status_id')->first();
+        // dd($myDealStatus);
+        if ($lastRejectedDeal && $lastRejectedDeal->rejected_at->gt(now()->subHours(24))) {
+            $cultdown = true; // cultdown activo, por lo que todavia NO pasaron 24 horas
+        }
         return inertia('posts/show', [
             'post' => $post,
+            'myDealStatus' => $myDealStatus,
+            'deals' => $deals,
+            'hasDeals' => $hasDeals,
+            'hasDealsReceived' => $hasDealsReceived,
+            'lastRejectedDeal' => $lastRejectedDeal,
+            'cultdown' => $cultdown,
         ]);
     }
 
