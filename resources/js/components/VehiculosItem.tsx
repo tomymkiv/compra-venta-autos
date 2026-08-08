@@ -38,7 +38,7 @@ function useCountdown(rejectedAt: string | null | undefined) {
     return timeLeft;
 }
 
-export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals, lastRejectedDeal, cultdown, myDealStatus }: CarCardsProps) {
+export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals, lastRejectedDeal, cultdown, myDealStatus, isPostFinalized }: CarCardsProps) {
     const { user: UserProps } = usePage().props;
     const user = UserProps as User;
     const { convertPrice, priceBtnActive, USDPrice, ARSPrice } = usePriceConverter({ post });
@@ -193,9 +193,12 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
                             <img src={`/${post.post_image[indexImg].url}`} alt={`imagen ${indexImg}`} className="max-w-[90vw] min-h-[300px] max-h-[300px] md:min-w-[700px] md:min-h-[700px] md:max-h-[700px] md:max-w-[700px] object-contain cursor-pointer" onClick={openSlide} />
                         </div>
                         <div className='xl:w-[33%] space-y-2 md:mt-3 mx-3 lg:mx-6 md:flex flex-col gap-5'>
-                            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8">{post.car_model.car_brand.name} {post.car_model.name}</h2>
+                            {
+                                isPostFinalized &&
+                                <p className="text-white p-2 text-sm md:text-lg text-center bg-gradient-to-r from-red-700/80 to-red-600/80 p-3 rounded-md shadow-md tracking-wide">Publicación finalizada</p>
+                            }
+                            <h2 className="text-2xl font-bold mb-8">{post.car_model.car_brand.name} {post.car_model.name} {post.version}</h2>
                             <div>
-                                <CarPostData title="Versión" data={`${post.version}`} />
                                 <CarPostData title="Año" data={`${post.anio}`} />
                                 <CarPostData title="Kilometraje" data={`${handleDots(post.kilometraje.toString())} km`} />
                                 <CarPostData title="Precio" data={`${post.id_currency == 1 ? (priceBtnActive ? `$ ${handleDots(ARSPrice.toFixed(0))}` : `U$S ${handleDots(USDPrice.toFixed(0))}`) : (priceBtnActive ? `U$S ${handleDots(USDPrice.toFixed(0))}` : `$ ${handleDots(ARSPrice.toFixed(0))}`)}`} />

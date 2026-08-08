@@ -104,7 +104,9 @@ class PostController extends Controller
         $deals = Deal::where('post_id', $post->id)
             ->where('seller_id', $post->id_user)
             ->get();
-
+        $isPostFinalized = Deal::where('post_id', $post->id)
+            ->where('deal_status_id', 1)
+            ->exists();
 
         $lastRejectedDeal = Deal::with('post', 'buyer', 'seller')
             ->where('post_id', $post->id)
@@ -127,6 +129,7 @@ class PostController extends Controller
             'hasDeals' => $hasDeals,
             'hasDealsReceived' => $hasDealsReceived,
             'lastRejectedDeal' => $lastRejectedDeal,
+            'isPostFinalized' => $isPostFinalized,
             'cultdown' => $cultdown,
         ]);
     }

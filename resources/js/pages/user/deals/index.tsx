@@ -10,7 +10,8 @@ import ButtonPrimary from '@/components/ui/ButtonPrimary';
 import usePopUp from '@/hooks/use-popup';
 import PopUp from '@/components/PopUp';
 
-export default function index({ deal }: PaginatedDealsProps) {
+export default function index({ deal, post }: PaginatedDealsProps) {
+    console.log()
     const { user: UserProps } = usePage().props;
     const { show, setShow, confirmation, setConfirmation, confirmDelete, setConfirmDelete } = usePopUp();
     const [dealAccepted, setDealAccepted] = useState<boolean>(false);
@@ -87,7 +88,7 @@ export default function index({ deal }: PaginatedDealsProps) {
                 <div>
                     <h1 className="text-2xl font-bold text-white">Mis Deals</h1>
                     <p className="text-sm text-gray-400 mt-1">
-                        Historial y estado de tus propuestas y tratos de compra/venta.
+                        Historial y estado de tratos de compra/venta.
                     </p>
                 </div>
             </div>
@@ -106,7 +107,7 @@ export default function index({ deal }: PaginatedDealsProps) {
                                         <div className="flex flex-col gap-3">
                                             <div className="flex items-center justify-between gap-2 border-b border-gray-700/50 pb-3">
                                                 <span className="text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                                                    {isBuyer ? 'Comprador' : 'Vendedor'}
+                                                    {isBuyer ? 'Compra' : 'Venta'}
                                                 </span>
                                                 {(
                                                     <span className={`text-xs px-2.5 py-1 rounded-full font-medium border ${deal.deal_status_id === 1 ? 'bg-green-500/10 text-green-400 border-green-500/30' :

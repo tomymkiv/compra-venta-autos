@@ -5,16 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ReviewsRequest;
 use App\Models\Review;
 use App\Models\User;
-use Cache;
 
 class ReviewsController extends Controller
 {
-    public function clearCache(User $user)
-    {
-        Cache::forget('reviews' . $user->id);
-        Cache::forget('reviewAverage' . $user->id);
-        Cache::forget('userReviewCount' . $user->id);
-    }
     public function edit(Review $review)
     {
         return inertia('reviews/edit', [

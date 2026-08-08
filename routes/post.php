@@ -16,8 +16,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('posts/deal-seller/{deal}', [DealController::class, 'update_status'])->name('deals.update_status');
     Route::delete('posts/deal-seller/{deal}', [DealController::class, 'destroy_as_seller'])->name('deals.destroy_as_seller');
 
+    // deals referidos a un posteo (para el vendedor)
     Route::get('posts/{post}/deals', [DealController::class, 'index'])->name('deals.index');
     Route::get('posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+    // todos los deals de ese usuario (para el comprador y vendedor)
+    Route::get('user/{user}/deals', [DealController::class, 'user_deals'])->name('deals.user');
+
     Route::delete('posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 });
 

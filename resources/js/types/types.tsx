@@ -226,6 +226,7 @@ export interface CarCardsProps {
     lastRejectedDeal: Deal,
     cultdown: boolean,
     myDealStatus: number,
+    isPostFinalized: boolean,
 }
 export interface ProfileProps {
     posts?: Post[],
@@ -253,6 +254,7 @@ export interface ReviewsProps extends ProfileProps {
     userReviewCount: number,
     reviewAverage: number,
     user?: User,
+    relationalDeals: boolean,
 }
 export interface ReviewStatus {
     id: number,
@@ -268,5 +270,6 @@ export interface PaginatedReviewsProps {
 
 export interface PaginatedDealsProps {
     deal: Paginated<Deal>,
-    post: Post,
+    post: Paginated<Post>,
+    thisUser: User,
 }

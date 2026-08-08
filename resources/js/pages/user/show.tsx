@@ -8,7 +8,7 @@ import FormFieldTextarea from "@/components/FormFieldTextarea";
 import { useState } from "react";
 import ButtonPrimary from "@/components/ui/ButtonPrimary";
 
-export default function show({ posts, profileUser, hasReviewed, userReviews, reviewAverage, userReviewCount }: ReviewsProps) {
+export default function show({ posts, profileUser, hasReviewed, userReviews, reviewAverage, userReviewCount, relationalDeals }: ReviewsProps) {
     const { user: UserProps } = usePage().props;
     const user = UserProps as User;
     const { data, setData, post, errors, setError, clearErrors } = useForm({
@@ -46,7 +46,7 @@ export default function show({ posts, profileUser, hasReviewed, userReviews, rev
     return createPortal(
         <ProfileSection hasReviewed={hasReviewed} posts={posts} profileUser={profileUser}>
             <div className="flex items-center gap-10 md:gap-0 justify-between m-3 flex-wrap">
-                <div>
+                <div className="flex flex-col gap-3">
                     {
                         posts && posts.length > 0 ?
                             <div className="flex justify-start flex-wrap w-full gap-3">
@@ -57,45 +57,48 @@ export default function show({ posts, profileUser, hasReviewed, userReviews, rev
                             :
                             <p>Este usuario no tiene publicaciones.</p>
                     }
-                    <div className="flex items-center gap-3 flex-wrap mt-2 bg-gray-800/60 backdrop-blur-xs p-3 rounded-lg border border-gray-700/50">
-                        <div className="flex items-center gap-1">
-                            {
-                                reviewAverage ? [...Array(5)].map((_i: number, i: number) => {
-                                    const fillPercentage = Math.min(Math.max((Number(reviewAverage) - i) * 100, 0), 100);
-                                    return (
-                                        <span
-                                            key={i}
-                                            className="text-xl inline-block bg-clip-text text-transparent select-none"
-                                            style={{
-                                                backgroundImage: `linear-gradient(to right, #facc15 ${fillPercentage}%, #4b5563 ${fillPercentage}%)`,
-                                                WebkitBackgroundClip: 'text',
-                                                WebkitTextFillColor: 'transparent'
-                                            }}
-                                        >
-                                            ★
+                    {
+                        reviewAverage !== null && (
+                            <div className="flex items-center gap-3 flex-wrap mt-2 bg-gray-800/60 backdrop-blur-xs p-3 rounded-lg border border-gray-700/50">
+                                <div className="flex items-center gap-1">
+                                    {
+                                        [...Array(5)].map((_i: number, i: number) => {
+                                            const fillPercentage = Math.min(Math.max((Number(reviewAverage) - i) * 100, 0), 100);
+                                            return (
+                                                <span
+                                                    key={i}
+                                                    className="text-xl inline-block bg-clip-text text-transparent select-none"
+                                                    style={{
+                                                        backgroundImage: `linear-gradient(to right, #facc15 ${fillPercentage}%, #4b5563 ${fillPercentage}%)`,
+                                                        WebkitBackgroundClip: 'text',
+                                                        WebkitTextFillColor: 'transparent'
+                                                    }}
+                                                >
+                                                    ★
+                                                </span>
+                                            );
+                                        })
+                                    }
+                                </div>
+                                {
+                                    userReviewCount >= 1 &&
+                                    <>
+                                        <span className="text-lg font-semibold text-gray-200">
+                                            {reviewAverage.toFixed(1)}
                                         </span>
-                                    );
-                                }) : ""
-                            }
-                        </div>
-                        {
-                            userReviewCount >= 1 &&
-                            <>
-                                <span className="text-sm font-semibold text-gray-200">
-                                    {reviewAverage.toFixed(1)}
-                                </span>
-                                <span className="text-gray-500">•</span>
-                                <Link href={route('review.show', profileUser.id)} className="text-sm text-amber-400 hover:text-amber-300 transition-colors hover:underline">
-                                    Ver reseñas
-                                </Link>
-                            </>
-                        }
-                        {
-                            userReviewCount === 0 &&
-                            <span className="text-sm font-semibold text-gray-200">Sin reseñas</span>
-                        }
-
-                    </div>
+                                        <span className="text-lg text-gray-500">•</span>
+                                        <Link href={route('review.show', profileUser.id)} className="text-lg text-amber-400 hover:text-amber-300 transition-colors hover:underline">
+                                            Ver reseñas
+                                        </Link>
+                                    </>
+                                }
+                            </div>
+                        )
+                    }
+                    {
+                        userReviewCount === 0 &&
+                        <span className="text-sm font-semibold text-gray-200 mb-3">Este usuario no ha recibido reseñas aún.</span>
+                    }
                 </div>
                 <div>
                     {
@@ -104,8 +107,13 @@ export default function show({ posts, profileUser, hasReviewed, userReviews, rev
                     }
                 </div>
                 {
-                    !hasReviewed && user.name !== profileUser.name ? (
-                        <ButtonPrimary text="Dejar reseña" className="!w-fit !bg-amber-500 hover:!bg-amber-600 !border-amber-500 !text-white font-medium px-4 py-2 rounded-md transition-colors cursor-pointer shadow-md" onClick={() => setShowReviewContainer(true)} />
+                    !hasReviewed && user && user.name !== profileUser.name && relationalDeals ? (
+                        <>
+                            <div className="flex flex-col justify-between items-start gap-3 bg-gray-800/80 border border-gray-700/60 px-3 py-2 rounded-md">
+                                <p className="text-sm font-semibold text-gray-200">Parece que has tenido una interacción con este usuario. ¿Te gustaría dejar una reseña?</p>
+                                <ButtonPrimary text="Dejar reseña" className="!w-fit !bg-amber-500 hover:!bg-amber-600 !border-amber-500 !text-white font-medium px-4 py-2 rounded-md transition-colors cursor-pointer shadow-md" onClick={() => setShowReviewContainer(true)} />
+                            </div>
+                        </>
                     ) : (
                         user && user.name !== profileUser.name && userReviews && (
                             <div className="flex items-center gap-3 flex-wrap">
