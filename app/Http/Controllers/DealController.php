@@ -57,16 +57,6 @@ class DealController extends Controller
     // iniciar deal (en la pagina del post)
     public function store(Post $post)
     {
-        // $dealsLimitReached = Deal::where('buyer_id', auth()->id())
-        //     ->where('seller_id', $post->id_user)
-        //     ->where('deal_status_id', 3)
-        //     ->orWhere('deal_status_id', 2)
-        //     ->count();
-        // // solo tengo en cuenta los que están en estado "pendiente" y/o rechazados
-        // // los deals aceptados se descartan porque son operaciones finalizadas.
-        // if ($dealsLimitReached >= 2) {
-        //     return redirect()->back()->with('error', 'Has alcanzado el límite de deals.');
-        // }
         $deal = new Deal();
         $deal->post_id = $post->id;
         $deal->buyer_id = auth()->id();

@@ -14,7 +14,6 @@ use App\Models\Provincia;
 use App\Models\User;
 use App\Models\VehicleBody;
 use App\Models\VehicleBrand;
-use Auth;
 use Cache;
 use Gate;
 use Spatie\Permission\Models\Role;
@@ -91,8 +90,6 @@ class PostController extends Controller
         $hasDealsReceived = Deal::where('seller_id', $post->id_user) // del lado del vendedor, busco si tiene un deal activo en esta publicación
             ->where('post_id', $post->id)
             ->exists();
-        // $dealer = Deal::where('post_id', $post->id)
-        // ->select('buyer_id')->first();
         $post->load([
             'postImage' => fn($q) => $q->orderBy('orden'),
             'carModel.carBrand',
