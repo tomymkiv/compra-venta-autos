@@ -170,7 +170,7 @@ class AdminController extends Controller
             abort(403);
         }
         $status = $review->status;
-        $allReviewStatus = ReviewStatus::select('id', 'name')->first();
+        $allReviewStatus = ReviewStatus::select('id', 'name')->get();
 
         return inertia('admin/users/reviews/edit', [
             'review' => $review,

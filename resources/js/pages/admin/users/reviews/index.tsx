@@ -44,11 +44,11 @@ export default function index({ reviews }: PaginatedReviewsProps) {
                                     <span className="text-xs text-gray-400">Para: <span className="font-semibold text-gray-200">{review.reviewed_user.name}</span></span>
                                 </div>
 
-                                <span className={`text-xs px-2.5 py-1 rounded-full font-medium border ${review.status_id === 1 ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' :
+                                <span className={`text-xs text-center px-2.5 py-1 rounded-full font-medium border ${review.status_id === 1 ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' :
                                     review.status_id === 2 ? 'bg-green-500/10 text-green-400 border-green-500/30' :
                                         'bg-red-500/10 text-red-400 border-red-500/30'
                                     }`}>
-                                    {review.status_id === 1 ? 'En revisión' : review.status_id === 2 ? 'Visible' : 'Rechazada'}
+                                    {review.status_id === 1 ? 'Ocultada' : review.status_id === 2 ? 'Visible' : 'Rechazada'}
                                 </span>
                             </div>
 
