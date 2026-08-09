@@ -227,6 +227,7 @@ export interface CarCardsProps {
     cultdown: boolean,
     myDealStatus: number,
     isPostFinalized: boolean,
+    dealsLimitReached: boolean,
 }
 export interface ProfileProps {
     posts?: Post[],

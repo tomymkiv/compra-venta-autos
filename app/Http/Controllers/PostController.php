@@ -118,7 +118,15 @@ class PostController extends Controller
             ->where('buyer_id', auth()->id())
             ->where('post_id', $post->id)
             ->pluck('deal_status_id')->first();
-        // dd($myDealStatus);
+        $dealsLimitReached = Deal::select('buyer_id', 'seller_id')
+            ->where('buyer_id', auth()->id())
+            ->where('seller_id', $post->id_user)
+            ->where('deal_status_id', 3)
+            ->orWhere('deal_status_id', 2)
+            ->count() > 5;
+        // solo tengo en cuenta los que están en estado "pendiente" y/o rechazados
+        // los deals aceptados se descartan porque son operaciones finalizadas.
+
         if ($lastRejectedDeal && $lastRejectedDeal->rejected_at->gt(now()->subHours(24))) {
             $cultdown = true; // cultdown activo, por lo que todavia NO pasaron 24 horas
         }
@@ -131,6 +139,7 @@ class PostController extends Controller
             'lastRejectedDeal' => $lastRejectedDeal,
             'isPostFinalized' => $isPostFinalized,
             'cultdown' => $cultdown,
+            'dealsLimitReached' => $dealsLimitReached,
         ]);
     }
 

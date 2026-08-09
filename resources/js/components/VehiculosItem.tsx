@@ -13,6 +13,7 @@ import UserAvatar from "./UserAvatar";
 import ButtonPrimary from "./ui/ButtonPrimary";
 import usePopUp from "@/hooks/use-popup";
 import PopUp from "./PopUp";
+import DealAlertCard from "./ui/DealAlertCard";
 
 function useCountdown(rejectedAt: string | null | undefined) {
     const getTimeLeft = () => {
@@ -38,7 +39,7 @@ function useCountdown(rejectedAt: string | null | undefined) {
     return timeLeft;
 }
 
-export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals, lastRejectedDeal, cultdown, myDealStatus, isPostFinalized }: CarCardsProps) {
+export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals, lastRejectedDeal, cultdown, myDealStatus, isPostFinalized, dealsLimitReached }: CarCardsProps) {
     const { user: UserProps } = usePage().props;
     const user = UserProps as User;
     const { convertPrice, priceBtnActive, USDPrice, ARSPrice } = usePriceConverter({ post });
@@ -212,16 +213,7 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
                             {
                                 user && post.user.id !== user.id && (
                                     cultdown && timeLeft ? (
-                                        <div className="bg-gradient-to-br from-red-950/95 to-red-900/95 border border-red-500/35 rounded-xl p-4 sm:p-5 mt-1">
-                                            <div className="flex items-center gap-2 mb-2.5">
-                                                <svg className="w-4 h-4 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                                                </svg>
-                                                <p className="text-red-400 font-semibold text-xs sm:text-sm m-0">Deal rechazado</p>
-                                            </div>
-                                            <p className="text-gray-400 text-xs mb-3 leading-relaxed">
-                                                El vendedor rechazó tu solicitud. Podrás iniciar un nuevo Deal cuando expire el período de espera.
-                                            </p>
+                                        <DealAlertCard title="Deal rechazado" text="El vendedor rechazó tu solicitud. Podrás iniciar un nuevo Deal cuando expire el período de espera." redBackground >
                                             <div className="flex gap-2 justify-center">
                                                 {[{ label: 'Horas', value: timeLeft.hours }, { label: 'Min', value: timeLeft.minutes }, { label: 'Seg', value: timeLeft.seconds }].map(({ label, value }) => (
                                                     <div key={label} className="bg-red-500/10 border border-red-500/25 rounded-lg py-2 px-3 text-center min-w-[56px]">
@@ -232,50 +224,33 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
                                                     </div>
                                                 ))}
                                             </div>
-                                        </div>
+                                        </DealAlertCard>
                                     ) : !cultdown && !timeLeft && (
                                         <>
                                             {
                                                 !dealFinalized ? (
                                                     <form onSubmit={handleDeal}>
                                                         {
-                                                            !hasDeals ?
+                                                            !hasDeals && !dealsLimitReached ?
                                                                 <ButtonPrimary type="submit" text="Comenzar Deal" className="!bg-teal-700 hover:!bg-teal-500" />
-                                                                : hasDeals && myDealStatus !== 1 &&
-                                                                <ButtonPrimary type="submit" text="Cancelar Deal" className="!bg-red-700 hover:!bg-red-500 !border-red-700" />
+                                                                : !hasDeals && dealsLimitReached ?
+                                                                    <DealAlertCard title="Limite de Deals alcanzado" text="Tenés 5 deals activos con este usuario. Si querés ampliar el límite, finaliza las negociaciones con esta persona." yellowBackground />
+                                                                    : hasDeals && myDealStatus !== 1 &&
+                                                                    <ButtonPrimary type="submit" text="Cancelar Deal" className="!bg-red-700 hover:!bg-red-500 !border-red-700" />
                                                         }
                                                     </form>
                                                 ) : myDealStatus !== 1 && (
-                                                    <div className="bg-gradient-to-br from-yellow-950/95 to-orange-900/95 border border-yellow-500/35 rounded-xl p-4 sm:p-5 mt-1">
-                                                        <div className="flex items-center gap-2 mb-2.5">
-                                                            <svg className="w-4 h-4 shrink-0 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                                                            </svg>
-                                                            <p className="text-yellow-400 font-semibold text-xs sm:text-sm m-0">Deals finalizados</p>
-                                                        </div>
-                                                        <p className="text-gray-400 text-xs mb-3 leading-relaxed">
-                                                            Un comprador completó un Deal con el vendedor.
-                                                        </p>
-                                                    </div>
+                                                    <DealAlertCard title="Deals finalizados" text="Un comprador completó un Deal con el vendedor." yellowBackground />
                                                 )
                                             }
                                             {
                                                 dealFinalized && hasDeals && myDealStatus === 1 && (
-                                                    <div className="bg-gradient-to-br from-green-950/95 to-green-900/95 border border-green-500/35 rounded-xl p-4 sm:p-5 mt-1">
-                                                        <div className="flex items-center gap-2 mb-2.5">
-                                                            <svg className="w-4 h-4 shrink-0 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                            <p className="text-green-400 font-semibold text-xs sm:text-sm m-0">Deals finalizados</p>
-                                                        </div>
-                                                        <p className="text-gray-400 text-xs mb-3 leading-relaxed">
-                                                            Tu Deal se completó con éxito. Contactate con el vendedor para coordinar la entrega del vehiculo.
-                                                        </p>
-                                                    </div>
+                                                    <DealAlertCard greenBackground title="Deals finalizados" text="Tu Deal se completó con éxito. Contactate con el vendedor para coordinar la entrega del vehiculo." />
                                                 )
                                             }
                                             {
-                                                user.id !== post.user.id && (
+                                                // solo puedo consultar si soy un usuario ajeno al post y si no se aceptó ningún Deal.
+                                                user.id !== post.user.id && !dealFinalized && (
                                                     <ButtonPrimary onClick={handleRedirect} text="Consultar" className="!bg-cyan-700 hover:!bg-cyan-500" />
                                                 )
                                             }

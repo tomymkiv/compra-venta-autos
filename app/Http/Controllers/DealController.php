@@ -8,6 +8,7 @@ use App\Models\User;
 
 class DealController extends Controller
 {
+    // mis propios deals, sin ninguna operacion (solo visualizacion)
     public function user_deals(User $user)
     {
         if ($user->id !== auth()->id()) {
@@ -23,6 +24,7 @@ class DealController extends Controller
             'thisUser' => $user
         ]);
     }
+    // deal por publicacion, desde la perspectiva del vendedor
     public function index(Post $post)
     {
         $userId = auth()->id();
@@ -52,8 +54,19 @@ class DealController extends Controller
         }
         abort(403);
     }
+    // iniciar deal (en la pagina del post)
     public function store(Post $post)
     {
+        // $dealsLimitReached = Deal::where('buyer_id', auth()->id())
+        //     ->where('seller_id', $post->id_user)
+        //     ->where('deal_status_id', 3)
+        //     ->orWhere('deal_status_id', 2)
+        //     ->count();
+        // // solo tengo en cuenta los que están en estado "pendiente" y/o rechazados
+        // // los deals aceptados se descartan porque son operaciones finalizadas.
+        // if ($dealsLimitReached >= 2) {
+        //     return redirect()->back()->with('error', 'Has alcanzado el límite de deals.');
+        // }
         $deal = new Deal();
         $deal->post_id = $post->id;
         $deal->buyer_id = auth()->id();
@@ -62,6 +75,7 @@ class DealController extends Controller
         $deal->save();
         return redirect()->back();
     }
+    // cancelar deal (comprador)
     public function destroy_as_buyer(Post $post) // al clickear en "cancelar Deal"
     {
         $deal = Deal::where('post_id', $post->id)
@@ -71,6 +85,7 @@ class DealController extends Controller
         $deal->delete();
         return redirect()->back()->with('success', 'Deal cancelado.');
     }
+    // rechazar deal
     public function update_status(Deal $deal) // al rechazar
     {
         $deal->update([
@@ -80,6 +95,7 @@ class DealController extends Controller
 
         return redirect()->back()->with('success', 'Deal rechazado.');
     }
+    // aceptar deal
     public function accept_deal(Deal $deal)
     {
         $deal->update([
@@ -87,6 +103,7 @@ class DealController extends Controller
         ]);
         return redirect()->back();
     }
+    // eliminar deal (vendedor)
     public function destroy_as_seller(Deal $deal) // al rechazar y posteriormente darle a "eliminar Deal"
     {
         $deal->delete();
