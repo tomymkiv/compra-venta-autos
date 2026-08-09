@@ -173,7 +173,7 @@ export default function index({ deal }: PaginatedDealsProps) {
                                                     }
                                                     {
                                                         // eliminar
-                                                        (show && !accepted && deal.deal_status_id === 2) || (forceDelete) && (
+                                                        (show && confirmDelete && !accepted && deal.deal_status_id === 2) || (forceDelete) && (
                                                             <PopUp deleteButton={true} setShow={setShow} title='Eliminar Deal' mensaje='¿Estás seguro que quieres eliminar definitivamente este Deal?'
                                                                 confirmDelete={setConfirmDelete} setExtraState={setForceDelete}
                                                             />
