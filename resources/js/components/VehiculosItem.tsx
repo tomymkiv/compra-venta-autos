@@ -128,7 +128,9 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
         setShow(true);
         setPostId(post.id);
     }
-
+    const handleRedirect = () => {
+        open(`https://wa.me/54${post.user.contact.contacto}?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car_model.car_brand.name} ${post.car_model.name} ${post.anio}`, '_blank');
+    }
     useEffect(() => {
         if (confirmation) {
             // inicia el deal
@@ -272,6 +274,11 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
                                                     </div>
                                                 )
                                             }
+                                            {
+                                                user.id !== post.user.id && (
+                                                    <ButtonPrimary onClick={handleRedirect} text="Consultar" className="!bg-cyan-700 hover:!bg-cyan-500" />
+                                                )
+                                            }
                                         </>
                                     )
                                 )
@@ -382,11 +389,6 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
                 </div>
                 {
                     user ? <div className="w-[50%] flex flex-col lg:flex-row gap-4 items-center justify-center">
-                        {
-                            user.id !== post.user.id && (
-                                <a href={`https://wa.me/54${post.user.contact.contacto}?text=Hola, ¿como te va?. Me interesa saber más información acerca del vehiculo ${post.car_model.car_brand.name} ${post.car_model.name} ${post.anio}`} target="_blank" className="p-3 bg-gray-800 rounded-lg hover:bg-gray-300 hover:text-gray-700 cursor-pointer transition-colors duration-300 w-full lg:w-[40%] text-center font-[500]">Consultar</a>
-                            )
-                        }
                         {
                             user.id === post.user.id ? <Link href={`/posts/${post.id}/edit`} className="p-3 bg-gray-800 rounded-lg hover:bg-blue-600 hover:text-gray-200 cursor-pointer transition-colors duration-300 w-full lg:w-[40%] text-center font-[500]">Editar publicación</Link> : ''
                         }

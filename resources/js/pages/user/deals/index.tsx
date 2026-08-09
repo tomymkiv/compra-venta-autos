@@ -10,8 +10,7 @@ import ButtonPrimary from '@/components/ui/ButtonPrimary';
 import usePopUp from '@/hooks/use-popup';
 import PopUp from '@/components/PopUp';
 
-export default function index({ deal, post }: PaginatedDealsProps) {
-    console.log()
+export default function index({ deal }: PaginatedDealsProps) {
     const { user: UserProps } = usePage().props;
     const { show, setShow, confirmation, setConfirmation, confirmDelete, setConfirmDelete } = usePopUp();
     const [dealAccepted, setDealAccepted] = useState<boolean>(false);
@@ -121,9 +120,9 @@ export default function index({ deal, post }: PaginatedDealsProps) {
                                             <div className="flex flex-col gap-1">
                                                 <span className="text-xs text-gray-400">
                                                     {isBuyer ? 'Vendedor: ' : 'Comprador: '}
-                                                    <span className="font-semibold text-gray-200">
+                                                    <Link href={route('user.show', deal.buyer.id)} className="hover:underline font-semibold text-gray-200">
                                                         {isBuyer ? deal.seller?.name : deal.buyer?.name}
-                                                    </span>
+                                                    </Link>
                                                 </span>
                                                 {deal.post && (
                                                     <div className="mt-2 bg-gray-900/50 p-3 rounded-md border border-gray-700/30 flex items-center justify-between gap-2">
