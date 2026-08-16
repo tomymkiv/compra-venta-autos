@@ -1,5 +1,5 @@
 import AuthLayout from "@/layouts/auth-layout";
-import { Link, useForm } from "@inertiajs/react"
+import { Link, router, useForm } from "@inertiajs/react"
 import React, { useEffect, useRef, useState } from "react";
 import { route } from "ziggy-js";
 import RegisterFormData from "@/components/RegisterFormData";
@@ -205,5 +205,8 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
                 }
             </FormStepRegister>
         </form>
+        <div className="flex flex-col items-center justify-center">
+            <button onClick={() => router.visit(route('redirect.google'))} className="p-3 bg-red-500 hover:bg-red-600 rounded-md transition-colors duration-300 text-white w-full text-center cursor-pointer">Registrarse con Google</button>
+        </div>
     </AuthLayout>
 }

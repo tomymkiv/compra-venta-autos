@@ -36,6 +36,10 @@ return [
     ],
     'n8n' => [
         'webhook_url' => env('N8N_WEBHOOK_URL_SEND_POSTS'),
-    ]
-
+    ],
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_CLIENT_REDIRECT'),
+    ],
 ];

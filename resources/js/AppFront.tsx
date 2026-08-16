@@ -25,7 +25,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
   const [menuWidthClass, setMenuWidthClass] = useState('w-0');
 
   useEffect(() => {
-    setMenuWidthClass(window.innerWidth > 920 ? 'w-0' : 'w-full');
+    setMenuWidthClass('w-0');
   }, []);
 
   const toggleMenu = () => {
@@ -101,7 +101,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
               <SearchInput enviarData={(e: React.FormEvent) => submit(e)} setQuery={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)} initialQuery={query} />
             </ul>
           </nav>
-          <button className='fixed top-0 left-0 z-50 flex flex-col gap-1 p-5 bg-[#2228] outline outline-gray-200/40 cursor-pointer' onMouseEnter={toggleMenu}>
+          <button className='fixed top-0 left-0 z-50 flex flex-col gap-1 p-5 bg-[#2228] outline outline-gray-200/40 cursor-pointer' onClick={toggleMenu}>
             <NavButtonLines />
             <NavButtonLines />
             <NavButtonLines />
