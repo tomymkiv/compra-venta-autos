@@ -5,6 +5,7 @@ import { router, useForm, usePage } from '@inertiajs/react'
 import { route } from 'ziggy-js'
 import { useEffect, useRef, useState } from 'react'
 import { User } from '@/types'
+import { Contact } from '@/types/types'
 import FormFieldFile from '@/components/FormFieldFile'
 import FormFieldInput from '@/components/FormFieldInput'
 import FormFieldContainer from '@/components/FormFieldContainer'
@@ -13,7 +14,8 @@ import usePopUp from '@/hooks/use-popup'
 
 export default function edit() {
     const { show, setShow, confirmDelete, setConfirmDelete } = usePopUp();
-    const { user } = usePage().props;
+    const { user, user_contact } = usePage().props;
+    const contact = (user_contact as Contact)?.contacto;
     const loguedUser = user as User;
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [mailChanged, setMailChanged] = useState(false);
@@ -22,11 +24,13 @@ export default function edit() {
         name: string,
         email: string,
         password: string,
+        contact: number,
         password_confirmation: string,
     }>({
         avatar: null,
         name: loguedUser.name,
         email: loguedUser.email,
+        contact: contact,
         password: '',
         password_confirmation: '',
     })
@@ -94,6 +98,9 @@ export default function edit() {
                 </div>
                 <FormFieldInput max={32} titulo='Nombre de usuario' className='w-full p-3' value={data.name} onChangeEventInput={(e) => setData('name', e.target.value.slice(0, 32))} type='text' placeholder='Nombre de usuario' errorsText={errors.name} />
                 <FormFieldInput titulo="Correo" className='w-full p-3' value={data.email} onChangeEventInput={handleEmail} type='email' placeholder='Email' errorsText={errors.email} />
+                {
+                    contact && <FormFieldInput titulo="Contacto" className='w-full p-3' value={data.contact} onChangeEventInput={(e) => setData('contact', Number(e.target.value.slice(0, 8)))} type='number' placeholder='Numero de celular' errorsText={errors.contact} />
+                }
                 <FormFieldInput titulo='Contraseña' className='w-full p-3' value={data.password} onChangeEventInput={(e) => setData('password', e.target.value)} type='password' errorsText={errors.password} />
                 <FormFieldInput titulo='Confirmar contraseña' className='w-full p-3' value={data.password_confirmation} onChangeEventInput={(e) => setData('password_confirmation', e.target.value)} type='password' errorsText={errors.password_confirmation} />
                 <FormFieldContainer titulo={loguedUser.email_verified_at ? 'Email verificado' : 'Verificar email'} className='w-full p-3'>

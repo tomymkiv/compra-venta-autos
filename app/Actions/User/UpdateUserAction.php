@@ -20,7 +20,11 @@ class UpdateUserAction
             $user->email_verified_at = null;
             // si el usuario desea verificarlo, deberá hacerlo tocando el botón correspondiente en la edicion de usuarios
         }
-
+        if ($validated['contact']) {
+            $user->contact()->update(
+                ['contacto' => $validated['contact']]
+            );
+        }
         if ($request->hasFile('avatar')) {
             if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
@@ -34,5 +38,6 @@ class UpdateUserAction
             $validated['avatar'] = $request['avatar'];
         }
         $user->update($validated);
+
     }
 }

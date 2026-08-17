@@ -4,24 +4,27 @@ import FormFieldInput from "@/components/FormFieldInput";
 import ProfileSection from "@/components/ProfileSection";
 import { Button } from "@/components/ui/button";
 import { User } from "@/types";
+import { Contact } from "@/types/types";
 import { router, useForm } from "@inertiajs/react";
 import { Label } from "@radix-ui/react-label";
 import { useRef, useState } from "react";
 import { route } from "ziggy-js";
 
-export default function edit({ profile_user }: { profile_user: User }) {
+export default function edit({ profile_user, contact }: { profile_user: User, contact: Contact }) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [mailChanged, setMailChanged] = useState(false);
     const { data, setData, patch, processing, errors } = useForm<{
         avatar: File | string | null,
         name: string,
         email: string,
+        contact: number,
         password: string,
         password_confirmation: string,
     }>({
         avatar: null,
         name: profile_user.name,
         email: profile_user.email,
+        contact: contact?.contacto,
         password: '',
         password_confirmation: '',
     })
@@ -51,11 +54,11 @@ export default function edit({ profile_user }: { profile_user: User }) {
         <section>
             <form onSubmit={handleSubmit} className='flex flex-col gap-2 items-center justify-center'>
                 <div className='flex flex-col gap-2 w-full p-3'>
-                    <Label htmlFor="avatar">Elegí tu nueva imagen de perfil <b>(max 2MB)</b>:</Label>
+                    <Label htmlFor="avatar">Elegí una nueva imagen de perfil para {profile_user.name} <b>(max 2MB)</b>:</Label>
                     {/* Mostrar imagen actual */}
                     <p>Imagen actual</p>
                     <img
-                        src={profile_user.avatar?.includes('api') ? profile_user.avatar : `/storage/${profile_user.avatar}`}
+                        src={profile_user.avatar?.includes('api') || profile_user.avatar?.includes('google') ? profile_user.avatar : `/storage/${profile_user.avatar}`}
                         alt="Avatar"
                         className="w-24 h-24 rounded-full object-cover"
                     />
@@ -77,6 +80,12 @@ export default function edit({ profile_user }: { profile_user: User }) {
                 </div>
                 <FormFieldInput max={32} titulo='Nombre de usuario' className='w-full p-3' value={data.name} onChangeEventInput={(e) => setData('name', e.target.value.slice(0, 32))} type='text' placeholder='Nombre de usuario' errorsText={errors.name} />
                 <FormFieldInput titulo="Correo" className='w-full p-3' value={data.email} onChangeEventInput={handleEmail} type='email' placeholder='Email' errorsText={errors.email} />
+
+                {
+                    contact &&
+                    <FormFieldInput titulo="Contacto" className='w-full p-3' value={data.contact} onChangeEventInput={(e) => setData('contact', Number(e.target.value.slice(0, 8)))} type='text' placeholder='Contacto' errorsText={errors.contact} />
+                }
+
                 <FormFieldInput titulo='Contraseña' className='w-full p-3' value={data.password} onChangeEventInput={(e) => setData('password', e.target.value)} type='password' errorsText={errors.password} />
                 <FormFieldInput titulo='Confirmar contraseña' className='w-full p-3' value={data.password_confirmation} onChangeEventInput={(e) => setData('password_confirmation', e.target.value)} type='password' errorsText={errors.password_confirmation} />
                 <FormFieldContainer titulo={profile_user.email_verified_at ? 'Email verificado' : 'Verificar email'} className='w-full p-3'>

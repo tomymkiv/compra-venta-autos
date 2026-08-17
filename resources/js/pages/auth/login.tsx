@@ -41,8 +41,8 @@ export default function Login() {
                 </div>
                 <ButtonGoogle isLogin action={handleGoogleLogin} />
                 <div className="flex flex-col lg:flex-row gap-3 justify-between items-center w-full">
-                    <Link href={route('auth.register')} className="text-gray-500 hover:text-gray-300 text-sm transition-colors duration-200 p-4">¿No tenés una cuenta? Registrate</Link>
-                    <Link href={route('auth.forgot-password')} className="text-gray-500 hover:text-gray-300 text-sm transition-colors duration-200 p-4">¿Olvidaste tu contraseña?</Link>
+                    <Link href={route('auth.register')} className="text-gray-500 hover:text-gray-300 text-sm transition-colors duration-200 py-4">¿No tenés una cuenta? Registrate</Link>
+                    <Link href={route('auth.forgot-password')} className="text-gray-500 hover:text-gray-300 text-sm transition-colors duration-200 py-4">¿Olvidaste tu contraseña?</Link>
                 </div>
             </section>
         </form>

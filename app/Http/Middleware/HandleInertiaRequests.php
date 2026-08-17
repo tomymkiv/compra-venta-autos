@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Contact;
 use App\Models\Post;
 use App\Models\User;
 use Auth;
@@ -72,6 +73,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'user' => Auth::user(), // objeto del usuario
+            'user_contact' => Auth::user() ? Contact::where('user_id', Auth::user()->id)->first() : null,
             'user_role' => $user_role,
             'my_user_role' => $my_user_role,
             'post_info' => $post_info

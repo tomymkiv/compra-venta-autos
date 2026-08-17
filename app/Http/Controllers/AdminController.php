@@ -7,6 +7,7 @@ use App\Actions\User\UpdateUserAction;
 use App\Http\Requests\PostUpdateRequest;
 use App\Http\Requests\ReviewsRequest;
 use App\Http\Requests\UserEditRequest;
+use App\Models\Contact;
 use App\Models\Currency;
 use App\Models\Post;
 use App\Models\Provincia;
@@ -115,8 +116,11 @@ class AdminController extends Controller
     public function edit_user(User $user)
     {
         if (Gate::allows('update-any-user', $user)) {
+            $contact = Contact::where('user_id', $user->id)->first();
+
             return inertia('admin/users/edit', [
                 'profile_user' => $user,
+                'contact' => $contact,
             ]);
         }
         return abort(404);

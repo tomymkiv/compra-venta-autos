@@ -6,7 +6,11 @@ export interface Rol {
     id: number,
     name: string,
 }
-
+export interface Contact {
+    id: number,
+    user_id: number,
+    contacto: number
+}
 // sirve para input (text, number), select y textarea
 export interface FormFieldsInterface {
     max?: number | undefined,
