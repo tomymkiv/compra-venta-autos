@@ -197,7 +197,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
                             :
                             <div className="flex flex-col items-center justify-center">
                                 <h4 className="w-full m-2">Opcional</h4>
-                                <ButtonGoogle />
+                                <ButtonGoogle isLogin={false} action={handleGoogleRedirect} />
                             </div>
                         }
                     </>
@@ -210,7 +210,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
                     </>
                 }
                 {showContacto && step == 3 &&
-                    <ButtonGoogle />
+                    <ButtonGoogle isLogin={false} action={handleGoogleRedirect} />
                 }
                 {
                     step == 4 && <>
