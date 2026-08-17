@@ -17,7 +17,6 @@ export default function ProfileSection({ children, profileUser }: ProfileProps) 
             if (e.key === "Escape") setIsImageOpen(false);
         };
 
-        document.body.classList.toggle('overflow-hidden');
         // si abro la imagen, habilito "handleEscape"
         isImageOpen && addEventListener('keydown', handleEscape);
 

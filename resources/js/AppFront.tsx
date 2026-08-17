@@ -29,10 +29,12 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
   }, []);
 
   useEffect(() => {
-    if (menuWidthClass === 'w-0') {
-      document.body.classList.remove('overflow-hidden');
-    } else {
+    if (window.innerWidth < 1024 && menuWidthClass !== 'w-0') {
       document.body.classList.add('overflow-hidden');
+    }
+
+    if (window.innerWidth < 1024 && menuWidthClass === 'w-0') {
+      document.body.classList.remove('overflow-hidden');
     }
   }, [menuWidthClass]);
 

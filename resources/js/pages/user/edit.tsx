@@ -72,7 +72,7 @@ export default function edit() {
                     {/* Mostrar imagen actual */}
                     <p>Imagen actual</p>
                     <img
-                        src={loguedUser.avatar?.includes('api') ? loguedUser.avatar : `/storage/${loguedUser.avatar}`}
+                        src={loguedUser.avatar?.includes('api') || loguedUser.avatar?.includes('google') ? loguedUser.avatar : `/storage/${loguedUser.avatar}`}
                         alt="Avatar"
                         className="w-24 h-24 rounded-full object-cover"
                     />

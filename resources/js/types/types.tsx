@@ -220,14 +220,14 @@ export interface FilterProps {
 }
 export interface CarCardsProps {
     post: Post,
-    hasDeals: boolean,
-    hasDealsReceived: boolean,
-    deals: Deal[],
-    lastRejectedDeal: Deal,
-    cultdown: boolean,
-    myDealStatus: number,
-    isPostFinalized: boolean,
-    dealsLimitReached: boolean,
+    hasDeals?: boolean,
+    hasDealsReceived?: boolean,
+    deals?: Deal[],
+    lastRejectedDeal?: Deal,
+    cultdown?: boolean,
+    myDealStatus?: number,
+    isPostFinalized?: boolean,
+    dealsLimitReached?: boolean,
 }
 export interface ProfileProps {
     posts?: Post[],
