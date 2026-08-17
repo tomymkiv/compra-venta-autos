@@ -36,7 +36,7 @@ export default function ProfileSection({ children, profileUser }: ProfileProps) 
                                 {profileUser.avatar && (
                                     <img
                                         // si la imagen tiene "api" en el src, la muestro directamente, si no, la muestro desde storage
-                                        src={profileUser.avatar?.includes("api") ? profileUser.avatar : `/storage/${profileUser.avatar}`}
+                                        src={profileUser.avatar?.includes("api") || !profileUser.avatar.includes('googleusercontent') || !profileUser.avatar.includes('ui-avatars') ? profileUser.avatar : `/storage/${profileUser.avatar}`}
                                         className="rounded-full object-cover w-80 h-80 transition-transform duration-300 group-hover:scale-105"
                                         alt={"Imagen del usuario"}
                                     />
@@ -70,7 +70,7 @@ export default function ProfileSection({ children, profileUser }: ProfileProps) 
                                 {/* Full Image Container (when i click the image) */}
                                 <div className="relative max-w-full max-h-full flex items-center justify-center animate-in zoom-in-90 duration-300">
                                     <img
-                                        src={profileUser.avatar?.includes("api") ? profileUser.avatar : `/storage/${profileUser.avatar}`}
+                                        src={profileUser.avatar && (profileUser.avatar?.includes("api") || !profileUser.avatar.includes('googleusercontent') || !profileUser.avatar.includes('ui-avatars')) ? profileUser.avatar : `/storage/${profileUser.avatar}`}
                                         // Muestra la foto COMPLETA (sin rounded-full) y centrada.
                                         className="rounded-md object-contain shadow-2xl border-2 border-white/20 max-w-[95vw] max-h-[90vh]"
                                         alt={"Imagen del usuario ampliada"}

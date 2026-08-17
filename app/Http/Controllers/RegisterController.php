@@ -8,7 +8,6 @@ use App\Models\User;
 use Http;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
-use Request;
 use Spatie\Permission\Models\Role;
 
 class RegisterController extends Controller

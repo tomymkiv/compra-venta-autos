@@ -5,6 +5,7 @@ import { route } from "ziggy-js";
 import RegisterFormData from "@/components/RegisterFormData";
 import InputComp from "@/components/ui/InputComp";
 import FormStepRegister from "@/components/FormStepRegister";
+import ButtonGoogle from "@/components/ui/ButtonGoogle";
 
 export default function Register({ rol: initialRol = '' }: { rol: string }) {
     const [inputBg, setInputBg] = useState('');
@@ -13,6 +14,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
     const [imgBtn, setImgBtn] = useState('hidden');
     const [showContacto, setShowContacto] = useState(initialRol === 'V');
     const [showRol, setShowRol] = useState("");
+    const [googleRegister, setGoogleRegister] = useState(false);
 
     const { data, setData, post, errors, setError, clearErrors } = useForm<{
         avatar: File | null,
@@ -47,25 +49,8 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
                 setError('rol', 'El rol es obligatorio.');
                 return false;
             }
-        } else if (currentStep === 2) {
-            if (!data.name.trim()) {
-                setError('name', 'El nombre es obligatorio.');
-                return false;
-            }
-            if (data.name.length > 32) {
-                setError('name', 'El nombre debe tener como máximo 32 caracteres.');
-                return false;
-            }
-        } else if (currentStep === 3) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!data.email.trim()) {
-                setError('email', 'El correo es obligatorio.');
-                return false;
-            }
-            if (!emailRegex.test(data.email)) {
-                setError('email', 'El correo debe ser un correo válido.');
-                return false;
-            }
+        }
+        else if (currentStep === 2) {
             if (showContacto) {
                 if (!data.contacto) {
                     setError('contacto', 'El número de contacto es obligatorio para vendedores.');
@@ -75,6 +60,26 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
                     setError('contacto', 'El número de contacto debe tener exactamente 8 dígitos.');
                     return false;
                 }
+            }
+        }
+        else if (currentStep === 3) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!data.email.trim()) {
+                setError('email', 'El correo es obligatorio.');
+                return false;
+            }
+            if (!emailRegex.test(data.email)) {
+                setError('email', 'El correo debe ser un correo válido.');
+                return false;
+            }
+
+            if (!data.name.trim()) {
+                setError('name', 'El nombre es obligatorio.');
+                return false;
+            }
+            if (data.name.length > 32) {
+                setError('name', 'El nombre debe tener como máximo 32 caracteres.');
+                return false;
             }
         } else if (currentStep === 4) {
             if (!data.password) {
@@ -95,7 +100,7 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
 
     const handleNextStep = () => {
         // si todas las validaciones salieron bien, devuelve true
-        if (validateStep(step)) {
+        if (validateStep(step) && !googleRegister) {
             setStep(step + 1); // paso siguiente
         }
     }
@@ -131,7 +136,19 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
     useEffect(() => {
         handleRole();
     }, [initialRol]);
-
+    const handleGoogleRedirect = () => {
+        setGoogleRegister(true);
+        try {
+            router.visit(route('redirect.google'), {
+                data: {
+                    rol: data.rol,
+                    contacto: data.contacto
+                }
+            });
+        } catch (error) {
+            console.error('Error al redirigir a Google:', error);
+        }
+    }
     // limpio los errores (en tiempo real) al modificar los campos
     useEffect(() => {
         if (errors.name) clearErrors('name');
@@ -155,9 +172,9 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
 
     // Al aparecer un error, nos redirije al paso correspondiente
     useEffect(() => {
-        if (errors.name) {
+        if (errors.contacto) {
             setStep(2);
-        } else if (errors.email || errors.contacto) {
+        } else if (errors.name || errors.email) {
             setStep(3);
         } else if (errors.password || errors.password_confirmation) {
             setStep(4);
@@ -173,16 +190,27 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
                     step == 1 && <Link href={route('auth.roles')} className="p-3 bg-blue-500 hover:bg-blue-600 rounded-md transition-colors duration-300 text-white w-full text-center cursor-pointer">Elegir otro rol</Link>
                 }
                 {
-                    step == 2 &&
-                    <RegisterFormData errorMsg={errors.name} name="Nombre" type="text" setData={(e) => setData('name', e.target.value.slice(0, 32))} value={data.name} />
+                    step == 2 && <>
+                        {showContacto// muestro el contacto si elegí el rol "vendedor"
+                            ?
+                            <RegisterFormData errorMsg={errors.contacto} name="Número de contacto (sin codigo de area)" type="number" setData={handleContacto} value={String(data.contacto)} />
+                            :
+                            <div className="flex flex-col items-center justify-center">
+                                <h4 className="w-full m-2">Opcional</h4>
+                                <ButtonGoogle />
+                            </div>
+                        }
+                    </>
                 }
                 {
-                    step == 3 && <>
+                    step == 3 &&
+                    <>
                         <RegisterFormData errorMsg={errors.email} name="Correo" type="email" setData={(e) => setData('email', e.target.value)} value={data.email} />
-                        {showContacto// muestro el contacto si elegí el rol "vendedor"
-                            &&
-                            <RegisterFormData errorMsg={errors.contacto} name="Número de contacto (sin codigo de area)" type="number" setData={handleContacto} value={String(data.contacto)} />}
+                        <RegisterFormData errorMsg={errors.name} name="Nombre" type="text" setData={(e) => setData('name', e.target.value.slice(0, 32))} value={data.name} />
                     </>
+                }
+                {showContacto && step == 3 &&
+                    <ButtonGoogle />
                 }
                 {
                     step == 4 && <>
@@ -205,8 +233,5 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
                 }
             </FormStepRegister>
         </form>
-        <div className="flex flex-col items-center justify-center">
-            <button onClick={() => router.visit(route('redirect.google'))} className="p-3 bg-red-500 hover:bg-red-600 rounded-md transition-colors duration-300 text-white w-full text-center cursor-pointer">Registrarse con Google</button>
-        </div>
     </AuthLayout>
 }

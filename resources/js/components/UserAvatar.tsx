@@ -13,7 +13,7 @@ export default function UserAvatar({ avatar, name, userId, role, center }: UserA
   return (
     <div className={center ? 'flex items-center justify-center w-full' : 'flex items-center justify-start w-full'}>
       <Link href={route('user.show', userId)} className="flex items-center justify-center flex-col gap-1.5 w-fit object-cover rounded-full">
-        <img src={!avatar?.includes('ui-avatars') ? `/storage/${avatar}` : `${avatar}`} className="w-20 h-20 object-cover rounded-full" alt={name} />
+        <img src={avatar && !avatar.includes('ui-avatars') && !avatar.includes('googleusercontent') ? `/storage/${avatar}` : `${avatar}`} className="w-20 h-20 object-cover rounded-full" alt={name} />
         <div className='flex items-center justify-center gap-1'>
           {name &&
             <p className='text-md truncate'>{name}</p>

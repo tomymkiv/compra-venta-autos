@@ -17,7 +17,9 @@ export default function AuthLayout({ children, title }: AuthLayoutProps) {
             <div>
                 <h2 className="text-3xl font-semibold text-slate-200 my-3">{title}</h2>
             </div>
-            {children}
+            <section className="flex flex-col gap-5">
+                {children}
+            </section>
         </div>
     </section>
 }

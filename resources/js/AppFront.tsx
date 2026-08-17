@@ -28,6 +28,14 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
     setMenuWidthClass('w-0');
   }, []);
 
+  useEffect(() => {
+    if (menuWidthClass === 'w-0') {
+      document.body.classList.remove('overflow-hidden');
+    } else {
+      document.body.classList.add('overflow-hidden');
+    }
+  }, [menuWidthClass]);
+
   const toggleMenu = () => {
     if (window.innerWidth < 1024) {
       setMenuWidthClass(prev => prev === 'w-0' ? 'w-full' : 'w-0');
