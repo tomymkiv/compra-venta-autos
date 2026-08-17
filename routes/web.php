@@ -9,6 +9,7 @@ Route::get('/', [UserController::class, 'welcome'])->name('welcome');
 // autenticacion
 Route::get('role-selector', [RegisterController::class, 'roles'])->name('auth.roles');
 Route::post('role-selector', [RegisterController::class, 'storeRole'])->name('auth.storeRole');
+Route::get('waiting-room', [RegisterController::class, 'waitingRoom'])->name('auth.waitingRoom');
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';

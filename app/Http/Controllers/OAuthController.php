@@ -39,9 +39,7 @@ class OAuthController extends Controller
             $contacto = $request->session()->pull('oauth_contacto');
 
             if (!$rol) {
-                return Inertia::location(route('auth.register', [
-                    'error' => 'Ocurrio un problema al iniciar sesion. Contacte al administrador.',
-                ]));
+                return Inertia::location(route('auth.waitingRoom'));
             }
 
             $newUser = User::create([

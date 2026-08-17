@@ -12,6 +12,10 @@ use Spatie\Permission\Models\Role;
 
 class RegisterController extends Controller
 {
+    public function waitingRoom()
+    {
+        return inertia('auth/waiting-room');
+    }
     public function index()
     {
         return inertia('auth/register', [
