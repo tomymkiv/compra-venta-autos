@@ -25,7 +25,10 @@ class UserController extends Controller
     }
     public function show($id)
     {
-        // dd($id);
+        $finalizedDealsOfUser = Deal::where('seller_id', $id)
+            ->where('deal_status_id', 1)
+            ->select('deal_status_id')
+            ->get();
         $hasReviewed = null;
         $userReview = null;
         $userReviewAverage = null;
@@ -71,6 +74,7 @@ class UserController extends Controller
             'reviewAverage' => $userReviewAverage,
             'reviews' => $reviews,
             'userReviewCount' => $userReviewCount,
+            'finalizedDealsOfUser' => $finalizedDealsOfUser,
         ]);
     }
     public function edit()

@@ -8,7 +8,7 @@ import FormFieldTextarea from "@/components/FormFieldTextarea";
 import { useState } from "react";
 import ButtonPrimary from "@/components/ui/ButtonPrimary";
 
-export default function show({ posts, profileUser, hasReviewed, userReviews, reviewAverage, userReviewCount, relationalDeals }: ReviewsProps) {
+export default function show({ posts, profileUser, hasReviewed, userReviews, reviewAverage, userReviewCount, relationalDeals, finalizedDealsOfUser }: ReviewsProps) {
     const { user: UserProps } = usePage().props;
     const user = UserProps as User;
     const { data, setData, post, errors, setError, clearErrors } = useForm({
@@ -99,16 +99,23 @@ export default function show({ posts, profileUser, hasReviewed, userReviews, rev
                         <p>Usuario desde {new Date(profileUser.created_at).toLocaleDateString('es-AR')}</p>
                     }
                     {
+                        finalizedDealsOfUser.length > 0 && (
+                            <div className="flex flex-col justify-between items-start gap-3 py-2">
+                                <span className="text-sm text-gray-300">Ventas realizadas por este usuario: {finalizedDealsOfUser.length}.</span>
+                            </div>
+                        )
+                    }
+                    {
                         userReviewCount === 0 &&
                         <span className="text-sm font-semibold text-gray-200 mb-3">Este usuario no ha recibido reseñas aún.</span>
                     }
                 </div>
-                <div>
-                    {
-                        user && user.name === profileUser.name &&
+                {
+                    user && user.name === profileUser.name &&
+                    <div>
                         <Link href={route('user.edit')} className="text-blue-500 hover:underline w-full">Editar perfil</Link>
-                    }
-                </div>
+                    </div>
+                }
                 {
                     !hasReviewed && user && user.name !== profileUser.name && relationalDeals ? (
                         <>
@@ -119,7 +126,7 @@ export default function show({ posts, profileUser, hasReviewed, userReviews, rev
                         </>
                     ) : (
                         user && user.name !== profileUser.name && userReviews && (
-                            <div className="flex items-center gap-3 flex-wrap">
+                            <div className="flex items-center gap-3 flex-wrap h-full">
                                 {userReviews.status_id === 1 && (
                                     <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs px-3 py-2 rounded-md">
                                         <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>

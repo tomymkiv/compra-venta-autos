@@ -260,6 +260,7 @@ export interface ReviewsProps extends ProfileProps {
     reviewAverage: number,
     user?: User,
     relationalDeals: boolean,
+    finalizedDealsOfUser: Deal[],
 }
 export interface ReviewStatus {
     id: number,
