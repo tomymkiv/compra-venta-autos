@@ -113,8 +113,12 @@ export default function Register({ rol: initialRol = '' }: { rol: string }) {
         if (!validateStep(2)) { setStep(2); return; }
         if (!validateStep(3)) { setStep(3); return; }
         if (!validateStep(4)) { setStep(4); return; }
+        try {
+            post(route('auth.register'));
+        } catch (e) {
+            console.error(e);
+        }
 
-        post(route('auth.register'));
     }
     const handleImageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setData('avatar', e.target.files?.[0] ?? null)

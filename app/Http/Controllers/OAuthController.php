@@ -30,7 +30,19 @@ class OAuthController extends Controller
     public function handleGoogleCallback(Request $request)
     {
         $user = Socialite::driver('google')->user();
-        $findUser = User::where('google_id', $user->id)->first();
+        $findUser = User::where('google_id', $user->id)
+            ->orWhere('email', $user->email)
+            ->first();
+
+        // Si encontró la cuenta por email pero todavía
+        // no tiene Google vinculado
+        if ($findUser && !$findUser->google_id) {
+            $findUser->google_id = $user->id;
+            $findUser->email_verified_at = now();
+            $findUser->save();
+            Auth::login($findUser);
+            return Inertia::location(route('welcome'));
+        }
 
         if ($findUser) { // si el usuario existe, inicio sesion
             Auth::login($findUser);

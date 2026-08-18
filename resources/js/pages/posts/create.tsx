@@ -196,8 +196,7 @@ export default function create({ carBrands, vehicleBodies, currencies, provincia
         }
     }, [errors]);
     return <AppFront>
-        <section className="flex flex-col items-center min-h-screen py-10 px-4 w-full">
-
+        <section className="flex flex-col items-center min-h-screen py-10 w-full">
             {/* Header */}
             <div className="mb-8 text-center">
                 <p className="text-xs tracking-[0.25em] uppercase text-gray-500 mb-2">Nueva publicación</p>

@@ -41,9 +41,11 @@ export default function Filtro({ posts, showPages, carBrands, vehicleBodies, cur
     const handleOpenFilter = () => {
         if (!filterOn) {
             setFilterOn(true)
+            document.body.classList.add('overflow-hidden');
         } else {
             setFilterOn(false);
             setSelectedFilter('');
+            document.body.classList.remove('overflow-hidden');
         }
     }
     const encontrarLocalidad = (id: number | "") => {

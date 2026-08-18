@@ -54,14 +54,13 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
     const imgContainerRef = useRef<HTMLDivElement>(null);
     const [indexImg, setIndexImg] = useState(0); // contador para saber por cuál imagen estoy
     const [slide, setSlide] = useState(false); // verifico si el slide fue abierto o no
-    const [translateX, setTranslateX] = useState(0);
 
     const handleDots = (precio: string) => {
         const raw = precio.replace(/\D/g, "");
         return raw ? Number(raw).toLocaleString("es-AR") : "";
     }
     const readDealsStatuses = () => {
-        deals.map(d => {
+        deals?.map(d => {
             if (d.deal_status_id === 1) {
                 setDealFinalized(true);
             }
@@ -70,9 +69,19 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
     useEffect(() => {
         readDealsStatuses();
     }, [deals])
+    useEffect(() => {
+        if (show || slide || showSuccess) {
+            document.body.classList.add('overflow-hidden');
+        } else {
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        return () => {
+            document.body.classList.remove('overflow-hidden');
+        };
+    }, [show, slide, showSuccess]);
     const openSlide = () => {
         setSlide(true);
-        document.body.classList.toggle('overflow-hidden')
         imgContainerRef.current?.classList.remove('hidden')
     }
     const showImg = (numImg: number) => {
@@ -86,7 +95,6 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
     }
     const closeSlide = () => {
         setSlide(false);
-        document.body.classList.toggle('overflow-hidden')
         imgContainerRef.current?.classList.add('hidden')
     }
     useEffect(() => {
@@ -101,29 +109,6 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
     }, [slide, indexImg]) // ambas dependencias sirven para que funcione el soporte para teclado
     // si el slide está activado y el índice de la imagen es verdadero (existe), se podrá usar todo el useEffect
 
-    // slider para mobile
-    let startX = 0;
-
-    const onTouchStart = (e: React.TouchEvent) => {
-        startX = e.touches[0].clientX; // posicion de inicio en x
-    }
-    const onTouchMove = (e: React.TouchEvent) => {
-        const currentX = e.touches[0].clientX; // posicion actual en x
-        // startX > currentX, siguiente slide
-        // startX < currentX, anterior slide
-        setTranslateX(currentX - startX); // realizo el movimiento entre imagenes
-    }
-    const onTouchEnd = () => {
-        const threshold = 50; // minimo de pixeles que debo mover para pasar a la siguiente imagen
-
-        if (translateX > threshold) {
-            prevSlide();
-        } else if (translateX < -threshold) {
-            nextSlide();
-        }
-
-        setTranslateX(0);
-    }
     const handleDeal = async (e: React.FormEvent) => {
         e.preventDefault();
         setShow(true);
@@ -294,22 +279,18 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
                         <div ref={imgContainerRef} className="hidden fixed inset-0 bg-black/60 flex items-center justify-center w-screen h-screen z-[9999]">
                             <div>
                                 {/* esto es la imagen que aparece cuando abro el slider */}
-                                <img src={`/${post.post_image[indexImg].url}`} alt="" className={`transition-transform duration-300 max-w-[100vw] max-h-[100vh] md:max-w-[75vw] object-contain`} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onTouchMove={onTouchMove}
-                                    style={{
-                                        transform: `translateX(${translateX}px)`
-                                    }}
-                                />
+                                <img src={`/${post.post_image[indexImg].url}`} alt="" className={`transition-transform duration-300 max-w-[100vw] max-h-[100vh] md:max-w-[75vw] object-contain`} />
                             </div>
                             <CloseButton onClickEvent={closeSlide} />
                             <div className="absolute top-10 right-25 p-4 bg-black/65">
                                 <h6>{indexImg + 1}/{post.post_image.length}</h6>
                             </div>
-                            <div onClick={prevSlide} className={`${post.post_image.length == 1 ? 'hidden' : 'hidden md:block'} absolute left-0 bg-black/60`}>
+                            <div onClick={prevSlide} className={`${post.post_image.length == 1 && 'hidden'} absolute left-0 bg-black/30`}>
                                 <svg className="w-12 cursor-pointer fill-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                     <path d="M169.4 297.4C156.9 309.9 156.9 330.2 169.4 342.7L361.4 534.7C373.9 547.2 394.2 547.2 406.7 534.7C419.2 522.2 419.2 501.9 406.7 489.4L237.3 320L406.6 150.6C419.1 138.1 419.1 117.8 406.6 105.3C394.1 92.8 373.8 92.8 361.3 105.3L169.3 297.3z" />
                                 </svg>
                             </div>
-                            <div onClick={nextSlide} className={`${post.post_image.length == 1 ? 'hidden' : 'hidden md:block'} absolute right-0 bg-black/60`}>
+                            <div onClick={nextSlide} className={`${post.post_image.length == 1 && 'hidden'} absolute right-0 bg-black/30`}>
                                 <svg className="w-12 cursor-pointer fill-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                     <path d="M471.1 297.4C483.6 309.9 483.6 330.2 471.1 342.7L279.1 534.7C266.6 547.2 246.3 547.2 233.8 534.7C221.3 522.2 221.3 501.9 233.8 489.4L403.2 320L233.9 150.6C221.4 138.1 221.4 117.8 233.9 105.3C246.4 92.8 266.7 92.8 279.2 105.3L471.2 297.3z" />
                                 </svg>
