@@ -93,7 +93,7 @@ export default function FormStepComponent({ cancelActionBtn, maxSteps, step, set
                             type='button'
                             onClick={back}
                             text="Volver"
-                            className="!bg-[#2e2e2e] hover:!bg-[#383838] !text-gray-300 !border-[#3a3a3a] !hover:border-[#484848]"
+                            className="!bg-[#2e2e2e] hover:!bg-[#383838] !text-[#eee] !border-[#3a3a3a] !hover:border-[#484848]"
                         />
                     }
                     {cancelActionBtn && step >= 1 &&

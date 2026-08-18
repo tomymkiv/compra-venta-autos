@@ -45,7 +45,7 @@ class UserController extends Controller
             ->get();
 
         // en caso de no tener ningun post, envío solo el usuario.
-        $user = User::where('id', $id)->select('id', 'name', 'email_verified_at', 'avatar')->firstOrFail();
+        $user = User::where('id', $id)->select('id', 'name', 'email_verified_at', 'avatar', 'created_at')->firstOrFail();
         if ($user->hasRole('VENDEDOR') || $user->hasRole('SUPER_USER')) {
             $hasReviewed = Review::where('reviewer_id', auth()->id())
                 ->where('reviewed_user_id', $user->id)

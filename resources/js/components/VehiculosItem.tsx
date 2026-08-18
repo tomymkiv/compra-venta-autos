@@ -175,12 +175,12 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
                             }
                         </>
                     </div>
-                    <div className="order-1 lg:order-2 xl:flex justify-center">
+                    <section className="order-1 lg:order-2 xl:flex justify-between w-full">
                         <div className="mx-3 mb-8 flex justify-center">
                             {/* esto es la imagen principal (la que está siendo mostrada en grande) */}
                             <img src={`/${post.post_image[indexImg].url}`} alt={`imagen ${indexImg}`} className="max-w-[90vw] min-h-[300px] max-h-[300px] md:min-w-[700px] md:min-h-[700px] md:max-h-[700px] md:max-w-[700px] object-contain cursor-pointer" onClick={openSlide} />
                         </div>
-                        <div className='xl:w-[33%] space-y-2 md:mt-3 mx-3 lg:mx-6 md:flex flex-col gap-5'>
+                        <div className='lg:border rounded-md p-3 xl:w-[33%] space-y-2 flex flex-col gap-5'>
                             {
                                 isPostFinalized &&
                                 <p className="text-white p-2 text-sm md:text-lg text-center bg-gradient-to-r from-red-700/80 to-red-600/80 p-3 rounded-md shadow-md tracking-wide">Publicación finalizada</p>
@@ -194,7 +194,7 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
                             <div className="">
                                 <button className={`bg-cover bg-center bg-no-repeat rounded-lg text-black cursor-pointer transition-background shadow-md hover:shadow-gray-400 duration-300 text-center font-[700] ${post.id_currency == 1 ? (priceBtnActive ? 'bg-[url("/public/img/billete-100-dolares.webp")]' : 'bg-[url("/public/img/billete-1000-pesos.webp")]') : (priceBtnActive ? 'bg-[url("/public/img/billete-1000-pesos.webp")]' : 'bg-[url("/public/img/billete-100-dolares.webp")]')}`} onClick={convertPrice}> <p className="p-3 bg-white/40 rounded-md">{post.id_currency == 1 ? (priceBtnActive ? 'Convertir a dólares (USD)' : 'Convertir a pesos (ARS)') : (priceBtnActive ? 'Convertir a pesos (ARS)' : 'Convertir a dólares (USD)')}</p></button>
                             </div>
-                            <hr className="my-5 lg:hidden" />
+                            <hr className="my-5 animate-box-pulse" />
                             {
                                 user && post.user.id !== user.id && (
                                     cultdown && timeLeft ? (
@@ -211,7 +211,7 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
                                             </div>
                                         </DealAlertCard>
                                     ) : !cultdown && !timeLeft && (
-                                        <>
+                                        <section className="flex flex-col gap-2">
                                             {
                                                 !dealFinalized ? (
                                                     <form onSubmit={handleDeal}>
@@ -239,24 +239,9 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
                                                     <ButtonPrimary onClick={handleRedirect} text="Consultar" className="!bg-cyan-700 hover:!bg-cyan-500" />
                                                 )
                                             }
-                                        </>
+                                        </section>
                                     )
                                 )
-                            }
-                            {
-                                hasDealsReceived && user && user.id === post.user.id &&
-                                <ButtonPrimary onClick={() => router.get(route('deals.index', post.id))} text="Ver deals de este posteo" />
-                            }
-                            {
-                                show && !hasDeals && !cultdown &&
-                                <PopUp setShow={setShow} title="Empezar negociación" mensaje="Al confirmar, se creará un nuevo Deal para este auto, y el vendedor recibirá una notificación. ¿Deseas continuar?" deleteButton={false} confirmButtonText="Confirmar" confirmation={setConfirmation} />
-                            }
-                            {
-                                show && hasDeals &&
-                                <PopUp setShow={setShow} title="Cancelar negociación" mensaje="Al confirmar, se cancelará el Deal. ¿Deseas continuar?" deleteButton={false} confirmButtonText="Confirmar" confirmation={setConfirmation} />
-                            }
-                            {
-                                showSuccess && <PopUp setShow={setShowSuccess} title="Deal iniciado" mensaje="¡Deal iniciado correctamente! Ahora espera que el vendedor lo confirme." deleteButton={false} />
                             }
                             <div className="flex flex-col gap-2">
                                 <p>Usuario: <b>{post.user.name}</b></p>
@@ -271,9 +256,17 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
                             <div className="flex items-center w-full gap-2">
                                 <UserAvatar center={false} avatar={post.user.avatar && post.user.avatar || ""} userId={post.user.id} />
                             </div>
-                            <hr className="my-5 lg:hidden" />
+                            <hr className="my-5 animate-box-pulse" />
+                            <section id="mensajes-seguridad" className="flex flex-col gap-2 py-4 px-2">
+                                <h2 className="text-lg font-semibold">Consejos de seguridad</h2>
+                                <ul className="flex flex-col gap-2 pl-4">
+                                    <li className="list-disc">Nunca envíes plata por adelantado sin verificar el vehículo.</li>
+                                    <li className="list-disc">Siempre verificar la documentación antes de transferir o realizar alguna operación similar.</li>
+                                    <li className="list-disc">Desconfiá de precios demasiado bajos.</li>
+                                </ul>
+                            </section>
                         </div>
-                    </div>
+                    </section>
                     {/* este portal sirve para que, al abrir una imagen del post, el contenedor con fondo color "bg-black/60" esté forzado a mostrarse por encima (eje z, 3D) de cualquier elemento de la página */}
                     {createPortal(
                         <div ref={imgContainerRef} className="hidden fixed inset-0 bg-black/60 flex items-center justify-center w-screen h-screen z-[9999]">
@@ -354,6 +347,21 @@ export default function VehiculosItem({ post, hasDeals, hasDealsReceived, deals,
                                 <Link href={route('auth.login')} className="text-blue-500 hover:underline">iniciar sesión.</Link>
                             </p>
                         </div>
+                }
+                {
+                    hasDealsReceived && user && user.id === post.user.id &&
+                    <ButtonPrimary onClick={() => router.get(route('deals.index', post.id))} text="Ver deals de este posteo" />
+                }
+                {
+                    show && !hasDeals && !cultdown &&
+                    <PopUp setShow={setShow} title="Empezar negociación" mensaje="Al confirmar, se creará un nuevo Deal para este auto, y el vendedor recibirá una notificación. ¿Deseas continuar?" deleteButton={false} confirmButtonText="Confirmar" confirmation={setConfirmation} />
+                }
+                {
+                    show && hasDeals &&
+                    <PopUp setShow={setShow} title="Cancelar negociación" mensaje="Al confirmar, se cancelará el Deal. ¿Deseas continuar?" deleteButton={false} confirmButtonText="Confirmar" confirmation={setConfirmation} />
+                }
+                {
+                    showSuccess && <PopUp setShow={setShowSuccess} title="Deal iniciado" mensaje="¡Deal iniciado correctamente! Ahora espera que el vendedor lo confirme." deleteButton={false} />
                 }
             </div>
         }

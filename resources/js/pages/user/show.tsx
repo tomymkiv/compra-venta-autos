@@ -96,6 +96,9 @@ export default function show({ posts, profileUser, hasReviewed, userReviews, rev
                         )
                     }
                     {
+                        <p>Usuario desde {new Date(profileUser.created_at).toLocaleDateString('es-AR')}</p>
+                    }
+                    {
                         userReviewCount === 0 &&
                         <span className="text-sm font-semibold text-gray-200 mb-3">Este usuario no ha recibido reseñas aún.</span>
                     }

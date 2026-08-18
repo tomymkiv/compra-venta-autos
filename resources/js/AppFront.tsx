@@ -24,9 +24,10 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
   const year = new Date().getFullYear();
   const [menuWidthClass, setMenuWidthClass] = useState('w-0');
 
-  useEffect(() => {
+  const toggleMenuWidthClass = () => {
     setMenuWidthClass('w-0');
-  }, []);
+  }
+
 
   useEffect(() => {
     if (window.innerWidth < 1024 && menuWidthClass !== 'w-0') {
@@ -54,6 +55,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
   }
 
   const handleLogout = () => {
+    setMenuWidthClass('w-0');
     router.delete(route('logout'));
   };
 
@@ -106,7 +108,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
               {
                 user ?
                   <PageLinks title="Cerrar sesión" link='/logout' metodo='delete' onclick={handleLogout} />
-                  : <PageLinks title="Iniciar sesión" link='/login' />
+                  : <PageLinks title="Iniciar sesión" link='/login' onclick={toggleMenuWidthClass} />
               }
               <SearchInput enviarData={(e: React.FormEvent) => submit(e)} setQuery={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)} initialQuery={query} />
             </ul>
@@ -127,7 +129,7 @@ export default function AppFront({ children, initialQuery, hero }: AppComponentP
       <main className={`${innerWidth < 768 ? 'py-16' : ''} pt-40 relative bg-[#111] z-20 text-[#ccc] min-h-screen flex items-center justify-center`}>
         {/* Transición suave desde el hero hacia abajo */}
         {/* <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-[#111] to-transparent z-30 pointer-events-none" /> */}
-        <section className='max-w-7xl bg-[#111] px-5 flex items-center justify-center w-full'>
+        <section className='max-w-[1600px] bg-[#111] px-5 flex items-center justify-center w-full'>
           {children}
         </section>
       </main>
