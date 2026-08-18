@@ -32,7 +32,7 @@ class UserEditRequest extends FormRequest
             'avatar' => 'nullable|image|max:2048',
             'name' => 'unique:users,name,' . $userId . ',id|sometimes|string|max:32',
             'email' => 'unique:users,email,' . $userId . ',id|sometimes|email|max:128',
-            'contact' => 'unique:users_contactos,contacto,' . $userId . ',user_id|nullable|integer',
+            'contact' => 'unique:users_contactos,contacto,' . $userId . ',user_id|nullable|integer|min:10000000|max:99999999',
             'password' => 'required_with:password_confirmation|nullable|string|min:8|confirmed',
             'password_confirmation' => 'nullable|string|min:8',
         ];
@@ -47,6 +47,8 @@ class UserEditRequest extends FormRequest
             'email.email' => 'El email debe ser un email valido',
             'email.max' => 'El email no puede exceder los 128 caracteres',
             'contact.unique' => 'Este numero de contacto ya esta en uso',
+            'contact.max' => 'El numero de contacto no puede exceder los 8 digitos',
+            'contact.min' => 'El numero de contacto debe tener al menos 8 digitos',
             'password.required_with' => 'No puedes confirmar la contraseña sin ingresar una.',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres',
             'password.confirmed' => 'Las contraseñas no coinciden',
